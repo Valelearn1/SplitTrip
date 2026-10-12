@@ -526,8 +526,8 @@ Deploy automatico da `main`. Il primo deploy ("Hello") si fa il giorno 1.
 ### Metodo
 
 1. Spec approvata → piano con task da 1–2 h, test prima del codice.
-2. Board Trello **SplitTrip**: `Backlog · v1 · v2 · v3 · In corso · Fatto`; una card per task (creata dopo il piano, con approvazione).
-3. TDD; un commit per task, eseguito dall'autrice; tag `v1.0`, `v2.0`, `v3.0`.
+2. Board Trello **SplitTrip**: `v1 Core · v2 Social · v3 Live · In corso · Fatto`; una card per task del piano, con checklist dei passi (card segnaposto per v2 e v3 finché non ne scriviamo le spec).
+3. TDD; un commit per task, eseguito dall'autrice, direttamente su `main` (niente branch né pull request, D-23); tag `v1.0`, `v2.0`, `v3.0`.
 4. Chiusura versione: deploy, README, `decisioni.md`.
 
 ### Piano temporale
