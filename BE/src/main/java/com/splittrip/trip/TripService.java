@@ -4,6 +4,8 @@ import com.splittrip.common.BadRequestException;
 import com.splittrip.common.ConflictException;
 import com.splittrip.common.ForbiddenException;
 import com.splittrip.common.NotFoundException;
+import com.splittrip.expense.ExpenseRepository;
+import com.splittrip.expense.ExpenseShareRepository;
 import com.splittrip.trip.dto.JoinPreviewResponse;
 import com.splittrip.trip.dto.TripPatchRequest;
 import com.splittrip.trip.dto.TripRequest;
@@ -28,15 +30,20 @@ public class TripService {
     private final UserService users;
     private final TripAccessService access;
     private final InviteCodeGenerator codes;
+    private final ExpenseRepository expenses;
+    private final ExpenseShareRepository shares;
     private final Clock clock;
 
     public TripService(TripRepository trips, TripMemberRepository members, UserService users,
-                       TripAccessService access, InviteCodeGenerator codes, Clock clock) {
+                       TripAccessService access, InviteCodeGenerator codes,
+                       ExpenseRepository expenses, ExpenseShareRepository shares, Clock clock) {
         this.trips = trips;
         this.members = members;
         this.users = users;
         this.access = access;
         this.codes = codes;
+        this.expenses = expenses;
+        this.shares = shares;
         this.clock = clock;
     }
 
@@ -94,6 +101,9 @@ public class TripService {
         if (trip.getStatus() != TripStatus.PLANNING) {
             throw new ConflictException("Si può cancellare solo un viaggio in pianificazione");
         }
+        if (expenses.existsByTripId(tripId)) {
+            throw new ConflictException("Il viaggio ha delle spese: non si può cancellare");
+        }
         trips.delete(trip);
     }
 
@@ -133,6 +143,9 @@ public class TripService {
                 .orElseThrow(() -> new NotFoundException("Membro non trovato"));
         if (target.isOrganizer()) {
             throw new ConflictException("L'organizzatore non può lasciare il viaggio");
+        }
+        if (expenses.existsByTripIdAndPayerId(tripId, targetUserId) || shares.existsByUserIdAndExpenseTripId(targetUserId, tripId)) {
+            throw new ConflictException("Il membro ha spese o quote nel viaggio: non si può rimuovere");
         }
         members.delete(target);
     }
