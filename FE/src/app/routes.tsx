@@ -1,6 +1,9 @@
 import { Navigate, type RouteObject } from 'react-router'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
+import { ExpenseFormPage } from '../features/expenses/ExpenseFormPage'
+import { ExpensesPage } from '../features/expenses/ExpensesPage'
+import { TrashPage } from '../features/expenses/TrashPage'
 import { JoinPage } from '../features/trips/JoinPage'
 import { NewTripPage } from '../features/trips/NewTripPage'
 import { TripDashboardPage } from '../features/trips/TripDashboardPage'
@@ -30,6 +33,10 @@ export const routes: RouteObject[] = [
             element: <TripLayout />,
             children: [
               { index: true, element: <TripDashboardPage /> },
+              { path: 'expenses', element: <ExpensesPage /> },
+              { path: 'expenses/new', element: <ExpenseFormPage /> },
+              { path: 'expenses/trash', element: <TrashPage /> },
+              { path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> },
               { path: 'settings', element: <TripSettingsPage /> },
             ],
           },
