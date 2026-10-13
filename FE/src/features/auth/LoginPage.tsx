@@ -1,0 +1,40 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
+import { Link, useLocation, useNavigate } from 'react-router'
+import { Button } from '../../shared/ui/Button'
+import { Field } from '../../shared/ui/Field'
+import { FormError } from '../../shared/ui/FormError'
+import { authApi } from './authApi'
+import { loginSchema, type LoginForm } from './authSchemas'
+import { useAuth } from './useAuth'
+
+export function LoginPage() {
+  const { login } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: string } | null)?.from ?? '/trips'
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({ resolver: zodResolver(loginSchema) })
+  const mutation = useMutation({
+    mutationFn: authApi.login,
+    onSuccess: (data) => {
+      login(data)
+      navigate(from, { replace: true })
+    },
+  })
+
+  return (
+    <section className="auth-page">
+      <h1>Bentornata su SplitTrip</h1>
+      <form onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
+        <Field label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
+        <Field label="Password" type="password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
+        <FormError error={mutation.error} />
+        <Button type="submit" loading={mutation.isPending}>Entra</Button>
+      </form>
+      <p>
+        Prima volta qui? <Link to="/register" state={location.state}>Crea un account</Link>
+      </p>
+    </section>
+  )
+}
