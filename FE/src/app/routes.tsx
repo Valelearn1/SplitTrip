@@ -1,6 +1,8 @@
 import { Navigate, type RouteObject } from 'react-router'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
+import { BalancesPage } from '../features/balances/BalancesPage'
+import { SettlementFormPage } from '../features/balances/SettlementFormPage'
 import { ExpenseFormPage } from '../features/expenses/ExpenseFormPage'
 import { ExpensesPage } from '../features/expenses/ExpensesPage'
 import { TrashPage } from '../features/expenses/TrashPage'
@@ -37,6 +39,8 @@ export const routes: RouteObject[] = [
               { path: 'expenses/new', element: <ExpenseFormPage /> },
               { path: 'expenses/trash', element: <TrashPage /> },
               { path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> },
+              { path: 'balances', element: <BalancesPage /> },
+              { path: 'settlements/new', element: <SettlementFormPage /> },
               { path: 'settings', element: <TripSettingsPage /> },
             ],
           },
