@@ -1,6 +1,9 @@
 import { Navigate, type RouteObject } from 'react-router'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
+import { JoinPage } from '../features/trips/JoinPage'
+import { NewTripPage } from '../features/trips/NewTripPage'
+import { TripsPage } from '../features/trips/TripsPage'
 import { Layout } from './Layout'
 import { NotFoundPage } from './NotFoundPage'
 import { RequireAuth } from './RequireAuth'
@@ -14,8 +17,12 @@ export const routes: RouteObject[] = [
       { path: '/register', element: <RegisterPage /> },
       {
         element: <RequireAuth />,
-        // Segnaposto: sostituito dalla pagina vera nel task FE-03
-        children: [{ path: '/trips', element: <h1>I miei viaggi</h1> }],
+        children: [
+          { path: '/trips', element: <TripsPage /> },
+          { path: '/trips/new', element: <NewTripPage /> },
+          { path: '/join', element: <JoinPage /> },
+          { path: '/join/:code', element: <JoinPage /> },
+        ],
       },
       { path: '*', element: <NotFoundPage /> },
     ],

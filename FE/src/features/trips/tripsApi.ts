@@ -1,0 +1,17 @@
+import { api } from '../../shared/api/client'
+import type { JoinPreview, Trip, TripStatus, TripSummary } from '../../shared/api/types'
+
+export type TripInput = { name: string; destination: string; startDate: string; endDate: string; currency?: string }
+export type TripPatch = Partial<Omit<TripInput, 'currency'>> & { status?: TripStatus }
+
+export const tripsApi = {
+  list: () => api<TripSummary[]>('/trips'),
+  get: (tripId: string) => api<Trip>(`/trips/${tripId}`),
+  create: (body: TripInput) => api<Trip>('/trips', { method: 'POST', body }),
+  update: (tripId: string, body: TripPatch) => api<Trip>(`/trips/${tripId}`, { method: 'PATCH', body }),
+  remove: (tripId: string) => api<void>(`/trips/${tripId}`, { method: 'DELETE' }),
+  joinPreview: (code: string) => api<JoinPreview>(`/trips/join-preview?code=${encodeURIComponent(code)}`),
+  join: (code: string) => api<Trip>('/trips/join', { method: 'POST', body: { code } }),
+  regenerateCode: (tripId: string) => api<Trip>(`/trips/${tripId}/invite-code/regenerate`, { method: 'POST' }),
+  removeMember: (tripId: string, userId: string) => api<void>(`/trips/${tripId}/members/${userId}`, { method: 'DELETE' }),
+}
