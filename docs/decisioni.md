@@ -11,7 +11,7 @@ Una riga per decisione. **Reversibile** indica se cambiarla più avanti costa po
 | D-05 | 2026-10-12 | Ingresso nel viaggio con codice/link invito | invito via email | niente servizio email, niente email esposte, è come si fa tra amici | sì |
 | D-06 | 2026-10-12 | Due ruoli: ORGANIZER e MEMBER | ruoli granulari | sufficiente per dimostrare l'autorizzazione | sì |
 | D-07 | 2026-10-12 | Foto salvate nel DB (bytea), ridimensionate server-side | Cloudinary, S3, Supabase, disco Render | il filesystem free di Render è effimero; Cloudinary mai usato dall'autrice; zero servizi esterni e credenziali. Da rivalutare se il DB free (1 GB) non basta | sì (migrabile a storage esterno) |
-| D-08 | 2026-10-12 | Hosting Render free: backend Docker, frontend statico, Postgres | altri hosting | già usato al corso; `render.yaml` nel repo | sì |
+| D-08 | 2026-10-12 | Hosting Render free: backend Docker, frontend statico, Postgres. In produzione dal 2026-10-13: API https://splittrip-api.onrender.com (Swagger su `/swagger-ui.html`), sito https://splittrip.onrender.com. Nota: il DB free di Render scade dopo 30 giorni (metà novembre 2026) | altri hosting; Neon per il DB (valutato il 2026-10-13, scartato per ora: si è liberato lo slot free cancellando il DB di un progetto precedente) | già usato al corso; `render.yaml` nel repo | sì |
 | D-09 | 2026-10-12 | Flyway per le migrazioni | `ddl-auto=update`, Liquibase | schema versionato e deterministico, già conosciuto | no |
 | D-10 | 2026-10-12 | Mappa con Leaflet + OpenStreetMap | Google Maps | gratis, senza chiave API | sì |
 | D-11 | 2026-10-12 | UI mobile-first | desktop-first | in vacanza si usa dal telefono | — |
