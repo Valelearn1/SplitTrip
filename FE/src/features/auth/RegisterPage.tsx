@@ -6,6 +6,7 @@ import { ApiError } from '../../shared/api/client'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
+import { Icon } from '../../shared/ui/Icon'
 import { authApi } from './authApi'
 import { registerSchema, type RegisterForm } from './authSchemas'
 import { useAuth } from './useAuth'
@@ -32,15 +33,19 @@ export function RegisterPage() {
 
   return (
     <section className="auth-page">
-      <h1>Crea il tuo account</h1>
-      <form onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
-        <Field label="Nome" autoComplete="name" error={errors.displayName?.message} {...register('displayName')} />
-        <Field label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
-        <Field label="Password" type="password" autoComplete="new-password" error={errors.password?.message} {...register('password')} />
+      <div className="auth-logo">
+        <Icon name="luggage" fill />
+        <h1>Crea il tuo account</h1>
+        <p className="muted">Bastano un nome, un'email e una password.</p>
+      </div>
+      <form className="card" onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
+        <Field label="Nome" autoComplete="name" placeholder="Come ti chiamano gli amici" error={errors.displayName?.message} {...register('displayName')} />
+        <Field label="Email" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
+        <Field label="Password" type="password" autoComplete="new-password" placeholder="Almeno 8 caratteri, una lettera e una cifra" error={errors.password?.message} {...register('password')} />
         <FormError error={mutation.error} />
         <Button type="submit" loading={mutation.isPending}>Registrati</Button>
       </form>
-      <p>
+      <p className="muted" style={{ textAlign: 'center' }}>
         Hai già un account? <Link to="/login" state={location.state}>Entra</Link>
       </p>
     </section>

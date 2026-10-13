@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { configureClient } from '../../shared/api/client'
 import { AUTH_STORAGE_KEY, AuthContext, type AuthState } from './authContext'
 
@@ -11,13 +11,13 @@ function read(): AuthState | null {
   }
 }
 
+// Il token si legge sempre dallo storage (login/logout lo tengono aggiornato): così la prima query
+// di una rotta protetta, che parte negli effetti dei figli prima di quelli del provider, ha già il Bearer.
+const getToken = () => read()?.token ?? null
+configureClient({ getToken, onUnauthorized: () => {} })
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useState<AuthState | null>(read)
-  // Il client API legge il token dal ref, così non va riconfigurato a ogni login/logout
-  const authRef = useRef(auth)
-  useEffect(() => {
-    authRef.current = auth
-  }, [auth])
 
   const login = useCallback((state: AuthState) => {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(state))
@@ -30,7 +30,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    configureClient({ getToken: () => authRef.current?.token ?? null, onUnauthorized: logout })
+    configureClient({ getToken, onUnauthorized: logout })
+    return () => configureClient({ getToken, onUnauthorized: () => {} })
   }, [logout])
 
   const value = useMemo(() => ({ auth, login, logout }), [auth, login, logout])

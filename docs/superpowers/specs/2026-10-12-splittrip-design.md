@@ -48,8 +48,9 @@ Ogni versione è un progetto completo e presentabile da solo. Ogni versione = un
 | Versione | Nome | Contenuto | Giorni |
 |---|---|---|---|
 | **v1** | Core | auth JWT, viaggi e membri con codice invito, spese (equa + personalizzata), rimborsi, saldi, cestino spese, Swagger, test, deploy, README | 1–7 |
-| **v2** | Social | to-do list (valigia / generali), foto con posizione e mappa, notifiche in-app | 8–10 |
-| **v3** | Live | chat di gruppo WebSocket, notifiche in tempo reale | 11–12 |
+| **v1.5** | Divisioni smart (D-28) | schema: i soldi puntano ai partecipanti (S1), valuta/tasso sulla spesa (S2), metodo di divisione estendibile (S4); divisione per giorni di presenza e quote con peso. Spec e piano dedicati | dopo `v1.0` |
+| **v2** | Social | to-do list (valigia / generali), foto con posizione e mappa, notifiche in-app; extra dalle schermate Stitch (D-25): foto profilo, foto scontrino allegata alla spesa, meteo della destinazione via Open-Meteo | 8–10 |
+| **v3** | Live | chat di gruppo WebSocket, notifiche in tempo reale; extra (D-25): «consiglio di viaggio» generato con AI | 11–12 |
 | — | Rifinitura | README finale, prova presentazione | 13–14 |
 
 **Regola di taglio:** se a fine giorno 7 v1 non è chiusa, v3 esce dal piano. Meglio v1 e v2 impeccabili.
@@ -546,3 +547,14 @@ Deploy automatico da `main`. Il primo deploy ("Hello") si fa il giorno 1.
 ## 11. Fuori scopo
 
 Valute multiple e conversioni; refresh token; invito via email; notifiche push; cancellazione account; percentuali e quote "a parti" nelle spese; modalità offline; storage esterno delle foto (valutato, vedi D-07).
+
+Da valutare dopo la chiusura di v1 (D-25): «tappe del viaggio» (entità con nome e date, «giorno N di M» in dashboard), suggerite dalle schermate Stitch ma non previste dal modello dati.
+
+## 12. Accessibilità (D-24)
+
+1. Mai solo il colore: importi con segno ed etichetta («devi dare / devi ricevere»), stati con testo nel badge, errori con icona e testo.
+2. Contrasto WCAG AA: teal `#00685c` e corallo scuro `#aa361e` per il testo; corallo chiaro `#ff7355` solo per barre e sfondi.
+3. Tastiera e lettori di schermo: focus visibile, `aria-label` sulle icone, `role="alert"` sugli errori, `<dialog>` per le conferme.
+4. Target touch ≥ 44 px, font ≥ 16 px nei campi.
+5. `prefers-reduced-motion` rispettato.
+6. In v3 le notifiche sono sempre visive, mai solo sonore.

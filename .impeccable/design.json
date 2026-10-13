@@ -1,0 +1,732 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-13T15:48:41+00:00",
+  "title": "Design System: SplitTrip",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "Azzurro Latte",
+        "canonical": "#f8f9ff",
+        "oklch": "oklch(98.3% 0.008 278.6)",
+        "tonalRamp": [
+          "#141c26",
+          "#3f4a58",
+          "#5f6b7a",
+          "#dbe3f1",
+          "#e7eefd",
+          "#eff4ff",
+          "#f8f9ff",
+          "#ffffff"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Bianco Carta",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#141c26",
+          "#3f4a58",
+          "#5f6b7a",
+          "#dbe3f1",
+          "#e7eefd",
+          "#eff4ff",
+          "#f8f9ff",
+          "#ffffff"
+        ]
+      },
+      "surface-1": {
+        "role": "neutral",
+        "displayName": "Azzurro Nebbia",
+        "canonical": "#eff4ff",
+        "oklch": "oklch(96.7% 0.016 266.3)",
+        "tonalRamp": [
+          "#141c26",
+          "#3f4a58",
+          "#5f6b7a",
+          "#dbe3f1",
+          "#e7eefd",
+          "#eff4ff",
+          "#f8f9ff",
+          "#ffffff"
+        ]
+      },
+      "surface-2": {
+        "role": "neutral",
+        "displayName": "Azzurro Pietra",
+        "canonical": "#e7eefd",
+        "oklch": "oklch(94.8% 0.022 265.8)",
+        "tonalRamp": [
+          "#141c26",
+          "#3f4a58",
+          "#5f6b7a",
+          "#dbe3f1",
+          "#e7eefd",
+          "#eff4ff",
+          "#f8f9ff",
+          "#ffffff"
+        ]
+      },
+      "surface-3": {
+        "role": "neutral",
+        "displayName": "Azzurro Ardesia",
+        "canonical": "#dbe3f1",
+        "oklch": "oklch(91.4% 0.021 261.8)",
+        "tonalRamp": [
+          "#141c26",
+          "#3f4a58",
+          "#5f6b7a",
+          "#dbe3f1",
+          "#e7eefd",
+          "#eff4ff",
+          "#f8f9ff",
+          "#ffffff"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Linea",
+        "canonical": "#dbe3f1",
+        "oklch": "oklch(91.4% 0.021 261.8)",
+        "tonalRamp": [
+          "#141c26",
+          "#3f4a58",
+          "#5f6b7a",
+          "#dbe3f1",
+          "#e7eefd",
+          "#eff4ff",
+          "#f8f9ff",
+          "#ffffff"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Inchiostro",
+        "canonical": "#141c26",
+        "oklch": "oklch(22.3% 0.023 254.3)",
+        "tonalRamp": [
+          "#141c26",
+          "#3f4a58",
+          "#5f6b7a",
+          "#dbe3f1",
+          "#e7eefd",
+          "#eff4ff",
+          "#f8f9ff",
+          "#ffffff"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Inchiostro 2",
+        "canonical": "#3f4a58",
+        "oklch": "oklch(40.5% 0.028 254.6)",
+        "tonalRamp": [
+          "#141c26",
+          "#3f4a58",
+          "#5f6b7a",
+          "#dbe3f1",
+          "#e7eefd",
+          "#eff4ff",
+          "#f8f9ff",
+          "#ffffff"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Inchiostro 3",
+        "canonical": "#5f6b7a",
+        "oklch": "oklch(52.3% 0.028 254.1)",
+        "tonalRamp": [
+          "#141c26",
+          "#3f4a58",
+          "#5f6b7a",
+          "#dbe3f1",
+          "#e7eefd",
+          "#eff4ff",
+          "#f8f9ff",
+          "#ffffff"
+        ]
+      },
+      "teal": {
+        "role": "primary",
+        "displayName": "Teal Rotta",
+        "canonical": "#00685c",
+        "oklch": "oklch(46.4% 0.083 181.3)",
+        "tonalRamp": [
+          "#000f0c",
+          "#052d28",
+          "#075147",
+          "#1c7569",
+          "#479a8c",
+          "#6ec0b1",
+          "#91e3d4",
+          "#bdfef1"
+        ],
+        "projectScale": [
+          "#00685c",
+          "#1b8375",
+          "#97f3e2",
+          "#e4f6f2"
+        ]
+      },
+      "teal-2": {
+        "role": "primary",
+        "displayName": "Teal Acqua",
+        "canonical": "#1b8375",
+        "oklch": "oklch(55.0% 0.092 181.3)",
+        "tonalRamp": [
+          "#000f0c",
+          "#062d28",
+          "#085147",
+          "#1d7569",
+          "#3c9b8d",
+          "#64c1b1",
+          "#89e5d5",
+          "#bdfef1"
+        ],
+        "projectScale": [
+          "#00685c",
+          "#1b8375",
+          "#97f3e2",
+          "#e4f6f2"
+        ]
+      },
+      "teal-soft": {
+        "role": "primary",
+        "displayName": "Teal Laguna",
+        "canonical": "#97f3e2",
+        "oklch": "oklch(90.2% 0.092 181.1)",
+        "tonalRamp": [
+          "#000f0c",
+          "#002e28",
+          "#095047",
+          "#017769",
+          "#3d9b8c",
+          "#65c1b1",
+          "#89e5d4",
+          "#bdfef1"
+        ],
+        "projectScale": [
+          "#00685c",
+          "#1b8375",
+          "#97f3e2",
+          "#e4f6f2"
+        ]
+      },
+      "teal-tint": {
+        "role": "primary",
+        "displayName": "Teal Velo",
+        "canonical": "#e4f6f2",
+        "oklch": "oklch(95.9% 0.020 181.1)",
+        "tonalRamp": [
+          "#030e0c",
+          "#1c2a27",
+          "#3a4946",
+          "#5a6a67",
+          "#7d8d8a",
+          "#a1b2ae",
+          "#c4d5d2",
+          "#e1f3ef"
+        ],
+        "projectScale": [
+          "#00685c",
+          "#1b8375",
+          "#97f3e2",
+          "#e4f6f2"
+        ]
+      },
+      "coral": {
+        "role": "secondary",
+        "displayName": "Corallo Scuro",
+        "canonical": "#aa361e",
+        "oklch": "oklch(50.1% 0.156 33.4)",
+        "tonalRamp": [
+          "#1d0200",
+          "#4a0e03",
+          "#7f1902",
+          "#ad3921",
+          "#d65f46",
+          "#f98a72",
+          "#fec0b2",
+          "#fee9e4"
+        ],
+        "projectScale": [
+          "#aa361e",
+          "#ff7355",
+          "#ffdad3",
+          "#fff1ee"
+        ]
+      },
+      "coral-2": {
+        "role": "secondary",
+        "displayName": "Corallo Vivo",
+        "canonical": "#ff7355",
+        "oklch": "oklch(71.9% 0.177 33.6)",
+        "tonalRamp": [
+          "#1d0100",
+          "#4a0c02",
+          "#7b200c",
+          "#b52d0c",
+          "#df5639",
+          "#fb8970",
+          "#ffc0b1",
+          "#fee9e4"
+        ],
+        "projectScale": [
+          "#aa361e",
+          "#ff7355",
+          "#ffdad3",
+          "#fff1ee"
+        ]
+      },
+      "coral-soft": {
+        "role": "secondary",
+        "displayName": "Corallo Rosa",
+        "canonical": "#ffdad3",
+        "oklch": "oklch(91.7% 0.043 30.5)",
+        "tonalRamp": [
+          "#1a0402",
+          "#391e1a",
+          "#5a3d37",
+          "#7d5d57",
+          "#a1807a",
+          "#c8a59e",
+          "#ecc7c0",
+          "#fde9e5"
+        ],
+        "projectScale": [
+          "#aa361e",
+          "#ff7355",
+          "#ffdad3",
+          "#fff1ee"
+        ],
+        "note": "Definito in index.css, non usato nel build attuale."
+      },
+      "coral-tint": {
+        "role": "secondary",
+        "displayName": "Corallo Velo",
+        "canonical": "#fff1ee",
+        "oklch": "oklch(96.8% 0.016 32.0)",
+        "tonalRamp": [
+          "#110907",
+          "#2e2422",
+          "#4d4240",
+          "#6f6360",
+          "#928683",
+          "#b8aba8",
+          "#dbcdcb",
+          "#f9ebe8"
+        ],
+        "projectScale": [
+          "#aa361e",
+          "#ff7355",
+          "#ffdad3",
+          "#fff1ee"
+        ]
+      },
+      "amber": {
+        "role": "tertiary",
+        "displayName": "Ambra Bussola",
+        "canonical": "#7a4f00",
+        "oklch": "oklch(46.4% 0.099 73.2)",
+        "tonalRamp": [
+          "#130900",
+          "#362204",
+          "#5e3d05",
+          "#885c17",
+          "#ad7f40",
+          "#d4a465",
+          "#f9c787",
+          "#ffebd3"
+        ]
+      },
+      "amber-tint": {
+        "role": "tertiary",
+        "displayName": "Ambra Velo",
+        "canonical": "#fff3d6",
+        "oklch": "oklch(96.6% 0.040 88.2)",
+        "tonalRamp": [
+          "#100a00",
+          "#2f250e",
+          "#4e442c",
+          "#70654c",
+          "#93886e",
+          "#b8ad92",
+          "#dcd0b4",
+          "#faeed1"
+        ]
+      },
+      "cat-food": {
+        "role": "tertiary",
+        "displayName": "Prugna (cibo)",
+        "canonical": "#8e2a63",
+        "oklch": "oklch(45.6% 0.147 349.4)",
+        "tonalRamp": [
+          "#1c000f",
+          "#48042e",
+          "#791351",
+          "#a03b73",
+          "#c86096",
+          "#f185bc",
+          "#fdbada",
+          "#fee7f1"
+        ],
+        "note": "Valore letterale nelle classi .cat-* (index.css), non variabile CSS."
+      },
+      "cat-food-tint": {
+        "role": "tertiary",
+        "displayName": "Prugna Velo (cibo)",
+        "canonical": "#fbe9f3",
+        "oklch": "oklch(95.1% 0.023 342.9)",
+        "tonalRamp": [
+          "#12070e",
+          "#2f2229",
+          "#4e4048",
+          "#70616a",
+          "#94848d",
+          "#b9a8b2",
+          "#ddcbd5",
+          "#fbe9f3"
+        ],
+        "note": "Valore letterale nelle classi .cat-* (index.css), non variabile CSS."
+      },
+      "cat-transport": {
+        "role": "tertiary",
+        "displayName": "Blu Strada (trasporti)",
+        "canonical": "#2b5fb3",
+        "oklch": "oklch(49.7% 0.145 259.6)",
+        "tonalRamp": [
+          "#000925",
+          "#012259",
+          "#093f90",
+          "#2f63b7",
+          "#5288e0",
+          "#81aff8",
+          "#b9d2fb",
+          "#e6effe"
+        ],
+        "note": "Valore letterale nelle classi .cat-* (index.css), non variabile CSS."
+      },
+      "cat-transport-tint": {
+        "role": "tertiary",
+        "displayName": "Blu Velo (trasporti)",
+        "canonical": "#e9f1ff",
+        "oklch": "oklch(95.6% 0.021 261.8)",
+        "tonalRamp": [
+          "#070b14",
+          "#212731",
+          "#3f4550",
+          "#606672",
+          "#828996",
+          "#a7aebb",
+          "#cad1df",
+          "#e7effd"
+        ],
+        "note": "Valore letterale nelle classi .cat-* (index.css), non variabile CSS."
+      },
+      "cat-lodging": {
+        "role": "tertiary",
+        "displayName": "Viola Notte (alloggio)",
+        "canonical": "#5b3fa3",
+        "oklch": "oklch(45.4% 0.154 292.0)",
+        "tonalRamp": [
+          "#0e002a",
+          "#2c0862",
+          "#4a2c8e",
+          "#6a50b5",
+          "#8d74dd",
+          "#b09cfe",
+          "#d1c9fe",
+          "#eeecff"
+        ],
+        "note": "Valore letterale nelle classi .cat-* (index.css), non variabile CSS."
+      },
+      "cat-lodging-tint": {
+        "role": "tertiary",
+        "displayName": "Viola Velo (alloggio)",
+        "canonical": "#efe9ff",
+        "oklch": "oklch(94.5% 0.030 298.3)",
+        "tonalRamp": [
+          "#0d0816",
+          "#282333",
+          "#474253",
+          "#686375",
+          "#8b8699",
+          "#b0aabf",
+          "#d3cde3",
+          "#f0ebff"
+        ],
+        "note": "Valore letterale nelle classi .cat-* (index.css), non variabile CSS."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Saldo personale (amount-xl) e importo nel form spesa."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "h1: nome del viaggio, titolo di pagina; 1.5rem sotto i 720 px."
+      },
+      "amount": {
+        "displayName": "Importo",
+        "purpose": "Saldo nell'intestazione del viaggio, trasferimenti suggeriti (amount-lg)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "h2: titoli di card, stati vuoti, modali; 1.25rem nelle card viaggio."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Testo corrente e campi (sempre 16 px)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Etichette dei campi e dei valori, pillole di saldo, h3."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Badge di stato, nomi sotto gli avatar, testo secondario delle righe."
+      },
+      "code": {
+        "displayName": "Codice",
+        "purpose": "Solo il codice invito."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-card",
+        "value": "0 1px 2px rgba(20, 28, 38, 0.04), 0 10px 24px -14px rgba(20, 28, 38, 0.22)",
+        "purpose": "Card a riposo e tab attivo su desktop."
+      },
+      {
+        "name": "trip-card-hover",
+        "value": "0 2px 4px rgba(20, 28, 38, 0.05), 0 18px 32px -16px rgba(20, 28, 38, 0.3)",
+        "purpose": "Card viaggio cliccabile in hover, con translateY(-2px)."
+      },
+      {
+        "name": "shadow-float",
+        "value": "0 6px 18px -4px rgba(0, 104, 92, 0.45)",
+        "purpose": "Solo il FAB."
+      },
+      {
+        "name": "modal",
+        "value": "0 24px 48px -12px rgba(20, 28, 38, 0.35)",
+        "purpose": "Dialog di conferma; backdrop rgba(20, 28, 38, 0.45)."
+      },
+      {
+        "name": "focus",
+        "value": "0 0 0 3px var(--bg), 0 0 0 6px var(--teal)",
+        "purpose": "Anello di focus visibile globale (D-24)."
+      },
+      {
+        "name": "avatar-me-ring",
+        "value": "0 0 0 2px var(--surface), 0 0 0 4px var(--teal)",
+        "purpose": "Anello dell'avatar «tu» e della persona scelta come pagante."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "purpose": "Unica curva per le transizioni di stato."
+      },
+      {
+        "name": "duration-state",
+        "value": "150ms",
+        "purpose": "Hover, focus, active su bottoni, chip, tab, card, FAB."
+      },
+      {
+        "name": "duration-bar",
+        "value": "300ms",
+        "purpose": "Riempimento delle barre di saldo."
+      },
+      {
+        "name": "spinner",
+        "value": "800ms linear infinite",
+        "purpose": "Rotazione dello spinner."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "transition: none; animation: none",
+        "purpose": "Applicato a tutto con prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "desktop",
+        "value": "720px",
+        "purpose": "Griglia a due colonne, tab segmentati in alto; sotto: tab bar fissa in basso."
+      },
+      {
+        "name": "content-max",
+        "value": "1040px",
+        "purpose": "Larghezza massima del contenuto."
+      },
+      {
+        "name": "auth-max",
+        "value": "420px",
+        "purpose": "Larghezza delle pagine di accesso e della modale."
+      }
+    ],
+    "icons": {
+      "family": "Material Symbols Outlined",
+      "variation": "'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24",
+      "defaultSize": "22px",
+      "inlineSize": "18px",
+      "filledVariant": "msi-fill (solo il marchio)"
+    }
+  },
+  "components": [
+    {
+      "name": "Bottone primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Azione principale del contesto: Nuova spesa, Salva, Salda.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"18\" height=\"18\" viewBox=\"0 -960 960 960\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z\"/></svg>Nuova spesa</button>",
+      "css": ".ds-btn-primary { font-family: 'DM Sans', system-ui, sans-serif; font-size: 16px; font-weight: 600; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid transparent; background: var(--teal, #00685c); color: #fff; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: background 150ms cubic-bezier(0.2,0.8,0.2,1), transform 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-primary:hover { background: var(--teal-2, #1b8375); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--bg, #f8f9ff), 0 0 0 6px var(--teal, #00685c); }"
+    },
+    {
+      "name": "Bottone soft",
+      "kind": "button",
+      "refersTo": "button-soft",
+      "description": "Azione secondaria affermativa: Regola conti, Condividi, Ho un codice.",
+      "html": "<button class=\"ds-btn-soft\"><svg width=\"18\" height=\"18\" viewBox=\"0 -960 960 960\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M280-160 80-360l200-200 56 57-103 103h287v80H233l103 103-56 57Zm400-240-56-57 103-103H440v-80h287L624-743l56-57 200 200-200 200Z\"/></svg>Regola conti</button>",
+      "css": ".ds-btn-soft { font-family: 'DM Sans', system-ui, sans-serif; font-size: 16px; font-weight: 600; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid transparent; background: var(--teal-tint, #e4f6f2); color: var(--teal, #00685c); display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: background 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-soft:hover { background: var(--teal-soft, #97f3e2); } .ds-btn-soft:active { transform: translateY(1px); } .ds-btn-soft:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--bg, #f8f9ff), 0 0 0 6px var(--teal, #00685c); }"
+    },
+    {
+      "name": "Bottone secondario",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Azione neutra: Esci, Annulla.",
+      "html": "<button class=\"ds-btn-secondary\">Annulla</button>",
+      "css": ".ds-btn-secondary { font-family: 'DM Sans', system-ui, sans-serif; font-size: 16px; font-weight: 600; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid var(--surface-3, #dbe3f1); background: var(--surface, #fff); color: var(--ink, #141c26); cursor: pointer; transition: background 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-secondary:hover { background: var(--surface-1, #eff4ff); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--bg, #f8f9ff), 0 0 0 6px var(--teal, #00685c); }"
+    },
+    {
+      "name": "Campo",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo di testo con etichetta sopra; 16 px, alto 48.",
+      "html": "<label class=\"ds-field\"><span>Descrizione</span><input class=\"ds-input\" placeholder=\"Cena al porto\"></label>",
+      "css": ".ds-field { font-family: 'DM Sans', system-ui, sans-serif; display: grid; gap: 6px; } .ds-field > span { font-size: 14px; font-weight: 600; color: var(--ink-2, #3f4a58); } .ds-input { font: inherit; font-size: 16px; min-height: 48px; padding: 10px 14px; border: 1px solid var(--surface-3, #dbe3f1); border-radius: 12px; background: var(--surface-1, #eff4ff); color: var(--ink, #141c26); caret-color: var(--teal, #00685c); transition: border-color 150ms, background 150ms; } .ds-input::placeholder { color: var(--ink-3, #5f6b7a); } .ds-input:focus-visible { outline: none; background: #fff; border-color: var(--teal, #00685c); box-shadow: 0 0 0 3px var(--bg, #f8f9ff), 0 0 0 6px var(--teal, #00685c); }"
+    },
+    {
+      "name": "Saldo con pillola",
+      "kind": "custom",
+      "refersTo": "balance-pill-positive",
+      "description": "Firma del sistema: importo con segno, cifre tabulari, pillola freccia + testo. Mai solo il colore.",
+      "html": "<div class=\"ds-balance\"><span class=\"ds-money ds-pos\">+263,66 €</span><span class=\"ds-pill ds-pill-pos\"><svg width=\"18\" height=\"18\" viewBox=\"0 -960 960 960\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z\"/></svg>Devi ricevere</span></div><div class=\"ds-balance\"><span class=\"ds-money ds-neg\">-35,00 €</span><span class=\"ds-pill ds-pill-neg\"><svg width=\"18\" height=\"18\" viewBox=\"0 -960 960 960\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M440-800v487L216-537l-56 57 320 320 320-320-56-57-224 224v-487h-80Z\"/></svg>Devi dare</span></div>",
+      "css": ".ds-balance { font-family: 'DM Sans', system-ui, sans-serif; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 4px 0; } .ds-money { font-variant-numeric: tabular-nums; font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; white-space: nowrap; } .ds-pos { color: var(--teal, #00685c); } .ds-neg { color: var(--coral, #aa361e); } .ds-pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px 4px 8px; border-radius: 999px; font-size: 14px; font-weight: 600; } .ds-pill-pos { background: var(--teal-tint, #e4f6f2); color: var(--teal, #00685c); } .ds-pill-neg { background: var(--coral-tint, #fff1ee); color: var(--coral, #aa361e); }"
+    },
+    {
+      "name": "Cerchi delle iniziali",
+      "kind": "custom",
+      "refersTo": "avatar",
+      "description": "Segno ricorrente dei partecipanti; «tu» con anello teal.",
+      "html": "<div class=\"ds-people\"><span class=\"ds-avatar ds-avatar-me\">VA</span><span class=\"ds-avatar\">MB</span><span class=\"ds-avatar\">GR</span></div>",
+      "css": ".ds-people { font-family: 'DM Sans', system-ui, sans-serif; display: flex; gap: 12px; padding: 6px; } .ds-avatar { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface-2, #e7eefd); color: var(--ink-2, #3f4a58); font-weight: 700; font-size: 14px; letter-spacing: 0.02em; text-transform: uppercase; } .ds-avatar-me { background: var(--teal-tint, #e4f6f2); color: var(--teal, #00685c); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--teal, #00685c); }"
+    },
+    {
+      "name": "Badge di stato",
+      "kind": "chip",
+      "refersTo": "status-badge-ongoing",
+      "description": "Stato del viaggio: pallino + parola, mai solo colore.",
+      "html": "<span class=\"ds-badge ds-badge-planning\">In pianificazione</span> <span class=\"ds-badge ds-badge-ongoing\">In corso</span> <span class=\"ds-badge ds-badge-closed\">Chiuso</span>",
+      "css": ".ds-badge { font-family: 'DM Sans', system-ui, sans-serif; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; } .ds-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.7; } .ds-badge-planning { background: var(--amber-tint, #fff3d6); color: var(--amber, #7a4f00); } .ds-badge-ongoing { background: var(--teal-tint, #e4f6f2); color: var(--teal, #00685c); } .ds-badge-closed { background: var(--surface-3, #dbe3f1); color: var(--ink-2, #3f4a58); }"
+    },
+    {
+      "name": "Chip categoria",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Scelta della categoria nel form spesa; selezionato pieno teal.",
+      "html": "<button class=\"ds-chip ds-chip-active\"><svg width=\"18\" height=\"18\" viewBox=\"0 -960 960 960\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M280-80v-366q-51-14-85.5-56T160-600v-280h80v280h40v-280h80v280h40v-280h80v280q0 56-34.5 98T360-446v366h-80Zm400 0v-320H560v-280q0-83 58.5-141.5T760-880v800h-80Z\"/></svg>Cibo</button> <button class=\"ds-chip\">Trasporti</button>",
+      "css": ".ds-chip { font-family: 'DM Sans', system-ui, sans-serif; font-size: 15px; font-weight: 500; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--surface-3, #dbe3f1); background: #fff; color: var(--ink-2, #3f4a58); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: background 150ms, color 150ms; } .ds-chip:hover { background: var(--surface-1, #eff4ff); } .ds-chip-active, .ds-chip-active:hover { background: var(--teal, #00685c); border-color: var(--teal, #00685c); color: #fff; } .ds-chip:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--bg, #f8f9ff), 0 0 0 6px var(--teal, #00685c); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Contenitore bianco a raggio 16 con ombra card e riquadro tinto interno.",
+      "html": "<section class=\"ds-card\"><h2>Il tuo saldo</h2><div class=\"ds-kv\"><div><span>Spesa totale del gruppo</span><strong>729,00 €</strong></div><div><span>La tua quota</span><strong>266,34 €</strong></div></div></section>",
+      "css": ".ds-card { font-family: 'DM Sans', system-ui, sans-serif; background: #fff; border: 1px solid var(--line, #dbe3f1); border-radius: 16px; padding: 16px; box-shadow: 0 1px 2px rgba(20,28,38,0.04), 0 10px 24px -14px rgba(20,28,38,0.22); color: var(--ink, #141c26); } .ds-card h2 { margin: 0 0 12px; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; } .ds-kv { display: grid; gap: 6px; padding: 12px 16px; background: var(--surface-1, #eff4ff); border-radius: 12px; } .ds-kv > div { display: flex; justify-content: space-between; gap: 12px; } .ds-kv strong { font-weight: 600; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Tab bar mobile",
+      "kind": "nav",
+      "refersTo": "tab-active-mobile",
+      "description": "Navigazione del viaggio sotto i 720 px: icona sopra etichetta, attivo su teal-tint.",
+      "html": "<nav class=\"ds-tabbar\"><a class=\"ds-tab ds-tab-active\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 -960 960 960\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M280-160 80-360l200-200 56 57-103 103h287v80H233l103 103-56 57Zm400-240-56-57 103-103H440v-80h287L624-743l56-57 200 200-200 200Z\"/></svg><span>Panoramica</span></a><a class=\"ds-tab\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 -960 960 960\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M280-80v-366q-51-14-85.5-56T160-600v-280h80v280h40v-280h80v280h40v-280h80v280q0 56-34.5 98T360-446v366h-80Zm400 0v-320H560v-280q0-83 58.5-141.5T760-880v800h-80Z\"/></svg><span>Spese</span></a><a class=\"ds-tab\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 -960 960 960\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z\"/></svg><span>Saldi</span></a></nav>",
+      "css": ".ds-tabbar { font-family: 'DM Sans', system-ui, sans-serif; display: flex; padding: 6px; background: #fff; border-top: 1px solid var(--line, #dbe3f1); } .ds-tab { flex: 1; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; border-radius: 10px; text-decoration: none; color: var(--ink-2, #3f4a58); font-weight: 600; font-size: 11px; transition: background 150ms, color 150ms; } .ds-tab svg { width: 24px; height: 24px; } .ds-tab-active { background: var(--teal-tint, #e4f6f2); color: var(--teal, #00685c); } .ds-tab:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--bg, #f8f9ff), 0 0 0 6px var(--teal, #00685c); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Il taccuino di viaggio del gruppo",
+    "overview": "**Creative North Star: \"Il taccuino di viaggio del gruppo\"**\n\nSplitTrip è uno strumento da usare in piedi, con una mano, al ristorante o in taxi: il sistema visivo esiste per rendere leggibile in un colpo d'occhio una sola informazione, il saldo personale. Fondo azzurro-latte, superfici a strati che salgono dal bianco al grigio-azzurro, card bianche morbide (raggio 16 px) con un'ombra appena percepibile. Un solo accento d'azione, il teal, che è anche il colore del «devi ricevere»; il corallo compare solo quando qualcuno deve dare.\n\nLa densità è da app mobile: righe da 44 px, bottoni da 48 px, importi grandi in DM Sans extrabold con cifre tabulari, ogni importo con segno accompagnato da una pillola freccia + testo. Il segno ricorrente sono i cerchi con le iniziali dei partecipanti: tornano nel header, nella dashboard, nel form spesa come selettore del pagante, nei saldi e nei membri. Le icone sono Material Symbols Outlined (peso 500), mai glifi o emoji come icone.\n\nRifiuti confermati: non deve sembrare una banca o una fintech (niente blu istituzionale, niente tabelle grigie di transazioni con un accento solo) e non deve risultare minimal e anonimo. Tema solo chiaro: l'uso tipico è all'aperto, di giorno (D-26).",
+    "keyCharacteristics": [
+      "Fondo `bg` azzurro-latte, superfici a strati `surface-1` → `surface-3`, card bianche raggio 16 px.",
+      "Teal = azione e «devi ricevere»; corallo = solo «devi dare».",
+      "DM Sans ovunque; importi 40 px / 24 px extrabold con cifre tabulari.",
+      "Pillola di saldo freccia + testo incollata a ogni importo con segno.",
+      "Cerchi con le iniziali come segno dei partecipanti; anello teal per «tu».",
+      "Tab bar in basso su mobile, segmentata in alto su desktop; FAB «+» nelle liste.",
+      "Accessibilità D-24 come vincolo visivo, non come rifinitura."
+    ],
+    "rules": [
+      {
+        "name": "The Coral Means Owing Rule",
+        "body": "Il corallo significa solo «devi dare» (e, per estensione, errore e azione distruttiva). Nessuna categoria, decorazione o stato neutro usa la famiglia del corallo: le categorie stanno su prugna, blu, viola, ambra e grigio-azzurro.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never Color Alone Rule",
+        "body": "Ogni importo con segno porta il segno (`+` / `−`) e una pillola con freccia e testo («↑ Devi ricevere», «↓ Devi dare», «✓ Sei in pari»); i badge di stato hanno sempre il testo; gli errori hanno icona e testo. Il colore conferma, non informa da solo.",
+        "section": "colors"
+      },
+      {
+        "name": "The Dark Coral For Text Rule",
+        "body": "Per il testo si usano solo `teal` e `coral` (contrasto WCAG AA). `coral-2` e `teal-2` vivono nelle barre e nei riempimenti, mai come colore del testo.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Money Rule",
+        "body": "Ogni importo usa `font-variant-numeric: tabular-nums`, peso 700 in riga e 800 quando è protagonista, e non va mai a capo.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "DM Sans ovunque; il monospace è riservato al codice invito. Nessun carattere di sistema come display.",
+        "section": "typography"
+      },
+      {
+        "name": "The Balance First Rule",
+        "body": "Su ogni schermata del viaggio il saldo personale con la sua pillola è leggibile senza scorrere: nella card del saldo in dashboard e saldi, e nell'intestazione del viaggio nelle altre schede.",
+        "section": "layout"
+      },
+      {
+        "name": "The Tinted Ink Shadow Rule",
+        "body": "Le ombre sono sempre dell'inchiostro `#141c26` a bassa opacità (o del teal per il FAB), morbide e con spread negativo; mai nere pure, mai ombre dure sfalsate.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** accompagnare ogni importo con segno con la pillola freccia + testo (The Never Color Alone Rule).",
+      "**Do** usare `teal` (#00685c) e `coral` (#aa361e) per il testo dei soldi; `coral-2` solo nelle barre.",
+      "**Do** mantenere target touch di almeno 44 px (bottoni 48, chip 40 dentro righe da 44, tab 44/52, FAB 60) e campi a 16 px.",
+      "**Do** lasciare visibile l'anello di focus doppio (`--focus`) su ogni elemento interattivo, anche sui controlli nascosti dentro chip e avatar.",
+      "**Do** limitare il movimento a transizioni da 150 ms (300 ms per le barre) con `--ease`, senza animazioni d'ingresso, e azzerarle con `prefers-reduced-motion`.",
+      "**Do** usare i cerchi con le iniziali ovunque compaia una persona, con l'anello teal per «tu».",
+      "**Do** usare Material Symbols Outlined (peso 500, `aria-hidden` se decorative, `aria-label` se sole) per ogni icona.",
+      "**Do** dare a ogni categoria nuova una famiglia di colore fuori dal corallo, con testo scuro su tinta chiara che passi AA."
+    ],
+    "donts": [
+      "**Don't** usare la famiglia del corallo per qualcosa che non sia «devi dare», un errore o un'azione distruttiva.",
+      "**Don't** affidare un'informazione al solo colore: niente importi senza segno ed etichetta, niente badge senza testo, niente errori senza icona e testo.",
+      "**Don't** usare `coral-2` (#ff7355) o `teal-2` come colore del testo.",
+      "**Don't** introdurre un secondo carattere display o font di sistema come titolo.",
+      "**Don't** usare emoji o glifi tipografici come icone; la freccia «→» dentro il testo dei trasferimenti («Giulia → Marco») è copy, non icona.",
+      "**Don't** costruire elenchi grigi di transazioni con un accento solo, né l'estetica blu istituzionale di una banca.",
+      "**Don't** usare ombre nere pure o ombre dure sfalsate."
+    ]
+  }
+}

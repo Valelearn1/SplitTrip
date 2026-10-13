@@ -1,16 +1,27 @@
 import { Link } from 'react-router'
-import { CATEGORY_LABELS, type Expense } from '../../shared/api/types'
+import type { Expense } from '../../shared/api/types'
+import { CategoryIcon } from '../../shared/ui/CategoryIcon'
 import { MoneyText } from '../../shared/ui/MoneyText'
 
-export function ExpenseRow({ expense, currency }: { expense: Expense; currency: string }) {
+export function ExpenseRow({ expense, currency, meId }: { expense: Expense; currency: string; meId: string }) {
+  const mine = expense.shares.find((s) => s.userId === meId)
   return (
     <Link to={`${expense.id}/edit`} className="row expense-row">
-      <span>
-        <strong>{expense.description}</strong>
-        <br />
-        <small className="muted">{CATEGORY_LABELS[expense.category]} · pagato da {expense.payerName} · {expense.shares.length} persone</small>
+      <span className="row-main">
+        <CategoryIcon category={expense.category} />
+        <span className="row-text">
+          <strong>{expense.description}</strong>
+          <small>{expense.shares.length} {expense.shares.length === 1 ? 'persona' : 'persone'} · pagato da {expense.payerId === meId ? 'te' : expense.payerName}</small>
+        </span>
       </span>
-      <MoneyText amount={expense.amount} currency={currency} />
+      <span className="row-side">
+        <MoneyText amount={expense.amount} currency={currency} />
+        {expense.payerId === meId ? (
+          <small className="muted" style={{ display: 'block', color: 'var(--teal)' }}>Hai anticipato</small>
+        ) : (
+          mine && <small className="muted" style={{ display: 'block' }}>tua quota {mine.amount.toFixed(2).replace('.', ',')} €</small>
+        )}
+      </span>
     </Link>
   )
 }

@@ -1,0 +1,51 @@
+# Product
+
+<!-- impeccable:product-schema 1 -->
+
+## Platform
+
+web
+
+## Users
+
+Gruppi di amici (3–8 persone) in vacanza insieme. Usano SplitTrip dal telefono, spesso di fretta (al ristorante, in taxi, in spiaggia): vogliono registrare una spesa in pochi secondi e sapere in ogni momento chi deve cosa a chi. Un membro del gruppo è l'organizzatore (crea il viaggio, invita, chiude i conti); gli altri sono partecipanti. Uso desktop secondario, per pianificare prima e sistemare i conti dopo.
+
+## Product Purpose
+
+Accompagnare i gruppi di amici in ogni fase della vacanza: pianificare insieme prima di partire, tenere traccia di spese e cose da fare durante, e ritrovarsi con ricordi condivisi e conti chiari al ritorno. Successo: nessuna discussione sui soldi a fine viaggio; i saldi sono chiari, verificabili e si chiudono con un tap («Salda»).
+
+## Positioning
+
+Il viaggio è l'unità di tutto (spese, membri, liste, foto): non un gruppo generico di spese. I saldi sono calcolati da un motore trasparente (netto = pagato − dovuto ± rimborsi) e semplificati in pochi trasferimenti; ogni importo mostra segno e testo, mai solo il colore. Ingresso con codice invito condiviso su WhatsApp, senza email né ricerca utenti.
+
+## Operating Context
+
+Progetto finale (capstone) di un corso fullstack, consegnato con presentazione; repository pubblico con README e link alla demo. Backend Spring Boot su Render (piano free: il server si addormenta e la prima richiesta può richiedere 30–60 s), frontend React statico, PostgreSQL. Rilasci incrementali: v1 Core (auth, viaggi, spese, saldi), v2 Social (to-do, foto con mappa, notifiche), v3 Live (chat, notifiche in tempo reale).
+
+## Capabilities and Constraints
+
+- v1: registrazione/login JWT; viaggi con stato (In pianificazione → In corso → Chiuso) e codice invito; spese con divisione equa o importi personalizzati; rimborsi; saldi con trasferimenti suggeriti; cestino spese (organizzatore).
+- Una valuta per viaggio (default EUR). Date ISO nell'API, formato italiano a schermo. Importi con due decimali.
+- Terminologia: viaggio, partecipante, organizzatore, spesa, quota, rimborso, saldo, «Salda», «devi dare / devi ricevere», codice invito.
+- Viaggio chiuso = sola lettura. Niente foto profilo in v1 (iniziali), niente valute multiple, niente notifiche push.
+- Stack frontend già deciso: React 19 + TypeScript, React Router, TanStack Query, React Hook Form + Zod, CSS Modules/variabili CSS (nessun framework CSS).
+
+## Brand Commitments
+
+Nome «SplitTrip» (provvisorio ma in uso). Lingua dell'interfaccia: italiano. Tono: caldo, amichevole, affidabile, un compagno di viaggio, non una banca. Riferimento visivo vincolante: le schermate Stitch in `docs/stitch/` (font DM Sans, icone Material Symbols, palette teal `#00685c`/`#1b8375`/`#97f3e2`, corallo `#ff7355`/`#aa361e`, sfondo `#f8f9ff`, superfici `#eff4ff`→`#dbe3f1`, testo `#141c26`; tab bar in basso su mobile).
+
+## Evidence on Hand
+
+Schermate di riferimento: `docs/stitch/*/screen.png` e `code.html` (7 schermate: dashboard mobile/desktop, nuova spesa mobile/desktop, spese, saldi e pareggio, i miei viaggi). Esempio dati reale usato nei test: cena 90 € di Marco divisa in tre, taxi 30 € di Giulia, rimborso 10 € di Vale → Marco +50, Giulia −15, Vale −35. Nessuna testimonianza, metrica o cliente da citare: non inventarne.
+
+## Product Principles
+
+1. Inserire una spesa deve costare meno di dieci secondi: importo prima di tutto, pagante preselezionato, tutti inclusi.
+2. Ogni numero sui soldi è leggibile da chiunque: segno, testo e colore insieme, cifre tabulari.
+3. Il viaggio è il contenitore: tutto quello che vedi appartiene al viaggio aperto.
+4. Chiarezza prima di espressione: è uno strumento che si usa in piedi, con una mano.
+5. La demo resta onesta: niente funzioni finte, niente dati inventati sull'app.
+
+## Accessibility & Inclusion
+
+Decisione D-24: mai solo il colore (segno + etichetta accanto agli importi, testo nei badge, icona + testo negli errori); contrasto WCAG AA (teal `#00685c` e corallo scuro `#aa361e` per il testo, corallo chiaro solo per barre e sfondi); tastiera e lettori di schermo (focus visibile, `aria-label` sulle icone, `role="alert"`, `<dialog>`); target touch ≥ 44 px e font ≥ 16 px nei campi; `prefers-reduced-motion` rispettato; notifiche sempre visive.

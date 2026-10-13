@@ -3,9 +3,12 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useOutletContext, useParams } from 'react-router'
 import { CATEGORY_LABELS, type Expense, type ExpenseCategory } from '../../shared/api/types'
+import { Avatar } from '../../shared/ui/Avatar'
 import { Button } from '../../shared/ui/Button'
+import { CATEGORY_ICONS } from '../../shared/ui/categoryIcons'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
+import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
 import { Spinner } from '../../shared/ui/Spinner'
 import type { TripContext } from '../trips/TripLayout'
@@ -59,8 +62,11 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
   const splitType = watch('splitType')
   const shares = watch('shares')
   const amount = watch('amount')
+  const includedCount = shares.filter((s) => s.included).length
+  const totalCents = parseCents(amount) ?? 0
+  const perHead = includedCount > 0 ? Math.floor(totalCents / includedCount) / 100 : 0
   const assigned = shares.filter((s) => s.included).reduce((sum, s) => sum + (parseCents(s.amount) ?? 0), 0)
-  const remaining = ((parseCents(amount) ?? 0) - assigned) / 100
+  const remaining = (totalCents - assigned) / 100
 
   const mutation = expense ? update : create
   const onSubmit = handleSubmit((values) =>
@@ -68,50 +74,80 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
   )
 
   return (
-    <form noValidate onSubmit={onSubmit} className="expense-form">
+    <form noValidate onSubmit={onSubmit} className="expense-form stack" style={{ gap: 12 }}>
       <h2>{expense ? 'Modifica spesa' : 'Nuova spesa'}</h2>
-      <Field label="Importo" inputMode="decimal" placeholder="0,00" className="amount-input" error={errors.amount?.message} {...register('amount')} />
-      <Field label="Descrizione" placeholder="Es. Cena in trattoria" error={errors.description?.message} {...register('description')} />
-      <div className="field">
-        <label htmlFor="category">Categoria</label>
-        <select id="category" {...register('category')}>
-          {(Object.keys(CATEGORY_LABELS) as ExpenseCategory[]).map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
-        </select>
-      </div>
-      <Field label="Data" type="date" error={errors.date?.message} {...register('date')} />
-      <div className="field">
-        <label htmlFor="payerId">Chi ha pagato</label>
-        <select id="payerId" {...register('payerId')}>
-          {trip.members.map((m) => <option key={m.userId} value={m.userId}>{m.displayName}{m.userId === me.userId ? ' (io)' : ''}</option>)}
-        </select>
+
+      <div className="card">
+        <Field label="Importo" inputMode="decimal" placeholder="0,00" className="amount-input" suffix={trip.currency === 'EUR' ? '€' : trip.currency} error={errors.amount?.message} {...register('amount')} />
+        <Field label="Descrizione" placeholder="Es. Cena in trattoria" error={errors.description?.message} {...register('description')} />
+        <fieldset className="field" style={{ marginBottom: 0 }}>
+          <legend>Categoria</legend>
+          <div className="chips chips-scroll" style={{ marginBottom: 0 }}>
+            {(Object.keys(CATEGORY_LABELS) as ExpenseCategory[]).map((c) => (
+              <label key={c} className="chip"><input type="radio" value={c} {...register('category')} /><Icon name={CATEGORY_ICONS[c]} />{CATEGORY_LABELS[c]}</label>
+            ))}
+          </div>
+        </fieldset>
       </div>
 
-      <fieldset className="field">
-        <legend>Diviso tra</legend>
-        <div className="chips">
-          <label className="chip"><input type="radio" value="EQUAL" {...register('splitType')} /> Parti uguali</label>
-          <label className="chip"><input type="radio" value="CUSTOM" {...register('splitType')} /> Importi personalizzati</label>
+      <div className="card">
+        <Field label="Data" type="date" error={errors.date?.message} {...register('date')} />
+        <fieldset className="field" style={{ marginBottom: 0 }}>
+          <legend>Chi ha pagato?</legend>
+          <div className="people" style={{ marginBottom: 0 }}>
+            {trip.members.map((m) => (
+              <label key={m.userId} className="person person-pick">
+                <input type="radio" value={m.userId} {...register('payerId')} />
+                <Avatar name={m.displayName} size="lg" />
+                <span>{m.userId === me.userId ? 'Tu' : m.displayName.trim().split(/\s+/)[0]}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+
+      <fieldset className="field card" style={{ marginBottom: 0 }} aria-labelledby="split-title">
+        <div className="page-head" style={{ marginBottom: 8 }}>
+          <h2 id="split-title">Diviso tra</h2>
+          <span className="badge badge-plain">{includedCount === trip.members.length ? `Tutti inclusi (${includedCount})` : `${includedCount} su ${trip.members.length}`}</span>
         </div>
+        <div className="chips">
+          <label className="chip"><input type="radio" value="EQUAL" {...register('splitType')} /><Icon name="pie_chart" />Parti uguali</label>
+          <label className="chip"><input type="radio" value="CUSTOM" {...register('splitType')} /><Icon name="tune" />Importi personalizzati</label>
+        </div>
+        {splitType === 'EQUAL' && includedCount > 0 && totalCents > 0 && (
+          <div className="info" style={{ marginBottom: 8 }}>
+            <Icon name="groups" />
+            <span>Quota a testa: <strong>{toInputAmount(perHead)} €</strong> a persona</span>
+          </div>
+        )}
         {trip.members.map((m, i) => (
           <div key={m.userId} className="row">
-            <label>
-              <input type="checkbox" {...register(`shares.${i}.included`)} /> {m.displayName}
+            <label className="check">
+              <input type="checkbox" {...register(`shares.${i}.included`)} />
+              <Avatar name={m.displayName} size="sm" />
+              <span>{m.userId === me.userId ? 'Tu (io)' : m.displayName}</span>
             </label>
             {splitType === 'CUSTOM' && shares[i]?.included && (
               <input aria-label={`Quota di ${m.displayName}`} inputMode="decimal" placeholder="0,00" className="share-input" {...register(`shares.${i}.amount`)} />
             )}
           </div>
         ))}
-        {splitType === 'CUSTOM' && <p className={remaining === 0 ? 'muted' : 'field-error'}>Resta da assegnare: {toInputAmount(remaining)} €</p>}
-        {errors.shares?.message && <p className="field-error">{errors.shares.message}</p>}
-        {errors.shares?.root?.message && <p className="field-error">{errors.shares.root.message}</p>}
+        {splitType === 'CUSTOM' && (
+          <p className={remaining === 0 ? 'muted' : 'field-error'} style={{ marginTop: 8 }}>
+            {remaining !== 0 && <Icon name="error" />}
+            <span>Resta da assegnare: {toInputAmount(remaining)} €</span>
+          </p>
+        )}
+        {errors.shares?.message && <p className="field-error"><Icon name="error" /><span>{errors.shares.message}</span></p>}
+        {errors.shares?.root?.message && <p className="field-error"><Icon name="error" /><span>{errors.shares.root.message}</span></p>}
       </fieldset>
 
       <FormError error={mutation.error} />
       {canEdit ? (
-        <div className="modal-actions">
-          {expense && <Button type="button" variant="danger" onClick={() => setConfirmDelete(true)}>Elimina</Button>}
-          <Button type="submit" loading={mutation.isPending}>Salva</Button>
+        <div className="actions">
+          {expense && <Button type="button" variant="danger" onClick={() => setConfirmDelete(true)}><Icon name="delete" />Elimina</Button>}
+          <Button type="submit" loading={mutation.isPending}><Icon name="save" />Salva{totalCents > 0 && <span className="echo" aria-hidden="true">· {toInputAmount(totalCents / 100)} €</span>}</Button>
         </div>
       ) : (
         <p className="muted">Puoi solo consultare questa spesa.</p>

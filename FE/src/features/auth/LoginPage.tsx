@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
+import { Icon } from '../../shared/ui/Icon'
 import { authApi } from './authApi'
 import { loginSchema, type LoginForm } from './authSchemas'
 import { useAuth } from './useAuth'
@@ -25,14 +26,18 @@ export function LoginPage() {
 
   return (
     <section className="auth-page">
-      <h1>Bentornata su SplitTrip</h1>
-      <form onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
-        <Field label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
+      <div className="auth-logo">
+        <Icon name="luggage" fill />
+        <h1>Bentornata su SplitTrip</h1>
+        <p className="muted">Spese divise, conti chiari.</p>
+      </div>
+      <form className="card" onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
+        <Field label="Email" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
         <Field label="Password" type="password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
         <FormError error={mutation.error} />
         <Button type="submit" loading={mutation.isPending}>Entra</Button>
       </form>
-      <p>
+      <p className="muted" style={{ textAlign: 'center' }}>
         Prima volta qui? <Link to="/register" state={location.state}>Crea un account</Link>
       </p>
     </section>

@@ -2,6 +2,7 @@ import { Link, useOutletContext } from 'react-router'
 import { Button } from '../../shared/ui/Button'
 import { EmptyState } from '../../shared/ui/EmptyState'
 import { FormError } from '../../shared/ui/FormError'
+import { Icon } from '../../shared/ui/Icon'
 import { MoneyText } from '../../shared/ui/MoneyText'
 import { Spinner } from '../../shared/ui/Spinner'
 import { formatDate } from '../../shared/utils/format'
@@ -17,7 +18,7 @@ export function TrashPage() {
   return (
     <div>
       <h2>Cestino</h2>
-      <p><Link to="..">← Torna alle spese</Link></p>
+      <p><Link to=".."><Icon name="arrow_back" className="inline-icon" /> Torna alle spese</Link></p>
       {isPending && <Spinner />}
       <FormError error={error ?? restore.error} />
       {data?.length === 0 && <EmptyState title="Il cestino è vuoto" />}

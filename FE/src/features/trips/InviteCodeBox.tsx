@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button } from '../../shared/ui/Button'
+import { Icon } from '../../shared/ui/Icon'
 
 export function InviteCodeBox({ code, tripName }: { code: string; tripName: string }) {
   const [copied, setCopied] = useState(false)
@@ -17,10 +17,11 @@ export function InviteCodeBox({ code, tripName }: { code: string; tripName: stri
   }
 
   return (
-    <div className="card">
-      <p className="muted">Codice invito</p>
-      <p className="code">{code}</p>
-      <Button variant="secondary" onClick={share}>{copied ? 'Copiato!' : 'Condividi codice'}</Button>
+    <div className="invite">
+      <span className="invite-label"><Icon name="key" />Codice invito <span className="code">{code}</span></span>
+      <button type="button" className="btn btn-soft btn-sm" onClick={share}>
+        <Icon name={copied ? 'check' : 'content_copy'} />{copied ? 'Copiato!' : 'Condividi'}
+      </button>
     </div>
   )
 }
