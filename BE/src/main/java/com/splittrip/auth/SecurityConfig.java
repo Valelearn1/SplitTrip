@@ -9,11 +9,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.time.Clock;
 import java.util.List;
 
 @Configuration
@@ -21,7 +23,8 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, ProblemAuthHandlers handlers) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, ProblemAuthHandlers handlers,
+                                           RateLimitProperties rateLimit, Clock clock) throws Exception {
         http
             // API stateless con JWT nell'header Authorization: la protezione CSRF serve ai cookie
             // di sessione, che non usiamo. Vedi docs/decisioni.md D-17.
@@ -42,6 +45,7 @@ public class SecurityConfig {
             .exceptionHandling(e -> e
                     .authenticationEntryPoint(handlers.entryPoint())
                     .accessDeniedHandler(handlers.deniedHandler()));
+        http.addFilterBefore(new RateLimitFilter(rateLimit, clock), BearerTokenAuthenticationFilter.class);
         return http.build();
     }
 
