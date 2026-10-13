@@ -41,3 +41,19 @@ body { margin: 0; }
 .badge-closed { background: #e2e8f0; color: #334155; }
 .empty-state { text-align: center; padding: 40px 16px; }
 .fab { position: fixed; right: 20px; bottom: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--color-primary); color: #fff; font-size: 28px; display: grid; place-items: center; text-decoration: none; box-shadow: 0 6px 16px rgba(15, 118, 110, 0.35); }
+.money { font-variant-numeric: tabular-nums; font-weight: 600; }
+.money-positive { color: #15803d; }
+.money-negative { color: #c2410c; }
+.modal { border: none; border-radius: var(--radius); padding: 20px; max-width: 420px; width: calc(100% - 32px); }
+.modal::backdrop { background: rgba(15, 23, 42, 0.5); }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid #e2e8f0; margin: 12px 0 16px; overflow-x: auto; }
+.tabs a { padding: 10px 12px; text-decoration: none; color: var(--color-muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+.tabs a.active { color: var(--color-primary); border-bottom-color: var(--color-primary); font-weight: 600; }
+.stat { display: grid; gap: 4px; }
+.stat .big { font-size: 32px; }
+.grid-2 { display: grid; gap: 12px; }
+@media (min-width: 720px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+.list { list-style: none; padding: 0; margin: 0; }
+.code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 20px; letter-spacing: 2px; }
