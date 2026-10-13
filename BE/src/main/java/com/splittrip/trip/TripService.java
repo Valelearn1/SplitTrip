@@ -1,6 +1,11 @@
 package com.splittrip.trip;
 
 import com.splittrip.common.BadRequestException;
+import com.splittrip.common.ConflictException;
+import com.splittrip.common.ForbiddenException;
+import com.splittrip.common.NotFoundException;
+import com.splittrip.trip.dto.JoinPreviewResponse;
+import com.splittrip.trip.dto.TripPatchRequest;
 import com.splittrip.trip.dto.TripRequest;
 import com.splittrip.trip.dto.TripResponse;
 import com.splittrip.trip.dto.TripSummaryResponse;
@@ -61,6 +66,80 @@ public class TripService {
         access.requireMember(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
         return TripResponse.from(trip, members.findByTripIdOrderByJoinedAtAsc(tripId));
+    }
+
+    @Transactional
+    public TripResponse update(UUID tripId, UUID userId, TripPatchRequest req) {
+        access.requireOrganizer(tripId, userId);
+        Trip trip = trips.findById(tripId).orElseThrow();
+        if (req.name() != null) trip.setName(req.name().strip());
+        if (req.destination() != null) trip.setDestination(req.destination().strip());
+        if (req.startDate() != null) trip.setStartDate(req.startDate());
+        if (req.endDate() != null) trip.setEndDate(req.endDate());
+        validateDates(trip.getStartDate(), trip.getEndDate());
+        if (req.status() != null) {
+            if (req.status().ordinal() < trip.getStatus().ordinal()) {
+                throw new ConflictException("Lo stato del viaggio può solo avanzare");
+            }
+            trip.setStatus(req.status());
+        }
+        trip.setUpdatedAt(clock.instant());
+        return get(tripId, userId);
+    }
+
+    @Transactional
+    public void delete(UUID tripId, UUID userId) {
+        access.requireOrganizer(tripId, userId);
+        Trip trip = trips.findById(tripId).orElseThrow();
+        if (trip.getStatus() != TripStatus.PLANNING) {
+            throw new ConflictException("Si può cancellare solo un viaggio in pianificazione");
+        }
+        trips.delete(trip);
+    }
+
+    @Transactional(readOnly = true)
+    public JoinPreviewResponse joinPreview(String code) {
+        Trip trip = findByCode(code);
+        return new JoinPreviewResponse(trip.getName(), trip.getDestination(), trip.getStartDate(), trip.getEndDate(),
+                members.countByTripId(trip.getId()));
+    }
+
+    @Transactional
+    public TripResponse join(UUID userId, String code) {
+        Trip trip = findByCode(code);
+        if (!members.existsByTripIdAndUserId(trip.getId(), userId)) {
+            access.requireWritable(trip);
+            members.save(new TripMember(trip, users.require(userId), MemberRole.MEMBER, clock.instant()));
+        }
+        return get(trip.getId(), userId);
+    }
+
+    @Transactional
+    public TripResponse regenerateInviteCode(UUID tripId, UUID userId) {
+        access.requireOrganizer(tripId, userId);
+        Trip trip = trips.findById(tripId).orElseThrow();
+        trip.setInviteCode(uniqueCode());
+        trip.setUpdatedAt(clock.instant());
+        return get(tripId, userId);
+    }
+
+    @Transactional
+    public void removeMember(UUID tripId, UUID actorId, UUID targetUserId) {
+        TripMember actor = access.requireMember(tripId, actorId);
+        if (!actor.isOrganizer() && !actorId.equals(targetUserId)) {
+            throw new ForbiddenException("Puoi rimuovere solo te stesso");
+        }
+        TripMember target = members.findByTripIdAndUserId(tripId, targetUserId)
+                .orElseThrow(() -> new NotFoundException("Membro non trovato"));
+        if (target.isOrganizer()) {
+            throw new ConflictException("L'organizzatore non può lasciare il viaggio");
+        }
+        members.delete(target);
+    }
+
+    private Trip findByCode(String code) {
+        return trips.findByInviteCode(InviteCodeGenerator.normalize(code))
+                .orElseThrow(() -> new NotFoundException("Codice invito non valido"));
     }
 
     String uniqueCode() {
