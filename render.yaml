@@ -20,7 +20,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGIN
-        value: https://splittrip.onrender.com
+        value: https://splittrip-750q.onrender.com
       - key: JAVA_TOOL_OPTIONS
         value: -Xmx384m
 

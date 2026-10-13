@@ -2,7 +2,7 @@
 
 > **Accompagnare i gruppi di amici in ogni fase della vacanza:** pianificare insieme prima di partire, tenere traccia di spese e cose da fare durante, e ritrovarsi con ricordi condivisi e conti chiari al ritorno.
 
-🔗 **Demo:** https://splittrip.onrender.com
+🔗 **Demo:** https://splittrip-750q.onrender.com
 📘 **API (Swagger):** https://splittrip-api.onrender.com/swagger-ui.html
 
 > ⏳ Il backend gira sul piano gratuito di Render: dopo un periodo di inattività si addormenta e la **prima richiesta può impiegare fino a un minuto**. L'app lo segnala con un avviso «Il server si sta svegliando…».
