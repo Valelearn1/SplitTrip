@@ -139,9 +139,11 @@ public class ExpenseService {
             throw new NotFoundException("Spesa non trovata nel cestino");
         }
         Map<UUID, User> memberUsers = memberUsers(tripId);
-        for (UUID shareUser : trash.shareUserIds(expenseId)) {
-            if (!memberUsers.containsKey(shareUser)) {
-                String name = users.findById(shareUser).map(User::getDisplayName).orElse("un ex membro");
+        List<UUID> involved = new ArrayList<>(trash.shareUserIds(expenseId));
+        involved.addFirst(trash.payerId(expenseId));
+        for (UUID userIdInvolved : involved) {
+            if (!memberUsers.containsKey(userIdInvolved)) {
+                String name = users.findById(userIdInvolved).map(User::getDisplayName).orElse("un ex membro");
                 throw new ConflictException("Non si può ripristinare: " + name + " non fa più parte del viaggio");
             }
         }

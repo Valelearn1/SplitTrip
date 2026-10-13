@@ -6,6 +6,7 @@ import com.splittrip.common.ForbiddenException;
 import com.splittrip.common.NotFoundException;
 import com.splittrip.expense.ExpenseRepository;
 import com.splittrip.expense.ExpenseShareRepository;
+import com.splittrip.expense.SettlementRepository;
 import com.splittrip.trip.dto.JoinPreviewResponse;
 import com.splittrip.trip.dto.TripPatchRequest;
 import com.splittrip.trip.dto.TripRequest;
@@ -32,11 +33,13 @@ public class TripService {
     private final InviteCodeGenerator codes;
     private final ExpenseRepository expenses;
     private final ExpenseShareRepository shares;
+    private final SettlementRepository settlements;
     private final Clock clock;
 
     public TripService(TripRepository trips, TripMemberRepository members, UserService users,
                        TripAccessService access, InviteCodeGenerator codes,
-                       ExpenseRepository expenses, ExpenseShareRepository shares, Clock clock) {
+                       ExpenseRepository expenses, ExpenseShareRepository shares,
+                       SettlementRepository settlements, Clock clock) {
         this.trips = trips;
         this.members = members;
         this.users = users;
@@ -44,6 +47,7 @@ public class TripService {
         this.codes = codes;
         this.expenses = expenses;
         this.shares = shares;
+        this.settlements = settlements;
         this.clock = clock;
     }
 
@@ -146,6 +150,9 @@ public class TripService {
         }
         if (expenses.existsByTripIdAndPayerId(tripId, targetUserId) || shares.existsByUserIdAndExpenseTripId(targetUserId, tripId)) {
             throw new ConflictException("Il membro ha spese o quote nel viaggio: non si può rimuovere");
+        }
+        if (settlements.existsByTripIdAndUserInvolved(tripId, targetUserId)) {
+            throw new ConflictException("Il membro ha rimborsi nel viaggio: non si può rimuovere");
         }
         members.delete(target);
     }

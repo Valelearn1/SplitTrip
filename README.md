@@ -88,8 +88,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 66 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 19 test
+cd BE && sh mvnw test   # 70 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 20 test
 ```
 
 Cosa coprono:
@@ -105,9 +105,9 @@ Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il cod
 | Rischio | Difesa |
 |---|---|
 | **SQL injection** | JPA con query parametrizzate, nessuna concatenazione di stringhe |
-| **XSS** | escape automatico di React, header `Content-Security-Policy` e `X-Content-Type-Options`, lunghezze massime lato server |
+| **XSS** | escape automatico di React, `Content-Security-Policy` e `X-Content-Type-Options` sulla pagina dell'app (header del sito statico in `render.yaml`), lunghezze massime lato server |
 | **CSRF** | API stateless con JWT nell'header `Authorization` (nessun cookie di sessione); CORS limitato al frontend — motivazione in [`docs/decisioni.md`](docs/decisioni.md) (D-17) |
-| **Brute force** | rate limiting sul login (10 tentativi/minuto per IP) |
+| **Brute force** | rate limiting su login e registrazione (10 tentativi/minuto per IP; dietro il proxy di Render l'IP si legge dall'header di Cloudflare) |
 | **Password** | BCrypt, mai in chiaro; messaggio di errore generico al login |
 | **Dati personali** | solo email e nome; il token contiene solo l'id utente; segreti in variabili d'ambiente; HTTPS su Render |
 | **Autorizzazione** | ogni operazione verifica l'appartenenza al viaggio; l'id utente viene sempre dal token, mai dal body |

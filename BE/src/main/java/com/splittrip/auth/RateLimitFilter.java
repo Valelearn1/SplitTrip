@@ -34,7 +34,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        if (tryAcquire(request.getRemoteAddr())) {
+        if (tryAcquire(clientKey(request))) {
             chain.doFilter(request, response);
             return;
         }
@@ -42,6 +42,18 @@ public class RateLimitFilter extends OncePerRequestFilter {
         response.setContentType("application/problem+json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"status\":429,\"title\":\"Troppe richieste\",\"detail\":\"Riprova tra qualche minuto\"}");
+    }
+
+    /** Dietro il proxy di Render tutte le connessioni arrivano dallo stesso indirizzo: l'IP vero è nell'header di Cloudflare. */
+    private String clientKey(HttpServletRequest request) {
+        String header = props.clientIpHeader();
+        if (header != null && !header.isBlank()) {
+            String ip = request.getHeader(header);
+            if (ip != null && !ip.isBlank()) {
+                return ip.strip();
+            }
+        }
+        return request.getRemoteAddr();
     }
 
     boolean tryAcquire(String key) {

@@ -16,4 +16,10 @@ public interface SettlementRepository extends JpaRepository<Settlement, UUID> {
     List<Settlement> findAllByTripIdWithUsers(UUID tripId);
 
     Optional<Settlement> findByIdAndTripId(UUID id, UUID tripId);
+
+    @Query("""
+            select count(s) > 0 from Settlement s
+            where s.trip.id = :tripId and (s.fromUser.id = :userId or s.toUser.id = :userId)
+            """)
+    boolean existsByTripIdAndUserInvolved(UUID tripId, UUID userId);
 }

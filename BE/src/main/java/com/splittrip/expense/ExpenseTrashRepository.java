@@ -45,6 +45,12 @@ public class ExpenseTrashRepository {
                 .query(UUID.class).list();
     }
 
+    public UUID payerId(UUID expenseId) {
+        return jdbc.sql("select payer_id from expenses where id = :id")
+                .param("id", expenseId)
+                .query(UUID.class).single();
+    }
+
     public int restore(UUID tripId, UUID expenseId) {
         return jdbc.sql("update expenses set deleted_at = null where id = :id and trip_id = :tripId and deleted_at is not null")
                 .param("id", expenseId).param("tripId", tripId)

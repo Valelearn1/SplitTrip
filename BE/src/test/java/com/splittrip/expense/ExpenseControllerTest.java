@@ -141,6 +141,29 @@ class ExpenseControllerTest extends IntegrationTest {
     }
 
     @Test
+    void ripristinoBloccatoSeChiHaPagatoHaLasciatoIlViaggio() throws Exception {
+        UUID expenseId = TestExpenses.createEqual(mvc, giulia, tripId, "Taxi", "20.00", giuliaId, valeId, marcoId);
+        mvc.perform(delete("/api/trips/" + tripId + "/expenses/" + expenseId).header("Authorization", "Bearer " + giulia))
+                .andExpect(status().isNoContent());
+        mvc.perform(delete("/api/trips/" + tripId + "/members/" + giuliaId).header("Authorization", "Bearer " + giulia))
+                .andExpect(status().isNoContent());
+        mvc.perform(post("/api/trips/" + tripId + "/expenses/" + expenseId + "/restore").header("Authorization", "Bearer " + vale))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail").value(containsString("Giulia")));
+    }
+
+    @Test
+    void conRimborsiAttiviNonSiRimuoveIlMembro() throws Exception {
+        mvc.perform(post("/api/trips/" + tripId + "/settlements").header("Authorization", "Bearer " + marco)
+                .contentType(APPLICATION_JSON).content("""
+                {"fromUserId":"%s","toUserId":"%s","amount":35.00,"date":"2026-11-04"}
+                """.formatted(marcoId, valeId)))
+                .andExpect(status().isCreated());
+        mvc.perform(delete("/api/trips/" + tripId + "/members/" + marcoId).header("Authorization", "Bearer " + marco))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     void viaggioChiusoRifiutaLeScritture() throws Exception {
         mvc.perform(patch("/api/trips/" + tripId).header("Authorization", "Bearer " + vale)
                 .contentType(APPLICATION_JSON).content("{\"status\":\"CLOSED\"}")).andExpect(status().isOk());
