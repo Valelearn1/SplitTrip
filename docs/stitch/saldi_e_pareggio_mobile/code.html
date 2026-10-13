@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="it"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'surface-container-lowest': '#ffffff', 'tertiary': '#006c25', 'on-primary-container': '#f8fffc', 'surface-bright': '#f8f9ff', 'primary-fixed': '#97f3e2', 'tertiary-fixed-dim': '#7edb85', 'outline': '#6e7976', 'on-primary': '#ffffff', 'error-container': '#ffdad6', 'tertiary-fixed': '#99f89e', 'secondary-fixed': '#ffdad3', 'on-tertiary-container': '#fbfff6', 'on-secondary-container': '#6c0f00', 'outline-variant': '#bdc9c5', 'primary-fixed-dim': '#7bd7c6', 'on-tertiary': '#ffffff', 'error': '#ba1a1a', 'on-secondary-fixed-variant': '#891e07', 'on-primary-fixed': '#00201c', 'surface-container-high': '#e1e9f7', 'inverse-primary': '#7bd7c6', 'on-surface-variant': '#3e4946', 'primary-container': '#1b8375', 'surface-tint': '#006b5e', 'inverse-on-surface': '#eaf1ff', 'secondary': '#aa361e', 'tertiary-container': '#28863b', 'inverse-surface': '#29313c', 'surface-variant': '#dbe3f1', 'surface-dim': '#d3dae9', 'on-error-container': '#93000a', 'on-tertiary-fixed': '#002106', 'on-error': '#ffffff', 'secondary-container': '#ff7355', 'on-background': '#141c26', 'surface-container-low': '#eff4ff', 'on-primary-fixed-variant': '#005047', 'secondary-fixed-dim': '#ffb4a4', 'background': '#f8f9ff', 'on-secondary-fixed': '#3e0500', 'on-secondary': '#ffffff', 'primary': '#00685c', 'on-tertiary-fixed-variant': '#00531b', 'surface-container': '#e7eefd', 'on-surface': '#141c26', 'surface-container-highest': '#dbe3f1', 'surface': '#f8f9ff' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'margin': '1rem', 'margin-tablet': '1.5rem', 'gutter-desktop': '1.5rem', 'space-xl': '2rem', 'space-lg': '1.5rem', 'space-md': '1rem', 'space-xs': '0.25rem', 'space-sm': '0.5rem', 'margin-desktop': '2.5rem', 'gutter': '1rem' }, fontFamily: { 'label-sm': ['DM Sans'], 'label-md': ['DM Sans'], 'body-sm': ['DM Sans'], 'body-md': ['DM Sans'], 'headline-md': ['Plus Jakarta Sans'], 'headline-lg-mobile': ['Plus Jakarta Sans'], 'headline-sm': ['Plus Jakarta Sans'], 'amount-display': ['DM Sans'], 'headline-lg': ['Plus Jakarta Sans'], 'body-lg': ['DM Sans'], 'display': ['Plus Jakarta Sans'], 'amount-md': ['DM Sans'] }, fontSize: { 'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.03em', fontWeight: '600' }], 'label-md': ['13px', { lineHeight: '16px', letterSpacing: '0.01em', fontWeight: '500' }], 'body-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.01em', fontWeight: '400' }], 'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0', fontWeight: '400' }], 'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.01em', fontWeight: '600' }], 'headline-lg-mobile': ['24px', { lineHeight: '32px', letterSpacing: '-0.01em', fontWeight: '700' }], 'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0', fontWeight: '600' }], 'amount-display': ['28px', { lineHeight: '34px', letterSpacing: '-0.02em', fontWeight: '700' }], 'headline-lg': ['30px', { lineHeight: '38px', letterSpacing: '-0.015em', fontWeight: '700' }], 'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0', fontWeight: '400' }], 'display': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }], 'amount-md': ['16px', { lineHeight: '22px', letterSpacing: '0', fontWeight: '600' }] } } } };</script><style>@layer base { html, body { width: 100%; margin: 0; padding: 0; min-height: 100%; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen antialiased selection:bg-primary/20"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="bg-secondary-fixed/50 px-margin py-1.5 flex items-center justify-between text-on-secondary-fixed-variant"><div class="flex items-center gap-2"><span class="inline-block w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-label-sm text-label-sm">⚡ Il server si sta svegliando… Un attimo di pazienza per il caricamento dei dati.</span></div><button aria-label="Chiudi avviso" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-secondary-fixed transition-colors" onclick="this.parentElement.remove()" type="button"><span class="material-symbols-outlined text-[16px]">close</span></button></div><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="SplitTrip Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyRMdt73tWsrD1B7e0kmry4s4-vHtzDf53GnaSVwCke6ucpeoj8EqnKDw2qHYYSXf_mVJw8GuxUHzBm3aiUH0gZXCgR8q3mp4P2Joph9tKCKE_Bs1KTL6clyKx_c37tj09Y4kPSK-XIcSdHsPrZ8oqHOnD_ZvnHOKvrqueq5qLQmJwsBTtigdWMz-PIDkU8AezavtPQv1judq_4KBFXU8pGj9TTw4AD-vxOnhDd5LEOepZSxYNC9kdWw"/><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold hidden sm:inline">SplitTrip</span></div><button class="min-h-[44px] px-3 py-1.5 flex items-center gap-1.5 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors max-w-[200px]" type="button"><span class="material-symbols-outlined text-primary text-[20px]">luggage</span><span class="font-label-md text-label-md text-on-surface font-semibold truncate">Panoramica</span><span class="material-symbols-outlined text-outline text-[18px]">expand_more</span></button><div class="flex items-center gap-space-xs"><button aria-label="Profilo viaggiatore" class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors" type="button"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC39-zPyb51gpOeIUgvf9g4m3yvtDNQ8diqEZ7LRVddv6c2QYJ03shxqRpFByzG-L20xLHaIfWh8zPNj9_fUgv8ZWsMI0y6_L4LmMakAyxHPjeY2_Fyy9TCI76mN8XNlQmuIx0vHO6Cot0Ep2ovSqXq4anhZjNzOEMc2-klYhyiBIvGvcki13vn8Hh5QOCXESPKyCmzuxkdgFdkxTo5O5C5Be0e-z8RqsGSKGhoRqV0N7n4QThiH0oteg"/></button></div></div></header><main class="flex flex-col relative w-full pt-24 pb-28 min-h-screen bg-surface"><div class="flex flex-col w-full px-margin pb-6 gap-space-lg">
+<!-- Top Net Balance Hero Highlight -->
+<section class="flex flex-col gap-space-sm pt-2">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">Riepilogo Gruppo</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Saldi &amp; Pareggio</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[22px]">balance</span>
+</div>
+</div>
+<!-- User Net Balance Card with tactile warm souvenir feel -->
+<div class="relative overflow-hidden bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<div class="absolute -right-6 -bottom-6 w-28 h-28 bg-tertiary-fixed/30 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex flex-col gap-1.5 relative z-10">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px] text-tertiary">savings</span>
+<span>Il tuo saldo netto finale</span>
+</div>
+<div class="flex items-baseline gap-2 flex-wrap">
+<span class="font-amount-display text-amount-display text-tertiary font-bold tracking-tight">+50,00 €</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px] mr-1">arrow_downward_alt</span>
+            devi ricevere
+          </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+          Tutto chiaro! Quando i tuoi amici saldano, tornerai esattamente a zero.
+        </p>
+</div>
+</div>
+</section>
+<!-- Section 1: Situazione compagni di viaggio -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">group</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Situazione compagni</h2>
+</div>
+<span class="font-label-sm text-label-sm text-outline">5 viaggiatori</span>
+</div>
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm gap-4">
+<!-- Lorenzo (You) -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-tertiary-fixed flex items-center justify-center font-label-sm text-label-sm font-bold text-on-tertiary-fixed">
+              Tu
+            </div>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Tu (Lorenzo)</span>
+</div>
+<div class="text-right">
+<span class="font-amount-md text-amount-md text-tertiary font-bold">+50,00 €</span>
+<span class="block font-label-sm text-label-sm text-tertiary">devi ricevere</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden flex">
+<div class="bg-tertiary h-full rounded-full transition-all duration-500" style="width: 100%;"></div>
+</div>
+</div>
+<!-- Marco B. -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center font-label-sm text-label-sm font-semibold text-on-surface-variant">
+              MB
+            </div>
+<span class="font-label-md text-label-md text-on-surface font-medium">Marco B.</span>
+</div>
+<div class="text-right">
+<span class="font-amount-md text-amount-md text-tertiary font-bold">+34,00 €</span>
+<span class="block font-label-sm text-label-sm text-tertiary">deve ricevere</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden flex">
+<div class="bg-tertiary h-full rounded-full transition-all duration-500" style="width: 68%;"></div>
+</div>
+</div>
+<!-- Giulia R. -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center font-label-sm text-label-sm font-semibold text-on-surface-variant">
+              GR
+            </div>
+<span class="font-label-md text-label-md text-on-surface font-medium">Giulia R.</span>
+</div>
+<div class="text-right">
+<span class="font-amount-md text-amount-md text-secondary font-bold">−18,00 €</span>
+<span class="block font-label-sm text-label-sm text-secondary">deve dare</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden flex justify-end">
+<div class="bg-secondary-container h-full rounded-full transition-all duration-500" style="width: 36%;"></div>
+</div>
+</div>
+<!-- Elena S. -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center font-label-sm text-label-sm font-semibold text-on-surface-variant">
+              ES
+            </div>
+<span class="font-label-md text-label-md text-on-surface font-medium">Elena S.</span>
+</div>
+<div class="text-right">
+<span class="font-amount-md text-amount-md text-secondary font-bold">−24,00 €</span>
+<span class="block font-label-sm text-label-sm text-secondary">deve dare</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden flex justify-end">
+<div class="bg-secondary-container h-full rounded-full transition-all duration-500" style="width: 48%;"></div>
+</div>
+</div>
+<!-- Luca F. -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center font-label-sm text-label-sm font-semibold text-on-surface-variant">
+              LF
+            </div>
+<span class="font-label-md text-label-md text-on-surface font-medium">Luca F.</span>
+</div>
+<div class="text-right">
+<span class="font-amount-md text-amount-md text-secondary font-bold">−42,00 €</span>
+<span class="block font-label-sm text-label-sm text-secondary">deve dare</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden flex justify-end">
+<div class="bg-secondary-container h-full rounded-full transition-all duration-500" style="width: 84%;"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Come pareggiare (Metodo ottimizzato) -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">auto_fix_high</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Come pareggiare</h2>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">route</span>
+        Metodo ottimizzato: 2 rimborsi bastano per azzerare tutti i debiti del gruppo senza bonifici incrociati.
+      </span>
+</div>
+<!-- Settlement Cards List -->
+<div class="flex flex-col gap-space-sm mt-1">
+<!-- Card Pareggio 1 -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm gap-space-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shrink-0 font-label-sm text-label-sm font-bold">
+              LF
+            </div>
+<span class="material-symbols-outlined text-outline text-[18px] shrink-0">arrow_forward</span>
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed shrink-0 font-label-sm text-label-sm font-bold">
+              Tu
+            </div>
+<div class="flex flex-col min-w-0 ml-1">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Luca F. → Tu</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Saldamento completo</span>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface font-bold">42,00 €</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary">check_circle</span>
+<span>Azzera debito Luca</span>
+</div>
+<button class="min-h-[44px] px-4 py-2 bg-primary-container text-on-primary-container hover:bg-primary transition-all rounded-lg font-headline-sm text-label-md font-semibold shadow-sm flex items-center gap-1.5 active:scale-[0.98]" onclick="handleSettle(this, 'Luca F.', '42,00 €')" type="button">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>Salda / Registra</span>
+</button>
+</div>
+</div>
+<!-- Card Pareggio 2 -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm gap-space-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shrink-0 font-label-sm text-label-sm font-bold">
+              ES
+            </div>
+<span class="material-symbols-outlined text-outline text-[18px] shrink-0">arrow_forward</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant shrink-0 font-label-sm text-label-sm font-bold">
+              MB
+            </div>
+<div class="flex flex-col min-w-0 ml-1">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Elena S. → Marco B.</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Bonifico diretto</span>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface font-bold">24,00 €</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary">check_circle</span>
+<span>Azzera debito Elena</span>
+</div>
+<button class="min-h-[44px] px-4 py-2 bg-primary-container text-on-primary-container hover:bg-primary transition-all rounded-lg font-headline-sm text-label-md font-semibold shadow-sm flex items-center gap-1.5 active:scale-[0.98]" onclick="handleSettle(this, 'Elena S.', '24,00 €')" type="button">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>Salda / Registra</span>
+</button>
+</div>
+</div>
+<!-- Card Pareggio 3 (Split payout) -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm gap-space-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shrink-0 font-label-sm text-label-sm font-bold">
+              GR
+            </div>
+<span class="material-symbols-outlined text-outline text-[18px] shrink-0">call_split</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Giulia R. → Split</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Due quote calcolate</span>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface font-bold">18,00 €</span>
+</div>
+</div>
+<!-- Quota details block -->
+<div class="flex flex-col gap-1.5 bg-surface-container-low rounded-lg p-2.5">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant flex items-center gap-1 font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              A Tu (Lorenzo)
+            </span>
+<span class="font-amount-md text-label-md font-semibold text-on-surface">8,00 €</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant flex items-center gap-1 font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+              A Marco B.
+            </span>
+<span class="font-amount-md text-label-md font-semibold text-on-surface">10,00 €</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-body-sm text-body-sm text-outline">Rimborso combinato</span>
+<button class="min-h-[44px] px-5 py-2 bg-primary-container text-on-primary-container hover:bg-primary transition-all rounded-lg font-headline-sm text-label-md font-semibold shadow-sm flex items-center gap-1.5 active:scale-[0.98]" onclick="handleSettle(this, 'Giulia R.', '18,00 €')" type="button">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>Salda</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: History & Transparency Accordion -->
+<section class="flex flex-col gap-3 pt-1">
+<button class="min-h-[44px] w-full flex items-center justify-between px-space-md py-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors text-left group" onclick="toggleHistory(this)" type="button">
+<div class="flex items-center gap-2">
+<span class="text-base">📜</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Rimborsi già registrati (2)</span>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px] transition-transform duration-200" id="history-arrow">expand_more</span>
+</button>
+<!-- Collapsible content -->
+<div class="hidden flex-col gap-2 transition-all" id="history-panel">
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Marco B. → Tu (Lorenzo)</span>
+<span class="font-body-sm text-body-sm text-outline">Ieri, ore 18:42 • Bonifico istantaneo</span>
+</div>
+</div>
+<span class="font-amount-md text-amount-md text-on-surface font-bold shrink-0">15,00 €</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Luca F. → Elena S.</span>
+<span class="font-body-sm text-body-sm text-outline">2 gg fa • Contanti aperitivo</span>
+</div>
+</div>
+<span class="font-amount-md text-amount-md text-on-surface font-bold shrink-0">12,50 €</span>
+</div>
+</div>
+<!-- Algorithm transparency note -->
+<div class="flex items-start gap-2.5 p-3 rounded-xl bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">verified_user</span>
+<p class="font-body-sm text-body-sm leading-relaxed">
+<strong>Come calcoliamo i saldi:</strong> L'algoritmo di semplificazione del debito calcola la catena minima di transazioni, eliminando triangolazioni inutili affinché ciascuno debba fare al massimo un unico invio.
+      </p>
+</div>
+</section>
+<!-- Interactive Modal / Drawer notification simulation -->
+<div class="fixed bottom-20 inset-x-4 z-50 transform translate-y-32 opacity-0 transition-all duration-300 pointer-events-none" id="toast-settle">
+<div class="flex items-center justify-between bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-xl shadow-lg">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-tertiary-fixed text-[20px]">check_circle</span>
+<span class="font-label-md text-label-md font-medium" id="toast-text">Rimborso registrato con successo!</span>
+</div>
+<button class="text-inverse-on-surface opacity-80 hover:opacity-100 p-1" onclick="closeToast()" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  function toggleHistory(btn) {
+    const panel = document.getElementById('history-panel');
+    const arrow = document.getElementById('history-arrow');
+    if (!panel || !arrow) return;
+    const isHidden = panel.classList.contains('hidden');
+    if (isHidden) {
+      panel.classList.remove('hidden');
+      panel.classList.add('flex');
+      arrow.style.transform = 'rotate(180deg)';
+    } else {
+      panel.classList.add('hidden');
+      panel.classList.remove('flex');
+      arrow.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  function handleSettle(button, person, amount) {
+    button.disabled = true;
+    const prevHtml = button.innerHTML;
+    button.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Registrazione...</span>';
+    
+    setTimeout(() => {
+      button.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span><span>Saldato!</span>';
+      button.classList.remove('bg-primary-container', 'text-on-primary-container');
+      button.classList.add('bg-tertiary-fixed', 'text-on-tertiary-fixed');
+
+      const toast = document.getElementById('toast-settle');
+      const toastText = document.getElementById('toast-text');
+      if (toast && toastText) {
+        toastText.textContent = `Registrato rimborso di ${amount} con ${person}`;
+        toast.classList.remove('translate-y-32', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        
+        setTimeout(() => {
+          closeToast();
+        }, 3200);
+      }
+    }, 600);
+  }
+
+  function closeToast() {
+    const toast = document.getElementById('toast-settle');
+    if (toast) {
+      toast.classList.add('translate-y-32', 'opacity-0');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }
+  }
+
+  // Ensure bottom navigation Saldi tab active style matches specification
+  (function setActiveNav() {
+    const navLinks = document.querySelectorAll('nav [data-path]');
+    navLinks.forEach(link => {
+      if (link.getAttribute('data-path') === 'saldi') {
+        link.classList.remove('text-on-surface-variant');
+        link.classList.add('text-primary', 'font-semibold');
+      } else if (link.getAttribute('data-path') === 'panoramica' || link.getAttribute('data-path') === 'spese') {
+        link.classList.remove('text-primary', 'font-semibold');
+        link.classList.add('text-on-surface-variant');
+      }
+    });
+  })();
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="grid grid-cols-5 items-center h-16 px-1"><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 relative text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="panoramica" href="#"><span class="material-symbols-outlined text-[24px]">explore</span><span class="font-label-sm text-label-sm text-center">Panoramica</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 relative text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="spese" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">receipt_long</span><span class="absolute -top-1 -right-2 px-1.5 py-0.2 bg-primary text-on-primary font-label-sm text-[10px] rounded-full leading-tight">12</span></div><span class="font-label-sm text-label-sm text-center">Spese</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="saldi" href="#"><span class="material-symbols-outlined text-[24px]">balance</span><span class="font-label-sm text-label-sm text-center">Saldi</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 opacity-60 text-outline hover:text-on-surface-variant transition-colors gap-0.5" data-path="liste" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">checklist</span><span class="absolute -top-1.5 -right-3 px-1 py-0.2 bg-surface-container-high text-on-surface-variant font-label-sm text-[9px] rounded-full leading-none">presto</span></div><span class="font-label-sm text-label-sm text-center">Liste</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 opacity-60 text-outline hover:text-on-surface-variant transition-colors gap-0.5" data-path="foto" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">photo_camera</span><span class="absolute -top-1.5 -right-3 px-1 py-0.2 bg-surface-container-high text-on-surface-variant font-label-sm text-[9px] rounded-full leading-none">presto</span></div><span class="font-label-sm text-label-sm text-center">Foto</span></a></div></nav></body></html>

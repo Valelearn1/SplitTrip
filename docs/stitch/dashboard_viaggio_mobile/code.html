@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="it"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'surface-container-lowest': '#ffffff', 'tertiary': '#006c25', 'on-primary-container': '#f8fffc', 'surface-bright': '#f8f9ff', 'primary-fixed': '#97f3e2', 'tertiary-fixed-dim': '#7edb85', 'outline': '#6e7976', 'on-primary': '#ffffff', 'error-container': '#ffdad6', 'tertiary-fixed': '#99f89e', 'secondary-fixed': '#ffdad3', 'on-tertiary-container': '#fbfff6', 'on-secondary-container': '#6c0f00', 'outline-variant': '#bdc9c5', 'primary-fixed-dim': '#7bd7c6', 'on-tertiary': '#ffffff', 'error': '#ba1a1a', 'on-secondary-fixed-variant': '#891e07', 'on-primary-fixed': '#00201c', 'surface-container-high': '#e1e9f7', 'inverse-primary': '#7bd7c6', 'on-surface-variant': '#3e4946', 'primary-container': '#1b8375', 'surface-tint': '#006b5e', 'inverse-on-surface': '#eaf1ff', 'secondary': '#aa361e', 'tertiary-container': '#28863b', 'inverse-surface': '#29313c', 'surface-variant': '#dbe3f1', 'surface-dim': '#d3dae9', 'on-error-container': '#93000a', 'on-tertiary-fixed': '#002106', 'on-error': '#ffffff', 'secondary-container': '#ff7355', 'on-background': '#141c26', 'surface-container-low': '#eff4ff', 'on-primary-fixed-variant': '#005047', 'secondary-fixed-dim': '#ffb4a4', 'background': '#f8f9ff', 'on-secondary-fixed': '#3e0500', 'on-secondary': '#ffffff', 'primary': '#00685c', 'on-tertiary-fixed-variant': '#00531b', 'surface-container': '#e7eefd', 'on-surface': '#141c26', 'surface-container-highest': '#dbe3f1', 'surface': '#f8f9ff' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'margin': '1rem', 'margin-tablet': '1.5rem', 'gutter-desktop': '1.5rem', 'space-xl': '2rem', 'space-lg': '1.5rem', 'space-md': '1rem', 'space-xs': '0.25rem', 'space-sm': '0.5rem', 'margin-desktop': '2.5rem', 'gutter': '1rem' }, fontFamily: { 'label-sm': ['DM Sans'], 'label-md': ['DM Sans'], 'body-sm': ['DM Sans'], 'body-md': ['DM Sans'], 'headline-md': ['Plus Jakarta Sans'], 'headline-lg-mobile': ['Plus Jakarta Sans'], 'headline-sm': ['Plus Jakarta Sans'], 'amount-display': ['DM Sans'], 'headline-lg': ['Plus Jakarta Sans'], 'body-lg': ['DM Sans'], 'display': ['Plus Jakarta Sans'], 'amount-md': ['DM Sans'] }, fontSize: { 'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.03em', fontWeight: '600' }], 'label-md': ['13px', { lineHeight: '16px', letterSpacing: '0.01em', fontWeight: '500' }], 'body-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.01em', fontWeight: '400' }], 'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0', fontWeight: '400' }], 'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.01em', fontWeight: '600' }], 'headline-lg-mobile': ['24px', { lineHeight: '32px', letterSpacing: '-0.01em', fontWeight: '700' }], 'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0', fontWeight: '600' }], 'amount-display': ['28px', { lineHeight: '34px', letterSpacing: '-0.02em', fontWeight: '700' }], 'headline-lg': ['30px', { lineHeight: '38px', letterSpacing: '-0.015em', fontWeight: '700' }], 'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0', fontWeight: '400' }], 'display': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }], 'amount-md': ['16px', { lineHeight: '22px', letterSpacing: '0', fontWeight: '600' }] } } } };</script><style>@layer base { html, body { width: 100%; margin: 0; padding: 0; min-height: 100%; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen antialiased selection:bg-primary/20"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="bg-secondary-fixed/50 px-margin py-1.5 flex items-center justify-between text-on-secondary-fixed-variant"><div class="flex items-center gap-2"><span class="inline-block w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-label-sm text-label-sm">⚡ Il server si sta svegliando… Un attimo di pazienza per il caricamento dei dati.</span></div><button aria-label="Chiudi avviso" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-secondary-fixed transition-colors" onclick="this.parentElement.remove()" type="button"><span class="material-symbols-outlined text-[16px]">close</span></button></div><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="SplitTrip Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyRMdt73tWsrD1B7e0kmry4s4-vHtzDf53GnaSVwCke6ucpeoj8EqnKDw2qHYYSXf_mVJw8GuxUHzBm3aiUH0gZXCgR8q3mp4P2Joph9tKCKE_Bs1KTL6clyKx_c37tj09Y4kPSK-XIcSdHsPrZ8oqHOnD_ZvnHOKvrqueq5qLQmJwsBTtigdWMz-PIDkU8AezavtPQv1judq_4KBFXU8pGj9TTw4AD-vxOnhDd5LEOepZSxYNC9kdWw"/><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold hidden sm:inline">SplitTrip</span></div><button class="min-h-[44px] px-3 py-1.5 flex items-center gap-1.5 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors max-w-[200px]" type="button"><span class="material-symbols-outlined text-primary text-[20px]">luggage</span><span class="font-label-md text-label-md text-on-surface font-semibold truncate">Panoramica</span><span class="material-symbols-outlined text-outline text-[18px]">expand_more</span></button><div class="flex items-center gap-space-xs"><button aria-label="Profilo viaggiatore" class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors" type="button"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC39-zPyb51gpOeIUgvf9g4m3yvtDNQ8diqEZ7LRVddv6c2QYJ03shxqRpFByzG-L20xLHaIfWh8zPNj9_fUgv8ZWsMI0y6_L4LmMakAyxHPjeY2_Fyy9TCI76mN8XNlQmuIx0vHO6Cot0Ep2ovSqXq4anhZjNzOEMc2-klYhyiBIvGvcki13vn8Hh5QOCXESPKyCmzuxkdgFdkxTo5O5C5Be0e-z8RqsGSKGhoRqV0N7n4QThiH0oteg"/></button></div></div></header><main class="flex flex-col relative w-full pt-24 pb-28 min-h-screen bg-surface"><div class="flex flex-col w-full px-margin space-y-space-md">
+<!-- Trip Header Badge & Title Summary -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm flex items-center gap-1 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+        In corso
+      </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+        12 - 19 Maggio 2025
+      </span>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[18px]">wb_sunny</span>
+<span class="font-label-md text-label-md font-semibold">27°C Siviglia</span>
+</div>
+</div>
+<!-- Hero Status Card: Il tuo saldo attuale -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm transition-all">
+<!-- Decorative Warm Gradient Accent -->
+<div class="absolute -right-12 -top-12 w-36 h-36 rounded-full bg-primary-fixed/20 blur-2xl pointer-events-none"></div>
+<div class="absolute -left-10 -bottom-10 w-28 h-28 rounded-full bg-secondary-fixed/25 blur-xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col space-y-3">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Il tuo saldo attuale</span>
+<button aria-label="Dettagli conteggio" class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-low text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">info</span>
+</button>
+</div>
+<!-- Large Balance Metric with Dual-Encoding -->
+<div class="flex items-baseline gap-2.5 flex-wrap">
+<span class="font-amount-display text-amount-display text-tertiary tabular-nums font-bold tracking-tight">
+          +50,00 €
+        </span>
+<div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-tertiary-fixed/60 text-on-tertiary-fixed-variant font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">arrow_upward</span>
+<span>devi ricevere</span>
+</div>
+</div>
+<!-- Micro breakdown ledger summary -->
+<div class="py-2 px-3 rounded-lg bg-surface-container-low flex flex-col gap-1">
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span>Spesa totale gruppo</span>
+<span class="font-semibold text-on-surface font-amount-md text-amount-md">1.240,00 €</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span>La tua quota effettiva</span>
+<span class="font-semibold text-on-surface font-amount-md text-amount-md">260,00 €</span>
+</div>
+</div>
+<!-- Dual Actions -->
+<div class="grid grid-cols-2 gap-space-sm pt-1">
+<button class="h-12 px-4 rounded-xl bg-primary text-on-primary font-headline-sm text-headline-sm flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Nuova spesa</span>
+</button>
+<button class="h-12 px-4 rounded-xl bg-surface-container-high text-on-surface font-headline-sm text-headline-sm flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform hover:bg-surface-container-highest" type="button">
+<span class="material-symbols-outlined text-[19px] text-primary">swap_horiz</span>
+<span>Regola conti</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Visual Road Trip Journal Banner Snippet -->
+<div class="relative w-full h-24 rounded-xl overflow-hidden shadow-sm flex items-end p-3">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A warm sunset landscape of Andalusia Spain with olive groves, a white village in the distance, soft golden hour lighting, cinematic travel photography, terracotta and teal sky tones." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDBYx72ULY_u6_zXlHtLg0rrDONOrEYr4mPIv9ePbNeqJff6_sK59ec6qKe8AqHEVk-4JFPdhlPQL634EUXBqFuv4dusjrpJYbOBZEt8NwC8P-Ajsl6ILBjfvdDlhsNZ-fBrcrxaIS_4aI1ZDNKziVyW1h_xc3GYRRamNx1g4u3f2_omCEWnU_8Dv0gW4ykPOGRKeoOYfyxB15uk0S8g2JrSpAzvGwv6RUqjzdEkqt3WNlU5PYCjsCVxA')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/85 via-inverse-surface/30 to-transparent"></div>
+<div class="relative z-10 flex items-center justify-between w-full text-surface-bright">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-fixed text-[20px]">pin_drop</span>
+<span class="font-headline-sm text-headline-sm drop-shadow-sm">Tappa attuale: Ronda &amp; Granada</span>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container-lowest/30 backdrop-blur-md px-2 py-0.5 rounded-full text-on-primary font-medium">Giorno 4 di 7</span>
+</div>
+</div>
+<!-- Travel Companions Section -->
+<div class="flex flex-col space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Compagni di viaggio</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">5</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-medium flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[16px]">group</span>
+        Tutti in pari
+      </span>
+</div>
+<!-- Avatars Horizontal Scroll -->
+<div class="flex items-center gap-3 overflow-x-auto pb-1 -mx-margin px-margin scrollbar-none">
+<!-- User (Tu) -->
+<div class="flex flex-col items-center flex-shrink-0 space-y-1">
+<div class="relative">
+<img class="w-13 h-13 w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Warm portrait avatar of a cheerful young adult wearing a linen shirt smiling in the sun, natural daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR8QdSiJ7pIhdrvHyiINeUiQJCJ7jW7PWiH3YylTLrEHdizQAHFo2dG8sonNpkpTr_Iu94R7ppivcJODrANcH0zkUUrJG5kPbcmjUCtxL_yGQNLFdIEU1smTvsgwgCI8hfniSmSNsYMdGU3SRnxME_V_H-zlhfean5HNSls0A6jJqAizHro-yfOaotxO5_jDU4QH68llSgpo0BSWdoI3MZPROZz3LYFCsZejxhO-pDL8nhEakFp58VMQ"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary text-on-primary font-label-sm text-[9px] flex items-center justify-center font-bold">Tu</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate max-w-[56px]">Tu</span>
+</div>
+<!-- Marco -->
+<div class="flex flex-col items-center flex-shrink-0 space-y-1">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Portrait of Marco, a smiling traveler with sunglasses perched on head, warm Spanish architecture background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC06H8v5inVcfC9RXbTiuTBB5Lcxc6wpLyEYltN_b0D20NFDNVxmmfu9N5zrvUGvIKcB3MbwPm2EoV4toD4LTJ0GrCbK1IniH2NfQtX7l1HMJiyIjDsgxzb16mtfZaUew1WLEQTroJwGHHqE-auribu9cmC-txeMO_w8jkYQYT0LVs9dl0WAEHwMbJQRU6u0WRnOkOmwIBngrFl0-V-eHhbH7_hp7HOTIPVA4dhAKdMNgtkFVbHf-dIWg"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-tertiary shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-on-tertiary">done</span>
+</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface truncate max-w-[56px]">Marco</span>
+</div>
+<!-- Giulia -->
+<div class="flex flex-col items-center flex-shrink-0 space-y-1">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Portrait photo of Giulia, Italian female traveler with curly hair, natural smile, sunlight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbI9lYYXnAppPJ1rE0YPNFRAxMFTI-xf_9CaEwdYiwm1mrcc5HsfkJhXSSESbjaVUbEy05YEUbNCTKEW6Za0rjNb5kGsGzK-gE4yh70_hJZUAnCe1EoO1DqMnwO0IZ-duGaFUqCYTUrck6wipN_gHK52StTibSacsTNSlZ59BvKYDbMjNsTqqW3cASSodLYurBf1zQO_MbH13_nhMBIS3sFbLwTHSZwr1YJMA0TDCjEQmugNeqFufz8A"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-tertiary shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-on-tertiary">done</span>
+</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface truncate max-w-[56px]">Giulia</span>
+</div>
+<!-- Luca -->
+<div class="flex flex-col items-center flex-shrink-0 space-y-1">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Portrait of Luca, male traveler wearing straw hat, smiling warmly against Andalusian white village wall." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-4XbTeog39lWukxXEgsW9JIG9GyZiVjhjjxplS9W23TA9EkIu4Y5ET_elvK5i8hoCQ8MxYz0QMw7yB2uFvAUYn6uWdiLvV4UqKnKbUzyi0ynDLnF-GNUKcPd8L9xO_NWZ8nZ-YQFBbe7tCSU36haMnye3FQpAPBUS9kIckbq_9hNdATqYE7OcuOmwy-VzJNXz2n54cMb4DIVkufrq5WWpdBz97iLqBUWM9yq0KoiP9XcuaNUP84y8ng"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-secondary shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-on-secondary">schedule</span>
+</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface truncate max-w-[56px]">Luca</span>
+</div>
+<!-- Elena -->
+<div class="flex flex-col items-center flex-shrink-0 space-y-1">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Portrait photo of Elena, young woman with braided hair smiling in outdoors golden light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBtWBlshoxEaI2vuSj-bSHARHSgGpFd854A-WqLL3SN5xAM7iKRCQdeO2FuTKSSPQha2mR6rFUCFO9TIFPw-prmyIogUkiCAjm2ogOhcbqkyvMDVxZVnuyVPYoaTAkQYPKpWL6csmvMjKTRqd-R3Hg6rjlId8rRxdJCFlmtsRZ4rXITAHmtWC_rTQz5yJ_QQC0f5BabhDUFoRZ8Z1i9lVkArtZ1cPm3ErsvusYYbXV8YPSiQcP4tPC9g"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-tertiary shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-on-tertiary">done</span>
+</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface truncate max-w-[56px]">Elena</span>
+</div>
+<!-- Add Friend Button -->
+<div class="flex flex-col items-center flex-shrink-0 space-y-1">
+<button aria-label="Aggiungi partecipante" class="w-12 h-12 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-primary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[22px]">person_add</span>
+</button>
+<span class="font-label-md text-label-md text-on-surface-variant">Invita</span>
+</div>
+</div>
+<!-- Invite Code Capsule -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">key</span>
+<div class="flex items-center gap-1.5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Codice invito:</span>
+<span class="font-label-md text-label-md font-mono font-bold tracking-wider text-on-surface bg-surface-container-lowest px-2 py-0.5 rounded shadow-sm">ANDA-882</span>
+</div>
+</div>
+<button class="px-2.5 py-1 rounded-lg bg-surface-container-highest hover:bg-surface-container-high text-primary font-label-md text-label-md font-semibold flex items-center gap-1 transition-colors" onclick="navigator.clipboard &amp;&amp; navigator.clipboard.writeText('ANDA-882')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span>Copia</span>
+</button>
+</div>
+</div>
+<!-- Recent Expenses List Section -->
+<div class="flex flex-col space-y-2.5 pt-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Ultime spese</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<a class="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-0.5" href="#">
+        Vedi tutte (18)
+        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<!-- Expense Card 1: Tapas e Sangria -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex items-center justify-between gap-3 hover:bg-surface-bright transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-11 h-11 rounded-full bg-secondary-fixed/50 flex-shrink-0 flex items-center justify-center text-[20px]">
+          🍷
+        </div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Tapas e Sangria da El Pimpi</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Ieri sera · Pagato da Marco</span>
+</div>
+</div>
+<div class="flex flex-col items-end flex-shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface font-bold tabular-nums">84,00 €</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">La tua quota: 16,80 €</span>
+</div>
+</div>
+<!-- Expense Card 2: Noleggio Van (Paid by Tu) -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex items-center justify-between gap-3 hover:bg-surface-bright transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-11 h-11 rounded-full bg-primary-fixed/50 flex-shrink-0 flex items-center justify-center text-[20px]">
+          🚗
+        </div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Noleggio Van Malaga</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">14 Mag · Pagato da Tu</span>
+</div>
+</div>
+<div class="flex flex-col items-end flex-shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface font-bold tabular-nums">220,00 €</span>
+<span class="font-label-sm text-label-sm text-tertiary font-semibold whitespace-nowrap">Hai anticipato</span>
+</div>
+</div>
+<!-- Expense Card 3: Biglietti Alhambra -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex items-center justify-between gap-3 hover:bg-surface-bright transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-11 h-11 rounded-full bg-surface-container flex-shrink-0 flex items-center justify-center text-[20px]">
+          🏛️
+        </div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Biglietti Alhambra Granada</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">13 Mag · Pagato da Giulia</span>
+</div>
+</div>
+<div class="flex flex-col items-end flex-shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface font-bold tabular-nums">65,00 €</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">La tua quota: 13,00 €</span>
+</div>
+</div>
+</div>
+<!-- Travel Tip Card (Moment of Delight) -->
+<div class="rounded-xl bg-primary-fixed/20 p-3.5 flex items-start gap-3 shadow-sm">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[18px]">lightbulb</span>
+</div>
+<div class="flex flex-col space-y-0.5">
+<span class="font-headline-sm text-headline-sm text-primary font-semibold">Consiglio di viaggio</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+        Hai conservato gli scontrini del carburante? Puoi scansionarli con la fotocamera per compilare automaticamente importo e data.
+      </p>
+</div>
+</div>
+<!-- Floating Quick Action Button (FAB) -->
+<div class="fixed right-4 bottom-20 z-40">
+<button aria-label="Aggiungi rapidamente nuova spesa" class="w-14 h-14 rounded-full bg-primary text-on-primary shadow-xl flex items-center justify-center hover:bg-primary-container active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+</div>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="grid grid-cols-5 items-center h-16 px-1"><a aria-current="page" class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 transition-colors gap-0.5 text-primary font-semibold" data-path="panoramica" href="#"><span class="material-symbols-outlined text-[24px]">explore</span><span class="font-label-sm text-label-sm text-center">Panoramica</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 relative text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="spese" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">receipt_long</span><span class="absolute -top-1 -right-2 px-1.5 py-0.2 bg-primary text-on-primary font-label-sm text-[10px] rounded-full leading-tight">12</span></div><span class="font-label-sm text-label-sm text-center">Spese</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="saldi" href="#"><span class="material-symbols-outlined text-[24px]">balance</span><span class="font-label-sm text-label-sm text-center">Saldi</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 opacity-60 text-outline hover:text-on-surface-variant transition-colors gap-0.5" data-path="liste" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">checklist</span><span class="absolute -top-1.5 -right-3 px-1 py-0.2 bg-surface-container-high text-on-surface-variant font-label-sm text-[9px] rounded-full leading-none">presto</span></div><span class="font-label-sm text-label-sm text-center">Liste</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 opacity-60 text-outline hover:text-on-surface-variant transition-colors gap-0.5" data-path="foto" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">photo_camera</span><span class="absolute -top-1.5 -right-3 px-1 py-0.2 bg-surface-container-high text-on-surface-variant font-label-sm text-[9px] rounded-full leading-none">presto</span></div><span class="font-label-sm text-label-sm text-center">Foto</span></a></div></nav></body></html>

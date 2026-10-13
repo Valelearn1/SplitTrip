@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html lang="it"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'surface-container-lowest': '#ffffff', 'tertiary': '#006c25', 'on-primary-container': '#f8fffc', 'surface-bright': '#f8f9ff', 'primary-fixed': '#97f3e2', 'tertiary-fixed-dim': '#7edb85', 'outline': '#6e7976', 'on-primary': '#ffffff', 'error-container': '#ffdad6', 'tertiary-fixed': '#99f89e', 'secondary-fixed': '#ffdad3', 'on-tertiary-container': '#fbfff6', 'on-secondary-container': '#6c0f00', 'outline-variant': '#bdc9c5', 'primary-fixed-dim': '#7bd7c6', 'on-tertiary': '#ffffff', 'error': '#ba1a1a', 'on-secondary-fixed-variant': '#891e07', 'on-primary-fixed': '#00201c', 'surface-container-high': '#e1e9f7', 'inverse-primary': '#7bd7c6', 'on-surface-variant': '#3e4946', 'primary-container': '#1b8375', 'surface-tint': '#006b5e', 'inverse-on-surface': '#eaf1ff', 'secondary': '#aa361e', 'tertiary-container': '#28863b', 'inverse-surface': '#29313c', 'surface-variant': '#dbe3f1', 'surface-dim': '#d3dae9', 'on-error-container': '#93000a', 'on-tertiary-fixed': '#002106', 'on-error': '#ffffff', 'secondary-container': '#ff7355', 'on-background': '#141c26', 'surface-container-low': '#eff4ff', 'on-primary-fixed-variant': '#005047', 'secondary-fixed-dim': '#ffb4a4', 'background': '#f8f9ff', 'on-secondary-fixed': '#3e0500', 'on-secondary': '#ffffff', 'primary': '#00685c', 'on-tertiary-fixed-variant': '#00531b', 'surface-container': '#e7eefd', 'on-surface': '#141c26', 'surface-container-highest': '#dbe3f1', 'surface': '#f8f9ff' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'margin': '1rem', 'margin-tablet': '1.5rem', 'gutter-desktop': '1.5rem', 'space-xl': '2rem', 'space-lg': '1.5rem', 'space-md': '1rem', 'space-xs': '0.25rem', 'space-sm': '0.5rem', 'margin-desktop': '2.5rem', 'gutter': '1rem' }, fontFamily: { 'label-sm': ['DM Sans'], 'label-md': ['DM Sans'], 'body-sm': ['DM Sans'], 'body-md': ['DM Sans'], 'headline-md': ['Plus Jakarta Sans'], 'headline-lg-mobile': ['Plus Jakarta Sans'], 'headline-sm': ['Plus Jakarta Sans'], 'amount-display': ['DM Sans'], 'headline-lg': ['Plus Jakarta Sans'], 'body-lg': ['DM Sans'], 'display': ['Plus Jakarta Sans'], 'amount-md': ['DM Sans'] }, fontSize: { 'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.03em', fontWeight: '600' }], 'label-md': ['13px', { lineHeight: '16px', letterSpacing: '0.01em', fontWeight: '500' }], 'body-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.01em', fontWeight: '400' }], 'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0', fontWeight: '400' }], 'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.01em', fontWeight: '600' }], 'headline-lg-mobile': ['24px', { lineHeight: '32px', letterSpacing: '-0.01em', fontWeight: '700' }], 'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0', fontWeight: '600' }], 'amount-display': ['28px', { lineHeight: '34px', letterSpacing: '-0.02em', fontWeight: '700' }], 'headline-lg': ['30px', { lineHeight: '38px', letterSpacing: '-0.015em', fontWeight: '700' }], 'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0', fontWeight: '400' }], 'display': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }], 'amount-md': ['16px', { lineHeight: '22px', letterSpacing: '0', fontWeight: '600' }] } } } };</script><style>@layer base { html, body { width: 100%; margin: 0; padding: 0; min-height: 100%; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen antialiased selection:bg-primary/20"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="bg-secondary-fixed/50 px-margin py-1.5 flex items-center justify-between text-on-secondary-fixed-variant"><div class="flex items-center gap-2"><span class="inline-block w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-label-sm text-label-sm">⚡ Il server si sta svegliando… Un attimo di pazienza per il caricamento dei dati.</span></div><button aria-label="Chiudi avviso" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-secondary-fixed transition-colors" onclick="this.parentElement.remove()" type="button"><span class="material-symbols-outlined text-[16px]">close</span></button></div><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="SplitTrip Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyRMdt73tWsrD1B7e0kmry4s4-vHtzDf53GnaSVwCke6ucpeoj8EqnKDw2qHYYSXf_mVJw8GuxUHzBm3aiUH0gZXCgR8q3mp4P2Joph9tKCKE_Bs1KTL6clyKx_c37tj09Y4kPSK-XIcSdHsPrZ8oqHOnD_ZvnHOKvrqueq5qLQmJwsBTtigdWMz-PIDkU8AezavtPQv1judq_4KBFXU8pGj9TTw4AD-vxOnhDd5LEOepZSxYNC9kdWw"/><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold hidden sm:inline">SplitTrip</span></div><button class="min-h-[44px] px-3 py-1.5 flex items-center gap-1.5 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors max-w-[200px]" type="button"><span class="material-symbols-outlined text-primary text-[20px]">luggage</span><span class="font-label-md text-label-md text-on-surface font-semibold truncate">Panoramica</span><span class="material-symbols-outlined text-outline text-[18px]">expand_more</span></button><div class="flex items-center gap-space-xs"><button aria-label="Profilo viaggiatore" class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors" type="button"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC39-zPyb51gpOeIUgvf9g4m3yvtDNQ8diqEZ7LRVddv6c2QYJ03shxqRpFByzG-L20xLHaIfWh8zPNj9_fUgv8ZWsMI0y6_L4LmMakAyxHPjeY2_Fyy9TCI76mN8XNlQmuIx0vHO6Cot0Ep2ovSqXq4anhZjNzOEMc2-klYhyiBIvGvcki13vn8Hh5QOCXESPKyCmzuxkdgFdkxTo5O5C5Be0e-z8RqsGSKGhoRqV0N7n4QThiH0oteg"/></button></div></div></header><main class="flex flex-col relative w-full pt-24 pb-28 min-h-screen bg-surface"><div class="flex flex-col w-full relative">
+<!-- Header Stat & Filter Banner -->
+<section class="px-margin pt-2 pb-4 flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold">Andalusia Roadtrip</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Spese del gruppo</h1>
+</div>
+<button aria-label="Cerca o filtra spese" class="w-11 h-11 flex items-center justify-center rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-all active:scale-95 shadow-sm" id="toggle-search-btn">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</button>
+</div>
+<!-- Overview Card with Ambient Glow -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="absolute -right-8 -top-8 w-28 h-28 bg-primary/10 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between relative z-10">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">payments</span>
+            Totale complessivo
+          </span>
+<div class="flex items-baseline gap-2 mt-0.5">
+<span class="font-amount-display text-amount-display text-on-surface">1.240,00 €</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-semibold">18 spese</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+</div>
+</div>
+</div>
+<!-- Expandable Search Input (Hidden by default) -->
+<div class="hidden transition-all duration-300" id="search-input-wrapper">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline text-[20px]">search</span>
+<input class="w-full h-12 pl-10 pr-4 bg-surface-container-lowest rounded-xl font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none shadow-sm" placeholder="Cerca spesa o partecipante..." type="text"/>
+</div>
+</div>
+</section>
+<!-- Horizontal Scrollable Category Filter Chips -->
+<div class="w-full overflow-x-auto no-scrollbar py-1 px-margin flex items-center gap-2 select-none">
+<button class="filter-chip active flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-primary text-on-primary font-label-md text-label-md whitespace-nowrap shadow-sm transition-all" data-category="all">
+<span>Tutte</span>
+<span class="bg-primary-container/80 text-on-primary-container px-1.5 py-0.2 rounded-full text-[10px]">18</span>
+</button>
+<button class="filter-chip flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-on-surface font-label-md text-label-md whitespace-nowrap shadow-sm transition-all active:scale-95" data-category="food">
+<span>🍽️ Cibo</span>
+<span class="bg-surface-container text-on-surface-variant px-1.5 py-0.2 rounded-full text-[10px]">9</span>
+</button>
+<button class="filter-chip flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-on-surface font-label-md text-label-md whitespace-nowrap shadow-sm transition-all active:scale-95" data-category="transport">
+<span>🚗 Trasporti</span>
+<span class="bg-surface-container text-on-surface-variant px-1.5 py-0.2 rounded-full text-[10px]">4</span>
+</button>
+<button class="filter-chip flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-on-surface font-label-md text-label-md whitespace-nowrap shadow-sm transition-all active:scale-95" data-category="stay">
+<span>🏨 Alloggio</span>
+<span class="bg-surface-container text-on-surface-variant px-1.5 py-0.2 rounded-full text-[10px]">2</span>
+</button>
+<button class="filter-chip flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-on-surface font-label-md text-label-md whitespace-nowrap shadow-sm transition-all active:scale-95" data-category="tickets">
+<span>🎟️ Attrazioni</span>
+<span class="bg-surface-container text-on-surface-variant px-1.5 py-0.2 rounded-full text-[10px]">3</span>
+</button>
+</div>
+<!-- Expenses Grouped List -->
+<div class="px-margin mt-4 flex flex-col gap-6">
+<!-- Group: Oggi, 15 Maggio 2025 -->
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+          Oggi, 15 Maggio 2025
+        </h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 spese • 80,50 €</span>
+</div>
+<!-- Card 1: Paella e tapas -->
+<div class="group relative flex flex-col p-4 bg-surface-container-lowest rounded-xl shadow-sm transition-all hover:shadow-md">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed/50 flex items-center justify-center text-secondary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">restaurant</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-[15px] leading-snug text-on-surface font-semibold truncate">Paella e tapas sulla spiaggia</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 rounded bg-primary-fixed/40 text-on-primary-fixed font-semibold">Pagato da Te</span>
+<span class="text-outline text-[12px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Per 5</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface">48,50 €</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold mt-0.5">La tua quota: 9,70 €</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-3 pt-2 bg-surface-container-low/50 -mx-4 -mb-4 px-4 py-2 rounded-b-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
+            Divisa in parti uguali
+          </span>
+<button aria-label="Elimina spesa Paella" class="delete-btn w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/40 transition-colors" onclick="promptDelete(this, 'Paella e tapas sulla spiaggia')" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Sangria e birre -->
+<div class="group relative flex flex-col p-4 bg-surface-container-lowest rounded-xl shadow-sm transition-all hover:shadow-md">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed/40 flex items-center justify-center text-secondary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">local_bar</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-[15px] leading-snug text-on-surface font-semibold truncate">Sangria e birre</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Pagato da <strong class="text-on-surface">Marco B.</strong></span>
+<span class="text-outline text-[12px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Per 5</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface">32,00 €</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold mt-0.5">La tua quota: 6,40 €</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-3 pt-2 bg-surface-container-low/50 -mx-4 -mb-4 px-4 py-2 rounded-b-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+            18:45 • Chiringuito El Faro
+          </span>
+<button aria-label="Elimina spesa Sangria" class="delete-btn w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/40 transition-colors" onclick="promptDelete(this, 'Sangria e birre')" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Group: Ieri, 14 Maggio 2025 -->
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+          Ieri, 14 Maggio 2025
+        </h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 spese • 285,00 €</span>
+</div>
+<!-- Card 3: Noleggio Van Malaga -->
+<div class="group relative flex flex-col p-4 bg-surface-container-lowest rounded-xl shadow-sm transition-all hover:shadow-md">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-primary-fixed/50 flex items-center justify-center text-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">directions_car</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-[15px] leading-snug text-on-surface font-semibold truncate">Noleggio Van Malaga</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 rounded bg-primary-fixed/40 text-on-primary-fixed font-semibold">Pagato da Te</span>
+<span class="text-outline text-[12px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Per 5</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface">220,00 €</span>
+<span class="font-label-sm text-label-sm text-tertiary font-semibold mt-0.5">Anticipato intero</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-3 pt-2 bg-surface-container-low/50 -mx-4 -mb-4 px-4 py-2 rounded-b-xl">
+<span class="font-label-sm text-label-sm text-tertiary flex items-center gap-1 font-semibold">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+            Ti devono restituire: 176,00 €
+          </span>
+<button aria-label="Elimina spesa Van Malaga" class="delete-btn w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/40 transition-colors" onclick="promptDelete(this, 'Noleggio Van Malaga')" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Card 4: Rifornimento autostrada -->
+<div class="group relative flex flex-col p-4 bg-surface-container-lowest rounded-xl shadow-sm transition-all hover:shadow-md">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-primary-fixed/50 flex items-center justify-center text-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">local_gas_station</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-[15px] leading-snug text-on-surface font-semibold truncate">Rifornimento autostrada</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Pagato da <strong class="text-on-surface">Giulia R.</strong></span>
+<span class="text-outline text-[12px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Per 5</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface">65,00 €</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold mt-0.5">La tua quota: 13,00 €</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-3 pt-2 bg-surface-container-low/50 -mx-4 -mb-4 px-4 py-2 rounded-b-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">receipt</span>
+            Ricevuta Repsol A-92 allegata
+          </span>
+<button aria-label="Elimina spesa Rifornimento" class="delete-btn w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/40 transition-colors" onclick="promptDelete(this, 'Rifornimento autostrada')" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Group: 13 Maggio 2025 -->
+<div class="flex flex-col gap-2.5 pb-20">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+          13 Maggio 2025
+        </h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant">1 spesa • 65,00 €</span>
+</div>
+<!-- Card 5: Biglietti Alhambra -->
+<div class="group relative flex flex-col p-4 bg-surface-container-lowest rounded-xl shadow-sm transition-all hover:shadow-md">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed/50 flex items-center justify-center text-tertiary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-[15px] leading-snug text-on-surface font-semibold truncate">Biglietti Alhambra Granada</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Pagato da <strong class="text-on-surface">Giulia R.</strong></span>
+<span class="text-outline text-[12px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Per 5</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-amount-md text-amount-md text-on-surface">65,00 €</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold mt-0.5">La tua quota: 13,00 €</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-3 pt-2 bg-surface-container-low/50 -mx-4 -mb-4 px-4 py-2 rounded-b-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">confirmation_number</span>
+            Prenotazione anticipata online
+          </span>
+<button aria-label="Elimina spesa Biglietti" class="delete-btn w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/40 transition-colors" onclick="promptDelete(this, 'Biglietti Alhambra Granada')" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button (FAB) -->
+<div class="fixed bottom-20 right-4 z-40">
+<button aria-label="Aggiungi nuova spesa" class="flex items-center justify-center gap-2 h-14 pl-4 pr-5 rounded-full bg-primary text-on-primary shadow-xl hover:bg-primary-container active:scale-95 transition-all" id="add-expense-fab">
+<span class="material-symbols-outlined text-[26px]">add</span>
+<span class="font-headline-sm text-[15px] font-semibold tracking-tight">Nuova spesa</span>
+</button>
+</div>
+<!-- Simple Toast Notification for Deletion -->
+<div class="fixed bottom-24 left-4 right-4 z-50 transform translate-y-32 opacity-0 transition-all duration-300 pointer-events-none" id="action-toast">
+<div class="bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-xl shadow-xl flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-inverse-primary text-[20px]">info</span>
+<span class="font-body-md text-body-md" id="toast-message">Spesa rimossa</span>
+</div>
+<button class="font-label-md text-label-md text-inverse-primary font-semibold hover:underline pointer-events-auto" onclick="hideToast()">Chiudi</button>
+</div>
+</div>
+</div>
+<script>
+  // Search toggle micro-interaction
+  const toggleBtn = document.getElementById('toggle-search-btn');
+  const searchWrapper = document.getElementById('search-input-wrapper');
+  if (toggleBtn && searchWrapper) {
+    toggleBtn.addEventListener('click', () => {
+      searchWrapper.classList.toggle('hidden');
+      if (!searchWrapper.classList.contains('hidden')) {
+        const input = searchWrapper.querySelector('input');
+        if (input) input.focus();
+      }
+    });
+  }
+
+  // Filter chips interaction
+  const chips = document.querySelectorAll('.filter-chip');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => {
+        c.classList.remove('active', 'bg-primary', 'text-on-primary');
+        c.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
+      });
+      chip.classList.add('active', 'bg-primary', 'text-on-primary');
+      chip.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant');
+    });
+  });
+
+  // Highlight active bottom shell tab (Spese tab) & update badge to 18
+  document.addEventListener('DOMContentLoaded', () => {
+    const bottomNavLinks = document.querySelectorAll('nav[data-active-classes] a');
+    bottomNavLinks.forEach(link => {
+      const isSpese = link.getAttribute('data-path') === 'spese';
+      if (isSpese) {
+        link.classList.remove('text-on-surface-variant');
+        link.classList.add('text-primary', 'font-semibold');
+        const badge = link.querySelector('span.rounded-full');
+        if (badge) badge.textContent = '18';
+      } else {
+        link.classList.remove('text-primary', 'font-semibold');
+        if (!link.classList.contains('opacity-60')) {
+          link.classList.add('text-on-surface-variant');
+        }
+      }
+    });
+  });
+
+  // Soft delete simulation with toast
+  function promptDelete(btn, expenseName) {
+    const card = btn.closest('.group');
+    if (card) {
+      card.style.transition = 'all 0.25s ease-out';
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        card.remove();
+        showToast('Spesa eliminata: ' + expenseName);
+      }, 250);
+    }
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('action-toast');
+    const msgEl = document.getElementById('toast-message');
+    if (toast && msgEl) {
+      msgEl.textContent = msg;
+      toast.classList.remove('translate-y-32', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(hideToast, 3500);
+    }
+  }
+
+  function hideToast() {
+    const toast = document.getElementById('action-toast');
+    if (toast) {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-32', 'opacity-0', 'pointer-events-none');
+    }
+  }
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="grid grid-cols-5 items-center h-16 px-1"><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 relative text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="panoramica" href="#"><span class="material-symbols-outlined text-[24px]">explore</span><span class="font-label-sm text-label-sm text-center">Panoramica</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 relative text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="spese" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">receipt_long</span><span class="absolute -top-1 -right-2 px-1.5 py-0.2 bg-primary text-on-primary font-label-sm text-[10px] rounded-full leading-tight">12</span></div><span class="font-label-sm text-label-sm text-center">Spese</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="saldi" href="#"><span class="material-symbols-outlined text-[24px]">balance</span><span class="font-label-sm text-label-sm text-center">Saldi</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 opacity-60 text-outline hover:text-on-surface-variant transition-colors gap-0.5" data-path="liste" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">checklist</span><span class="absolute -top-1.5 -right-3 px-1 py-0.2 bg-surface-container-high text-on-surface-variant font-label-sm text-[9px] rounded-full leading-none">presto</span></div><span class="font-label-sm text-label-sm text-center">Liste</span></a><a class="flex flex-col items-center justify-center min-h-[44px] h-full py-1 opacity-60 text-outline hover:text-on-surface-variant transition-colors gap-0.5" data-path="foto" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">photo_camera</span><span class="absolute -top-1.5 -right-3 px-1 py-0.2 bg-surface-container-high text-on-surface-variant font-label-sm text-[9px] rounded-full leading-none">presto</span></div><span class="font-label-sm text-label-sm text-center">Foto</span></a></div></nav></body></html>
