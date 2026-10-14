@@ -1,21 +1,21 @@
 import { describe, expect, it } from 'vitest'
 import { expenseSchema, toExpenseInput } from './expenseSchema'
 
-const base = { description: 'Cena', amount: '90', date: '2026-11-02', category: 'FOOD', payerId: 'u1', splitType: 'EQUAL' as const,
-  shares: [{ userId: 'u1', included: true }, { userId: 'u2', included: true }, { userId: 'u3', included: false }] }
+const base = { description: 'Cena', amount: '90', date: '2026-11-02', category: 'FOOD', payerId: 'p1', splitType: 'EQUAL' as const,
+  shares: [{ participantId: 'p1', included: true }, { participantId: 'p2', included: true }, { participantId: 'p3', included: false }] }
 
 describe('expenseSchema', () => {
   it('EQUAL: manda solo i partecipanti inclusi, senza importi', () => {
     const parsed = expenseSchema.parse(base)
     expect(toExpenseInput(parsed)).toEqual({
-      description: 'Cena', amount: 90, date: '2026-11-02', category: 'FOOD', payerId: 'u1', splitType: 'EQUAL',
-      shares: [{ userId: 'u1' }, { userId: 'u2' }],
+      description: 'Cena', amount: 90, date: '2026-11-02', category: 'FOOD', payerId: 'p1', splitType: 'EQUAL',
+      shares: [{ participantId: 'p1' }, { participantId: 'p2' }],
     })
   })
 
   it('CUSTOM: la somma delle quote deve corrispondere al totale', () => {
     const custom = { ...base, splitType: 'CUSTOM' as const, shares: [
-      { userId: 'u1', included: true, amount: '40' }, { userId: 'u2', included: true, amount: '40' }, { userId: 'u3', included: false }] }
+      { participantId: 'p1', included: true, amount: '40' }, { participantId: 'p2', included: true, amount: '40' }, { participantId: 'p3', included: false }] }
     const result = expenseSchema.safeParse(custom)
     expect(result.success).toBe(false)
     expect(result.error?.issues[0].message).toContain('10,00')
@@ -23,9 +23,9 @@ describe('expenseSchema', () => {
 
   it('CUSTOM valido converte gli importi in numeri', () => {
     const custom = { ...base, splitType: 'CUSTOM' as const, shares: [
-      { userId: 'u1', included: true, amount: '50,50' }, { userId: 'u2', included: true, amount: '39.50' }, { userId: 'u3', included: false }] }
+      { participantId: 'p1', included: true, amount: '50,50' }, { participantId: 'p2', included: true, amount: '39.50' }, { participantId: 'p3', included: false }] }
     const parsed = expenseSchema.parse(custom)
-    expect(toExpenseInput(parsed).shares).toEqual([{ userId: 'u1', amount: 50.5 }, { userId: 'u2', amount: 39.5 }])
+    expect(toExpenseInput(parsed).shares).toEqual([{ participantId: 'p1', amount: 50.5 }, { participantId: 'p2', amount: 39.5 }])
   })
 
   it('serve almeno un partecipante', () => {

@@ -35,7 +35,7 @@ export function JoinPage() {
           <p>{formatDateRange(preview.data.startDate, preview.data.endDate)}</p>
           <p className="muted">{preview.data.memberCount} partecipanti</p>
           <FormError error={join.error} />
-          <Button loading={join.isPending} onClick={() => join.mutate(normalized, { onSuccess: (trip) => navigate(`/trips/${trip.id}`) })}>
+          <Button loading={join.isPending} onClick={() => join.mutate({ code: normalized }, { onSuccess: (trip) => navigate(`/trips/${trip.id}`) })}>
             Entra
           </Button>
         </div>

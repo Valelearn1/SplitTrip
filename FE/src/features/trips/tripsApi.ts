@@ -11,7 +11,7 @@ export const tripsApi = {
   update: (tripId: string, body: TripPatch) => api<Trip>(`/trips/${tripId}`, { method: 'PATCH', body }),
   remove: (tripId: string) => api<void>(`/trips/${tripId}`, { method: 'DELETE' }),
   joinPreview: (code: string) => api<JoinPreview>(`/trips/join-preview?code=${encodeURIComponent(code)}`),
-  join: (code: string) => api<Trip>('/trips/join', { method: 'POST', body: { code } }),
+  join: (code: string, participantId?: string) => api<Trip>('/trips/join', { method: 'POST', body: { code, participantId } }),
   regenerateCode: (tripId: string) => api<Trip>(`/trips/${tripId}/invite-code/regenerate`, { method: 'POST' }),
-  removeMember: (tripId: string, userId: string) => api<void>(`/trips/${tripId}/members/${userId}`, { method: 'DELETE' }),
+  leave: (tripId: string, participantId: string) => api<void>(`/trips/${tripId}/participants/${participantId}`, { method: 'DELETE' }),
 }

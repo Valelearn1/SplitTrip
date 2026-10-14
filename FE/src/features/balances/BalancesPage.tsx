@@ -15,7 +15,7 @@ import { useBalances, useDeleteSettlement, useSettlements } from './useBalances'
 /** Raggruppa i trasferimenti per chi paga: «Giulia → Tu 8 € e → Marco 10 €» (D-25). */
 function groupByDebtor(transfers: Transfer[]): Transfer[][] {
   const groups = new Map<string, Transfer[]>()
-  for (const t of transfers) groups.set(t.fromUserId, [...(groups.get(t.fromUserId) ?? []), t])
+  for (const t of transfers) groups.set(t.fromParticipantId, [...(groups.get(t.fromParticipantId) ?? []), t])
   return [...groups.values()]
 }
 
@@ -25,7 +25,7 @@ export function BalancesPage() {
   const settlements = useSettlements(trip.id)
   const remove = useDeleteSettlement(trip.id)
   const maxAbs = Math.max(1, ...(balances.data?.balances.map((b) => Math.abs(b.net)) ?? [1]))
-  const mine = balances.data?.balances.find((b) => b.userId === me.userId)
+  const mine = balances.data?.balances.find((b) => b.participantId === me.id)
 
   return (
     <div className="grid-2">
@@ -47,15 +47,15 @@ export function BalancesPage() {
         {balances.isPending && <Spinner />}
         <FormError error={balances.error} />
         {balances.data?.balances.map((b) => (
-          <div key={b.userId} className="balance-row">
+          <div key={b.participantId} className="balance-row">
             <div className="row">
               <span className="row-main">
-                <Avatar name={b.displayName} me={b.userId === me.userId} />
-                <span>{b.userId === me.userId ? 'Tu' : b.displayName}</span>
+                <Avatar name={b.displayName} me={b.participantId === me.id} />
+                <span>{b.participantId === me.id ? 'Tu' : b.left ? `${b.displayName} (ha lasciato il viaggio)` : b.displayName}</span>
               </span>
               <span className="row-side">
                 <MoneyText amount={b.net} currency={trip.currency} signed />
-                <BalancePill net={b.net} person={b.userId === me.userId ? 'second' : 'third'} />
+                <BalancePill net={b.net} person={b.participantId === me.id ? 'second' : 'third'} />
               </span>
             </div>
             <div className="bar">
@@ -76,17 +76,17 @@ export function BalancesPage() {
         )}
         {groupByDebtor(balances.data?.suggestedTransfers ?? []).map((group) =>
           group.map((t) => (
-            <div key={`${t.fromUserId}-${t.toUserId}`} className="transfer">
+            <div key={`${t.fromParticipantId}-${t.toParticipantId}`} className="transfer">
               <div className="transfer-who">
-                <Avatar name={t.fromName} me={t.fromUserId === me.userId} size="sm" />
+                <Avatar name={t.fromName} me={t.fromParticipantId === me.id} size="sm" />
                 <Icon name="arrow_forward" />
-                <Avatar name={t.toName} me={t.toUserId === me.userId} size="sm" />
+                <Avatar name={t.toName} me={t.toParticipantId === me.id} size="sm" />
                 <span>{t.fromName} → {t.toName}</span>
               </div>
               <div className="transfer-foot">
                 <MoneyText amount={t.amount} currency={trip.currency} className="amount-lg" />
                 {canWrite && (
-                  <Link className="btn btn-primary btn-sm" to={`/trips/${trip.id}/settlements/new?from=${t.fromUserId}&to=${t.toUserId}&amount=${t.amount.toFixed(2)}`}>
+                  <Link className="btn btn-primary btn-sm" to={`/trips/${trip.id}/settlements/new?from=${t.fromParticipantId}&to=${t.toParticipantId}&amount=${t.amount.toFixed(2)}`}>
                     <Icon name="payments" />Salda
                   </Link>
                 )}

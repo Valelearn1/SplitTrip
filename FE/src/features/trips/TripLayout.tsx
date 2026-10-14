@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation, useParams } from 'react-router'
-import type { Member, Trip } from '../../shared/api/types'
+import type { Participant, Trip } from '../../shared/api/types'
 import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Spinner } from '../../shared/ui/Spinner'
@@ -11,7 +11,8 @@ import { BalancePill } from '../../shared/ui/BalancePill'
 import { MoneyText } from '../../shared/ui/MoneyText'
 import { useTrip } from './useTrips'
 
-export type TripContext = { trip: Trip; me: Member; isOrganizer: boolean; canWrite: boolean }
+/** me = il mio partecipante: me.id è l'id usato nei soldi, me.userId il mio utente. */
+export type TripContext = { trip: Trip; me: Participant; isOrganizer: boolean; canWrite: boolean }
 
 export function TripLayout() {
   const { tripId = '' } = useParams()
@@ -23,13 +24,13 @@ export function TripLayout() {
   if (isPending) return <Spinner />
   if (error || !trip) return <FormError error={error ?? new Error('Viaggio non disponibile')} />
 
-  const me = trip.members.find((m) => m.userId === auth?.user.id)
+  const me = trip.participants.find((p) => p.userId === auth?.user.id)
   if (!me) return <p role="alert">Non fai parte di questo viaggio.</p>
   const ctx: TripContext = { trip, me, isOrganizer: me.role === 'ORGANIZER', canWrite: trip.status !== 'CLOSED' }
   // Panoramica e Saldi aprono già con la card grande del saldo: in testa lo mostriamo solo nelle altre sezioni
   const path = location.pathname.replace(/\/$/, '')
   const hasHeroBalance = path === `/trips/${tripId}` || path === `/trips/${tripId}/balances`
-  const myNet = hasHeroBalance ? undefined : balances.data?.balances.find((b) => b.userId === me.userId)?.net
+  const myNet = hasHeroBalance ? undefined : balances.data?.balances.find((b) => b.participantId === me.id)?.net
 
   return (
     <section>

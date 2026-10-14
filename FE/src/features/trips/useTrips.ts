@@ -26,7 +26,7 @@ export function useCreateTrip() {
 export function useJoinTrip() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (code: string) => tripsApi.join(code),
+    mutationFn: ({ code, participantId }: { code: string; participantId?: string }) => tripsApi.join(code, participantId),
     onSuccess: () => qc.invalidateQueries({ queryKey: tripKeys.all }),
   })
 }
@@ -55,10 +55,11 @@ export function useRegenerateCode(tripId: string) {
   })
 }
 
-export function useRemoveMember(tripId: string) {
+/** Uscita dal viaggio (o rimozione da parte dell'organizzatore): il partecipante resta nello storico. */
+export function useLeaveTrip(tripId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (userId: string) => tripsApi.removeMember(tripId, userId),
+    mutationFn: (participantId: string) => tripsApi.leave(tripId, participantId),
     onSuccess: () => qc.invalidateQueries({ queryKey: tripKeys.all }),
   })
 }

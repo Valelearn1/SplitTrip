@@ -11,7 +11,7 @@ export function parseCents(raw: string | undefined): number | null {
 }
 
 const shareSchema = z.object({
-  userId: z.string(),
+  participantId: z.string(),
   included: z.boolean(),
   amount: z.string().optional(),
 })
@@ -23,7 +23,7 @@ export const expenseSchema = z
     date: z.string().min(1, 'Scegli una data'),
     category: z.enum(['FOOD', 'TRANSPORT', 'LODGING', 'ACTIVITY', 'OTHER']),
     payerId: z.string().min(1, 'Chi ha pagato?'),
-    splitType: z.enum(['EQUAL', 'CUSTOM']),
+    splitType: z.enum(['EQUAL', 'CUSTOM', 'WEIGHT', 'DAYS']),
     shares: z.array(shareSchema),
   })
   .superRefine((v, ctx) => {
@@ -62,6 +62,6 @@ export function toExpenseInput(form: ExpenseForm): ExpenseInput {
     category: form.category,
     payerId: form.payerId,
     splitType: form.splitType,
-    shares: included.map((s) => (form.splitType === 'CUSTOM' ? { userId: s.userId, amount: (parseCents(s.amount) ?? 0) / 100 } : { userId: s.userId })),
+    shares: included.map((s) => (form.splitType === 'CUSTOM' ? { participantId: s.participantId, amount: (parseCents(s.amount) ?? 0) / 100 } : { participantId: s.participantId })),
   }
 }

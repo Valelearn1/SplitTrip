@@ -43,7 +43,7 @@ export function ExpensesPage() {
         <section key={day} className="day-group">
           <h3>{formatDate(day)}</h3>
           <div className="card" style={{ padding: '4px 16px' }}>
-            {items.map((e) => <ExpenseRow key={e.id} expense={e} currency={trip.currency} meId={me.userId} />)}
+            {items.map((e) => <ExpenseRow key={e.id} expense={e} currency={trip.currency} meId={me.id} />)}
           </div>
         </section>
       ))}

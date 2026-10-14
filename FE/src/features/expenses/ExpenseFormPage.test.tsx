@@ -11,9 +11,9 @@ import { ExpenseFormPage } from './ExpenseFormPage'
 const trip = {
   id: 't1', name: 'Roma', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR', status: 'ONGOING',
   inviteCode: 'ROMA-7K2P', ownerId: 'u1',
-  members: [
-    { userId: 'u1', displayName: 'Vale', role: 'ORGANIZER', joinedAt: '2026-10-12T10:00:00Z' },
-    { userId: 'u2', displayName: 'Marco', role: 'MEMBER', joinedAt: '2026-10-12T11:00:00Z' },
+  participants: [
+    { id: 'p1', userId: 'u1', displayName: 'Vale', role: 'ORGANIZER', defaultWeight: 1, arrivalDate: null, departureDate: null },
+    { id: 'p2', userId: 'u2', displayName: 'Marco', role: 'MEMBER', defaultWeight: 1, arrivalDate: null, departureDate: null },
   ],
 }
 
@@ -41,8 +41,8 @@ describe('ExpenseFormPage', () => {
     await user.click(screen.getByRole('button', { name: 'Salva' }))
 
     expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
-    expect(sent).toMatchObject({ description: 'Cena', amount: 90, payerId: 'u2', splitType: 'EQUAL', category: 'FOOD',
-      shares: [{ userId: 'u1' }, { userId: 'u2' }] })
+    expect(sent).toMatchObject({ description: 'Cena', amount: 90, payerId: 'p2', splitType: 'EQUAL', category: 'FOOD',
+      shares: [{ participantId: 'p1' }, { participantId: 'p2' }] })
     expect(router.state.location.pathname).toBe('/trips/t1/expenses')
   })
 })

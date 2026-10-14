@@ -4,7 +4,7 @@ import { CategoryIcon } from '../../shared/ui/CategoryIcon'
 import { MoneyText } from '../../shared/ui/MoneyText'
 
 export function ExpenseRow({ expense, currency, meId }: { expense: Expense; currency: string; meId: string }) {
-  const mine = expense.shares.find((s) => s.userId === meId)
+  const mine = expense.shares.find((s) => s.participantId === meId)
   return (
     <Link to={`${expense.id}/edit`} className="row expense-row">
       <span className="row-main">

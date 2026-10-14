@@ -48,14 +48,14 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
       ? {
           description: expense.description, amount: toInputAmount(expense.amount), date: expense.date,
           category: expense.category, payerId: expense.payerId, splitType: expense.splitType,
-          shares: trip.members.map((m) => {
-            const s = expense.shares.find((x) => x.userId === m.userId)
-            return { userId: m.userId, included: !!s, amount: s ? toInputAmount(s.amount) : '' }
+          shares: trip.participants.map((p) => {
+            const s = expense.shares.find((x) => x.participantId === p.id)
+            return { participantId: p.id, included: !!s, amount: s ? toInputAmount(s.amount) : '' }
           }),
         }
       : {
-          description: '', amount: '', date: today(), category: 'FOOD', payerId: me.userId, splitType: 'EQUAL',
-          shares: trip.members.map((m) => ({ userId: m.userId, included: true, amount: '' })),
+          description: '', amount: '', date: today(), category: 'FOOD', payerId: me.id, splitType: 'EQUAL',
+          shares: trip.participants.map((p) => ({ participantId: p.id, included: true, amount: '' })),
         },
   })
 
@@ -95,11 +95,11 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
         <fieldset className="field" style={{ marginBottom: 0 }}>
           <legend>Chi ha pagato?</legend>
           <div className="people" style={{ marginBottom: 0 }}>
-            {trip.members.map((m) => (
-              <label key={m.userId} className="person person-pick">
-                <input type="radio" value={m.userId} {...register('payerId')} />
-                <Avatar name={m.displayName} size="lg" />
-                <span>{m.userId === me.userId ? 'Tu' : m.displayName.trim().split(/\s+/)[0]}</span>
+            {trip.participants.map((p) => (
+              <label key={p.id} className="person person-pick">
+                <input type="radio" value={p.id} {...register('payerId')} />
+                <Avatar name={p.displayName} size="lg" />
+                <span>{p.id === me.id ? 'Tu' : p.displayName.trim().split(/\s+/)[0]}</span>
               </label>
             ))}
           </div>
@@ -109,7 +109,7 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
       <fieldset className="field card" style={{ marginBottom: 0 }} aria-labelledby="split-title">
         <div className="page-head" style={{ marginBottom: 8 }}>
           <h2 id="split-title">Diviso tra</h2>
-          <span className="badge badge-plain">{includedCount === trip.members.length ? `Tutti inclusi (${includedCount})` : `${includedCount} su ${trip.members.length}`}</span>
+          <span className="badge badge-plain">{includedCount === trip.participants.length ? `Tutti inclusi (${includedCount})` : `${includedCount} su ${trip.participants.length}`}</span>
         </div>
         <div className="chips">
           <label className="chip"><input type="radio" value="EQUAL" {...register('splitType')} /><Icon name="pie_chart" />Parti uguali</label>
@@ -121,15 +121,15 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
             <span>Quota a testa: <strong>{toInputAmount(perHead)} €</strong> a persona</span>
           </div>
         )}
-        {trip.members.map((m, i) => (
-          <div key={m.userId} className="row">
+        {trip.participants.map((p, i) => (
+          <div key={p.id} className="row">
             <label className="check">
               <input type="checkbox" {...register(`shares.${i}.included`)} />
-              <Avatar name={m.displayName} size="sm" />
-              <span>{m.userId === me.userId ? 'Tu (io)' : m.displayName}</span>
+              <Avatar name={p.displayName} size="sm" />
+              <span>{p.id === me.id ? 'Tu (io)' : p.displayName}</span>
             </label>
             {splitType === 'CUSTOM' && shares[i]?.included && (
-              <input aria-label={`Quota di ${m.displayName}`} inputMode="decimal" placeholder="0,00" className="share-input" {...register(`shares.${i}.amount`)} />
+              <input aria-label={`Quota di ${p.displayName}`} inputMode="decimal" placeholder="0,00" className="share-input" {...register(`shares.${i}.amount`)} />
             )}
           </div>
         ))}

@@ -15,7 +15,7 @@ export function TripDashboardPage() {
   const balances = useBalances(trip.id)
   const summary = useSummary(trip.id)
   const expenses = useExpenses(trip.id)
-  const mine = balances.data?.balances.find((b) => b.userId === me.userId)
+  const mine = balances.data?.balances.find((b) => b.participantId === me.id)
   const net = mine?.net ?? 0
 
   return (
@@ -39,13 +39,14 @@ export function TripDashboardPage() {
       <div className="card">
         <div className="page-head" style={{ marginBottom: 8 }}>
           <h2>Compagni di viaggio</h2>
-          <span className="badge badge-plain">{trip.members.length}</span>
+          <span className="badge badge-plain">{trip.participants.length}</span>
         </div>
         <div className="people">
-          {trip.members.map((m) => (
-            <div key={m.userId} className="person">
-              <Avatar name={m.displayName} me={m.userId === me.userId} size="lg" />
-              <span>{m.userId === me.userId ? 'Tu' : firstName(m.displayName)}</span>
+          {trip.participants.map((p) => (
+            <div key={p.id} className="person">
+              <Avatar name={p.displayName} me={p.id === me.id} size="lg" />
+              <span>{p.id === me.id ? 'Tu' : firstName(p.displayName)}</span>
+              {p.userId === null && <small className="muted">senza account</small>}
             </div>
           ))}
         </div>
@@ -66,7 +67,7 @@ export function TripDashboardPage() {
               <CategoryIcon category={e.category} />
               <span className="row-text">
                 <strong>{e.description}</strong>
-                <small>{formatDate(e.date)} · pagato da {e.payerId === me.userId ? 'te' : e.payerName}</small>
+                <small>{formatDate(e.date)} · pagato da {e.payerId === me.id ? 'te' : e.payerName}</small>
               </span>
             </span>
             <MoneyText amount={e.amount} currency={trip.currency} />

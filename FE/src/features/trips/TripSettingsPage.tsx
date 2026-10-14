@@ -2,26 +2,26 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useOutletContext } from 'react-router'
-import { STATUS_LABELS, type Member, type TripStatus } from '../../shared/api/types'
+import { STATUS_LABELS, type Participant, type TripStatus } from '../../shared/api/types'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
 import { Modal } from '../../shared/ui/Modal'
-import { MembersList } from './MembersList'
+import { ParticipantsList } from './ParticipantsList'
 import type { TripContext } from './TripLayout'
 import { tripSchema, type TripForm } from './tripSchema'
-import { useDeleteTrip, useRegenerateCode, useRemoveMember, useUpdateTrip } from './useTrips'
+import { useDeleteTrip, useLeaveTrip, useRegenerateCode, useUpdateTrip } from './useTrips'
 
 const NEXT_STATUS: Record<TripStatus, TripStatus | null> = { PLANNING: 'ONGOING', ONGOING: 'CLOSED', CLOSED: null }
 
-type Confirm = { kind: 'member'; member: Member } | { kind: 'status' } | { kind: 'delete' } | null
+type Confirm = { kind: 'member'; member: Participant } | { kind: 'status' } | { kind: 'delete' } | null
 
 export function TripSettingsPage() {
   const { trip, isOrganizer } = useOutletContext<TripContext>()
   const navigate = useNavigate()
   const update = useUpdateTrip(trip.id)
   const regenerate = useRegenerateCode(trip.id)
-  const removeMember = useRemoveMember(trip.id)
+  const removeMember = useLeaveTrip(trip.id)
   const deleteTrip = useDeleteTrip()
   const [confirm, setConfirm] = useState<Confirm>(null)
   const { register, handleSubmit, formState: { errors } } = useForm<TripForm>({
@@ -33,7 +33,7 @@ export function TripSettingsPage() {
   const next = NEXT_STATUS[trip.status]
 
   function confirmAction() {
-    if (confirm?.kind === 'member') removeMember.mutate(confirm.member.userId)
+    if (confirm?.kind === 'member') removeMember.mutate(confirm.member.id)
     if (confirm?.kind === 'status' && next) update.mutate({ status: next })
     if (confirm?.kind === 'delete') deleteTrip.mutate(trip.id, { onSuccess: () => navigate('/trips') })
     setConfirm(null)
@@ -72,7 +72,7 @@ export function TripSettingsPage() {
       <div className="card">
         <h2>Partecipanti</h2>
         <FormError error={removeMember.error} />
-        <MembersList members={trip.members} onRemove={(member) => setConfirm({ kind: 'member', member })} />
+        <ParticipantsList participants={trip.participants} onRemove={(member) => setConfirm({ kind: 'member', member })} />
       </div>
 
       {trip.status === 'PLANNING' && (

@@ -10,9 +10,9 @@ import { TripLayout } from './TripLayout'
 const trip = {
   id: 't1', name: 'Roma 2026', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR',
   status: 'ONGOING', inviteCode: 'ROMA-7K2P', ownerId: 'u1',
-  members: [
-    { userId: 'u1', displayName: 'Vale', role: 'ORGANIZER', joinedAt: '2026-10-12T10:00:00Z' },
-    { userId: 'u2', displayName: 'Marco', role: 'MEMBER', joinedAt: '2026-10-12T11:00:00Z' },
+  participants: [
+    { id: 'p1', userId: 'u1', displayName: 'Vale', role: 'ORGANIZER', defaultWeight: 1, arrivalDate: null, departureDate: null },
+    { id: 'p2', userId: 'u2', displayName: 'Marco', role: 'MEMBER', defaultWeight: 1, arrivalDate: null, departureDate: null },
   ],
 }
 
@@ -25,10 +25,10 @@ describe('TripDashboardPage', () => {
       http.get('http://localhost/api/trips/t1/balances', () =>
         HttpResponse.json({
           balances: [
-            { userId: 'u1', displayName: 'Vale', paid: 90, owed: 45, net: 45 },
-            { userId: 'u2', displayName: 'Marco', paid: 30, owed: 75, net: -45 },
+            { participantId: 'p1', displayName: 'Vale', left: false, paid: 90, owed: 45, net: 45 },
+            { participantId: 'p2', displayName: 'Marco', left: false, paid: 30, owed: 75, net: -45 },
           ],
-          suggestedTransfers: [{ fromUserId: 'u2', fromName: 'Marco', toUserId: 'u1', toName: 'Vale', amount: 45 }],
+          suggestedTransfers: [{ fromParticipantId: 'p2', fromName: 'Marco', toParticipantId: 'p1', toName: 'Vale', amount: 45 }],
         }),
       ),
       http.get('http://localhost/api/trips/t1/expenses', () => HttpResponse.json([])),

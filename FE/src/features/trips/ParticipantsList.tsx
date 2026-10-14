@@ -1,16 +1,17 @@
-import type { Member } from '../../shared/api/types'
+import type { Participant } from '../../shared/api/types'
 import { Avatar } from '../../shared/ui/Avatar'
 
-export function MembersList({ members, onRemove }: { members: Member[]; onRemove?: (m: Member) => void }) {
+export function ParticipantsList({ participants, onRemove }: { participants: Participant[]; onRemove?: (p: Participant) => void }) {
   return (
     <ul className="list">
-      {members.map((m) => (
-        <li key={m.userId} className="row">
+      {participants.map((m) => (
+        <li key={m.id} className="row">
           <span className="row-main">
             <Avatar name={m.displayName} />
             <span className="row-text">
               <strong>{m.displayName}</strong>
               {m.role === 'ORGANIZER' && <small>organizzatore</small>}
+              {m.userId === null && <small>senza account</small>}
             </span>
           </span>
           {onRemove && m.role !== 'ORGANIZER' && (
