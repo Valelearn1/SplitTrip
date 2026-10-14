@@ -255,7 +255,7 @@ fieldset.field.card { padding: var(--space-4); }
 .tabs a.active { background: var(--surface); color: var(--teal); box-shadow: var(--shadow-card); }
 .tab-soon { color: var(--ink-3); cursor: not-allowed; }
 .tab-soon small { font-size: 0.6875rem; font-weight: 500; }
-.fab { position: fixed; right: 20px; bottom: 24px; z-index: 15; width: 60px; height: 60px; border-radius: 50%; background: var(--teal); color: #fff; display: grid; place-items: center; text-decoration: none; box-shadow: var(--shadow-float); transition: transform 150ms var(--ease), background 150ms var(--ease); }
+.fab { position: fixed; right: 20px; bottom: 24px; z-index: 15; border: 0; cursor: pointer; width: 60px; height: 60px; border-radius: 50%; background: var(--teal); color: #fff; display: grid; place-items: center; text-decoration: none; box-shadow: var(--shadow-float); transition: transform 150ms var(--ease), background 150ms var(--ease); }
 .fab:hover { background: var(--teal-2); transform: scale(1.04); }
 .fab .msi { font-size: 30px; }
 
