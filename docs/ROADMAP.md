@@ -152,6 +152,14 @@ Ognuna diventa una nuova riga in `decisioni.md` quando la approvi.
 
 S3 (id dal client) può restare fuori dal capstone: si fa prima di iniziare l'offline.
 
+**Extra candidato da valutare al punto di controllo di sabato 18 ottobre (D-27)** — proposto il 14 ottobre:
+
+| Cosa | Perché | Compl. | Costo stimato |
+|---|---|---|---|
+| 🎡 **«Chi offre?»**: ruota che sceglie a caso chi paga il giro (caffè, gelati) e crea la spesa con quella persona come pagante | giochino legato ai soldi veri, non un'app nell'app; ottimo in presentazione | B | ~0,5 giorni, solo frontend |
+
+Vincoli D-24: con `prefers-reduced-motion` niente rotazione e risultato immediato; il nome scelto annunciato come testo (`role="status"`); usabile da tastiera. Scartati: quiz sulla destinazione (fuori tema), «pari o dispari» sui debiti (sembra una scommessa sui soldi veri); badge e classifiche vanno semmai nel riepilogo di fine viaggio («Wrapped», §4.2).
+
 ### 4.2 MVP di prodotto (dopo il capstone)
 
 Il tuo candidato era: **giorni di presenza, scontrino per voce, riepilogo condivisibile.**
