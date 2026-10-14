@@ -48,7 +48,7 @@ Ogni versione è un progetto completo e presentabile da solo. Ogni versione = un
 | Versione | Nome | Contenuto | Giorni |
 |---|---|---|---|
 | **v1** | Core | auth JWT, viaggi e membri con codice invito, spese (equa + personalizzata), rimborsi, saldi, cestino spese, Swagger, test, deploy, README | 1–7 |
-| **v1.5** | Divisioni smart (D-28) | schema: i soldi puntano ai partecipanti (S1), valuta/tasso sulla spesa (S2), metodo di divisione estendibile (S4); divisione per giorni di presenza e quote con peso. Spec e piano dedicati | dopo `v1.0` |
+| **v1.5** | Divisioni smart (D-28) | schema: i soldi puntano ai partecipanti (S1), valuta/tasso sulla spesa (S2), metodo di divisione estendibile (S4); divisione per giorni di presenza e quote con peso. Spec `2026-10-14-v1.5-divisioni-smart-design.md` | ✅ 2026-10-14 |
 | **v2** | Social | to-do list (valigia / generali), foto con posizione e mappa, notifiche in-app; extra dalle schermate Stitch (D-25): foto profilo, foto scontrino allegata alla spesa, meteo della destinazione via Open-Meteo | 8–10 |
 | **v3** | Live | chat di gruppo WebSocket, notifiche in tempo reale; extra (D-25): «consiglio di viaggio» generato con AI | 11–12 |
 | — | Rifinitura | README finale, prova presentazione | 13–14 |

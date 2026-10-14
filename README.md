@@ -11,11 +11,13 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 
 ---
 
-## ✨ Cosa fa (v1 Core)
+## ✨ Cosa fa
 
 - 🔐 **Registrazione e login** con JWT
 - ✈️ **Viaggi** con stato (in pianificazione → in corso → chiuso) e **codice invito** da condividere su WhatsApp
-- 💸 **Spese** divise in parti uguali o con importi personalizzati, per categoria
+- 💸 **Spese** divise in parti uguali, con importi personalizzati, **per peso** (la coppia con un solo telefono conta per due, il bambino per mezzo) o **per presenza** (notti o giorni: chi arriva dopo paga meno alloggio), con l'anteprima delle quote
+- 👵 **Partecipanti senza account**: l'organizzatore aggiunge chi non usa l'app, che ha comunque la sua quota; se poi si registra, entrando col codice **rivendica il suo posto** e ritrova le sue spese
+- 🧳 **La mia partecipazione**: ognuno imposta peso e date di arrivo e partenza, o lascia il viaggio senza perdere lo storico
 - ⚖️ **Saldi** sempre aggiornati e **trasferimenti suggeriti**: il minimo di rimborsi per azzerare i debiti del gruppo
 - 🔁 **Rimborsi** registrabili con un tap da «Salda»
 - 🗑️ **Cestino** delle spese con ripristino (organizzatore)
@@ -35,7 +37,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 | Versione | Contenuto | Stato |
 |---|---|---|
 | **v1 Core** | auth, viaggi, spese, rimborsi, saldi | ✅ |
-| **v1.5 Divisioni smart** | divisione per giorni di presenza, quote con peso, modello dati pronto per ospiti e multi-valuta | 🛠️ |
+| **v1.5 Divisioni smart** | divisione per presenza e per peso, partecipanti senza account rivendicabili, modello dati pronto per multi-valuta | ✅ |
 | **v2 Social** | to-do e valigia condivisa, foto con mappa, notifiche | 📋 |
 | **v3 Live** | chat di gruppo e notifiche in tempo reale (WebSocket) | 📋 |
 
@@ -88,12 +90,14 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 70 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 20 test
+cd BE && sh mvnw test   # 97 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 34 test
 ```
 
 Cosa coprono:
 - ⚖️ **motore dei saldi** al 100 %: somma dei netti sempre zero, centesimi di resto deterministici, al massimo n−1 trasferimenti
+- 🧮 **divisione per peso e per presenza**: stessi esempi di riferimento nel backend e nel frontend (resto maggiore, Σ quote = totale)
+- 🗃️ **migrazione dei dati**: test che applica la V1, inserisce dati reali (anche un ex membro nel cestino) e verifica la V2
 - 🔄 **flussi API end-to-end** su Postgres reale (Testcontainers): registrazione → viaggio → invito → spese → rimborsi → saldi
 - 🔒 **sicurezza**: 401/403, SQL injection, XSS, id utente preso solo dal token, nessuno stack trace negli errori
 - 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda»
@@ -118,7 +122,7 @@ Il progetto è sviluppato con un metodo **spec-driven**: prima la specifica, poi
 
 | Documento | Contenuto |
 |---|---|
-| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifica di design (modello dati, motore dei saldi, API, sicurezza, frontend) |
+| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifiche di design: v1 (modello dati, motore dei saldi, API, sicurezza, frontend) e v1.5 (partecipanti, peso e presenza) |
 | [`docs/superpowers/plans/`](docs/superpowers/plans/) | piani di implementazione task per task |
 | [`docs/decisioni.md`](docs/decisioni.md) | registro delle decisioni, con alternative scartate e motivazioni |
 | [`PRODUCT.md`](PRODUCT.md) · [`DESIGN.md`](DESIGN.md) | prodotto e sistema visivo |
