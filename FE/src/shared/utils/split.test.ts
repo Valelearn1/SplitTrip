@@ -27,6 +27,11 @@ describe('splitByWeight', () => {
     expect([...splitByWeight(1000, [{ id: 'a', weight: 3 }, { id: 'b', weight: 0 }]).values()]).toEqual([1000, 0])
     expect([...splitByWeight(1, [{ id: 'b', weight: 1 }, { id: 'a', weight: 1 }]).entries()]).toEqual([['a', 1], ['b', 0]])
   })
+  it('spareggio per testo dell\'id, come il backend (7fff… prima di 8000…)', () => {
+    const low = '7fffffff-0000-4000-8000-000000000001'
+    const high = '80000000-0000-4000-8000-000000000002'
+    expect([...splitByWeight(1, [{ id: high, weight: 1 }, { id: low, weight: 1 }]).entries()]).toEqual([[low, 1], [high, 0]])
+  })
   it('somma pesi zero dà tutte quote zero senza errori', () => {
     expect([...splitByWeight(1000, [{ id: 'a', weight: 0 }]).values()]).toEqual([0])
   })

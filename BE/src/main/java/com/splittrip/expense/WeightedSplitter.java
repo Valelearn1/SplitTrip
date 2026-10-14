@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/** Divide un importo in proporzione ai pesi; i centesimi di resto vanno a chi ha la parte frazionaria più alta, poi per id. */
+/** Divide un importo in proporzione ai pesi; i centesimi di resto vanno a chi ha la parte frazionaria più alta, poi per id (come testo). */
 public final class WeightedSplitter {
 
     private WeightedSplitter() {}
@@ -21,7 +21,8 @@ public final class WeightedSplitter {
         if (weights.isEmpty() || sumWeights.signum() <= 0) {
             throw new BadRequestException("Almeno un partecipante deve avere un peso maggiore di zero");
         }
-        List<UUID> ids = weights.keySet().stream().sorted().toList();
+        // Ordine per testo dell'id, lo stesso dell'anteprima nel frontend (UUID.compareTo usa long con segno)
+        List<UUID> ids = weights.keySet().stream().sorted(Comparator.comparing(UUID::toString)).toList();
         long totalCents = BalanceCalculator.cents(total);
         long[] floor = new long[ids.size()];
         BigDecimal[] fraction = new BigDecimal[ids.size()];
@@ -37,7 +38,7 @@ public final class WeightedSplitter {
         long remainder = totalCents - assigned;
         List<Integer> order = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) order.add(i);
-        order.sort(Comparator.<Integer, BigDecimal>comparing(i -> fraction[i]).reversed().thenComparing(i -> ids.get(i)));
+        order.sort(Comparator.<Integer, BigDecimal>comparing(i -> fraction[i]).reversed().thenComparing(i -> ids.get(i).toString()));
         for (int k = 0; k < remainder; k++) {
             floor[order.get(k)]++;
         }

@@ -42,4 +42,13 @@ class EqualSplitterTest {
             }
         }
     }
+
+    @Test
+    void ilCentesimoDiRestoSegueLOrdineDelTestoDellId() {
+        UUID low = UUID.fromString("7fffffff-0000-4000-8000-000000000001");
+        UUID high = UUID.fromString("80000000-0000-4000-8000-000000000002");
+        var shares = EqualSplitter.split(new BigDecimal("0.01"), List.of(high, low));
+        assertThat(shares).extracting(s -> s.participantId()).containsExactly(low, high);
+        assertThat(shares).extracting(s -> s.amount()).containsExactly(new BigDecimal("0.01"), new BigDecimal("0.00"));
+    }
 }

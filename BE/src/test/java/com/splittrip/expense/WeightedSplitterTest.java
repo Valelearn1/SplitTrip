@@ -75,4 +75,14 @@ class WeightedSplitterTest {
             }
         }
     }
+
+    @Test
+    void ilCentesimoDiParitaSegueLOrdineDelTestoDellIdComeNelFrontend() {
+        // UUID.compareTo confronta long con segno: 8000… verrebbe prima di 7fff…; l'anteprima del frontend ordina per testo
+        UUID low = UUID.fromString("7fffffff-0000-4000-8000-000000000001");
+        UUID high = UUID.fromString("80000000-0000-4000-8000-000000000002");
+        var shares = WeightedSplitter.split(new BigDecimal("0.01"), w(high, 1, low, 1));
+        assertThat(shares).extracting(s -> s.participantId()).containsExactly(low, high);
+        assertThat(shares).extracting(s -> s.amount()).containsExactly(new BigDecimal("0.01"), new BigDecimal("0.00"));
+    }
 }

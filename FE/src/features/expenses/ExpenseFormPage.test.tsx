@@ -101,4 +101,35 @@ describe('ExpenseFormPage', () => {
     expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
     expect(sent).toMatchObject({ splitType: 'DAYS', dayBasis: 'NIGHTS', shares: [{ participantId: 'p1', weight: 1 }, { participantId: 'p2', weight: 4 }] })
   })
+
+  it('un peso scritto in Pesi non diventa «giorni» passando a Presenza', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
+    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json(tripWeights)))
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }], '/trips/t1/expenses/new')
+    const user = userEvent.setup()
+    await user.click(await screen.findByRole('radio', { name: 'Pesi' }))
+    await user.clear(screen.getByLabelText('Peso di Vale'))
+    await user.type(screen.getByLabelText('Peso di Vale'), '7')
+    await user.click(screen.getByRole('radio', { name: 'Presenza' }))
+    expect(screen.getByLabelText('Giorni di Vale')).toHaveValue('3') // presenza reale: arriva il 3, viaggio 1–5
+  })
+
+  it('una spesa per peso già salvata, passata a Presenza, propone notti dalle date', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
+    const saved = {
+      id: 'e1', description: 'Casa', amount: 300, currency: 'EUR', date: '2026-11-01', category: 'LODGING', splitType: 'WEIGHT', dayBasis: null,
+      payerId: 'p2', payerName: 'Marco', createdBy: 'u2', createdAt: '2026-11-01T10:00:00Z',
+      shares: [{ participantId: 'p1', displayName: 'Vale', amount: 100, weight: 1 }, { participantId: 'p2', displayName: 'Marco', amount: 200, weight: 2 }],
+    }
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(tripWeights)),
+      http.get('http://localhost/api/trips/t1/expenses/e1', () => HttpResponse.json(saved)),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> }] }], '/trips/t1/expenses/e1/edit')
+    const user = userEvent.setup()
+    expect(await screen.findByLabelText('Peso di Marco')).toHaveValue('2') // in Pesi restano i pesi salvati
+    await user.click(screen.getByRole('radio', { name: 'Presenza' }))
+    expect(screen.getByLabelText('Notti di Vale')).toHaveValue('2')
+    expect(screen.getByLabelText('Notti di Marco')).toHaveValue('4')
+  })
 })

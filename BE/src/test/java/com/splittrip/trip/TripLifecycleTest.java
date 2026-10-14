@@ -180,4 +180,19 @@ class TripLifecycleTest extends IntegrationTest {
         TestTrips.join(mvc, marco, code);
         assertThat(TestTrips.participantOf(mvc, marco, tripId)).isEqualTo(marcoP);
     }
+
+    @Test
+    void viaggioInPianificazioneConUnaSpesaNelCestinoSiCancella() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        String marco = TestUsers.register(mvc, "Marco");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        TestTrips.join(mvc, marco, TestTrips.inviteCode(mvc, vale, tripId));
+        UUID valeP = TestTrips.participantOf(mvc, vale, tripId);
+        UUID marcoP = TestTrips.participantOf(mvc, marco, tripId);
+        UUID expenseId = TestExpenses.createEqual(mvc, vale, tripId, "Cena", "20.00", valeP, valeP, marcoP);
+        mvc.perform(delete("/api/trips/" + tripId + "/expenses/" + expenseId).header("Authorization", "Bearer " + vale))
+                .andExpect(status().isNoContent());
+        mvc.perform(delete("/api/trips/" + tripId).header("Authorization", "Bearer " + vale))
+                .andExpect(status().isNoContent());
+    }
 }

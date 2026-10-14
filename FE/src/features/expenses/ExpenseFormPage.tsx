@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useOutletContext, useParams } from 'react-router'
-import { CATEGORY_LABELS, type Expense, type ExpenseCategory } from '../../shared/api/types'
+import { CATEGORY_LABELS, type Expense, type ExpenseCategory, type SplitType } from '../../shared/api/types'
 import { Avatar } from '../../shared/ui/Avatar'
 import { Button } from '../../shared/ui/Button'
 import { CATEGORY_ICONS } from '../../shared/ui/categoryIcons'
@@ -52,10 +52,13 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
   const canEdit = canWrite && (!expense || expense.createdBy === me.userId || isOrganizer)
 
   const weighted = expense?.splitType === 'WEIGHT' || expense?.splitType === 'DAYS'
-  // I numeri scritti a mano non vengono ricalcolati; in modifica valgono quelli salvati sulla spesa
-  const [touched, setTouched] = useState<Set<number>>(() => new Set(weighted ? trip.participants.map((_, i) => i) : []))
+  // Numeri scritti a mano (o salvati sulla spesa) non vengono ricalcolati, ma solo nella modalità in cui sono nati:
+  // un peso non deve diventare «notti» passando da Pesi a Presenza
+  const [touched, setTouched] = useState<{ mode: SplitType; rows: Set<number> }>(() => ({
+    mode: expense?.splitType ?? 'EQUAL',
+    rows: new Set(weighted ? trip.participants.flatMap((p, i) => (expense.shares.some((s) => s.participantId === p.id) ? [i] : [])) : []),
+  }))
   const [basisTouched, setBasisTouched] = useState(expense?.splitType === 'DAYS')
-  const markTouched = (i: number) => setTouched((prev) => new Set(prev).add(i))
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ExpenseForm>({
     resolver: zodResolver(expenseSchema),
@@ -82,6 +85,8 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
   const category = watch('category')
   const dayBasis = watch('dayBasis')
   const isWeighted = splitType === 'WEIGHT' || splitType === 'DAYS'
+  const markTouched = (i: number) =>
+    setTouched((prev) => ({ mode: splitType, rows: new Set(prev.mode === splitType ? prev.rows : []).add(i) }))
 
   // Presenza: notti per l'alloggio, giorni per il resto, finché l'utente non sceglie (D-31)
   useEffect(() => {
@@ -91,8 +96,9 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
   // Precompila pesi o notti/giorni dal viaggio; il form propone, la spesa decide (D-33)
   useEffect(() => {
     if (splitType !== 'WEIGHT' && splitType !== 'DAYS') return
+    const manual = touched.mode === splitType ? touched.rows : new Set<number>()
     trip.participants.forEach((p, i) => {
-      if (touched.has(i)) return
+      if (manual.has(i)) return
       setValue(`shares.${i}.weight`, toInputNumber(splitType === 'DAYS' ? presence(trip, p, dayBasis) : p.defaultWeight))
     })
   }, [splitType, dayBasis, touched, trip, setValue])
