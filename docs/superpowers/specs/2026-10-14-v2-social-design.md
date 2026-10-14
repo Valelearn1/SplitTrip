@@ -165,7 +165,7 @@ Sotto `/api/trips/{tripId}` salvo dove indicato. Tutti richiedono il Bearer; `re
 | POST | `/todo-lists` | membro | `{title, type}` → 201; 409 se viaggio chiuso |
 | PATCH / DELETE | `/todo-lists/{lid}` | membro | `{title?}`; DELETE rimuove le voci |
 | POST | `/todo-lists/{lid}/items` | membro | `{text, assigneeParticipantId?}` → 201; 400 se il partecipante non è attivo nel viaggio |
-| PATCH / DELETE | `/todo-lists/{lid}/items/{iid}` | membro | `{text?, done?, assigneeParticipantId?}`; `assigneeParticipantId: null` toglie l'assegnazione (campo assente = non toccare, come `ParticipantPatchRequest`) |
+| PATCH / DELETE | `/todo-lists/{lid}/items/{iid}` | membro | `{text?, done?, assigneeParticipantId?, clearAssignee?}`; `clearAssignee: true` toglie l'assegnazione (campi assenti = non toccare, come `ParticipantPatchRequest`) |
 | GET | `/photos?kind=PHOTO\|RECEIPT&withLocation=true` | membro | metadati (`id, kind, expenseId, uploaderId, uploaderName, caption, takenAt, latitude, longitude, width, height, createdAt`), dalla più recente; default `kind=PHOTO` |
 | POST | `/photos` | membro | `multipart/form-data`: `file`, `caption?`, `takenAt?` (ISO), `latitude?`+`longitude?` (solo se consentito), `expenseId?` → `kind=RECEIPT`. 409 se esiste già uno scontrino per quella spesa o se si supera il limite; 409 se viaggio chiuso |
 | GET | `/photos/{pid}/image`, `/photos/{pid}/thumbnail` | membro | `image/jpeg`, `Cache-Control: private, max-age=31536000, immutable`, `ETag` = id |
