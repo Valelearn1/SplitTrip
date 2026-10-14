@@ -19,7 +19,7 @@ describe('downscale', () => {
     vi.stubGlobal('createImageBitmap', vi.fn(async () => ({ width: 4000, height: 3000, close })))
     const drawImage = vi.fn()
     const toBlob = vi.fn((cb: (b: Blob | null) => void, type: string, quality: number) => cb(new Blob(['x'], { type: `${type};q=${quality}` })))
-    const canvas = { width: 0, height: 0, getContext: () => ({ drawImage }), toBlob }
+    const canvas = { width: 0, height: 0, getContext: () => ({ drawImage, fillRect: vi.fn(), fillStyle: '' }), toBlob }
     const realCreate = document.createElement.bind(document)
     vi.spyOn(document, 'createElement').mockImplementation(((tag: string) => (tag === 'canvas' ? canvas : realCreate(tag))) as typeof document.createElement)
 
@@ -31,5 +31,22 @@ describe('downscale', () => {
     expect(toBlob.mock.calls[0][2]).toBe(0.85)
     expect(blob.size).toBeGreaterThan(0)
     expect(close).toHaveBeenCalled()
+  })
+
+  it('riempie di bianco prima di disegnare: un PNG trasparente non diventa nero nel JPEG', async () => {
+    vi.stubGlobal('createImageBitmap', vi.fn(async () => ({ width: 100, height: 50, close: vi.fn() })))
+    const calls: string[] = []
+    const ctx = {
+      fillStyle: '',
+      fillRect: vi.fn(() => calls.push(`fillRect ${ctx.fillStyle}`)),
+      drawImage: vi.fn(() => calls.push('drawImage')),
+    }
+    const canvas = { width: 0, height: 0, getContext: () => ctx, toBlob: (cb: (b: Blob | null) => void) => cb(new Blob(['x'])) }
+    const realCreate = document.createElement.bind(document)
+    vi.spyOn(document, 'createElement').mockImplementation(((tag: string) => (tag === 'canvas' ? canvas : realCreate(tag))) as typeof document.createElement)
+
+    await downscale(new File(['x'], 'a.png', { type: 'image/png' }))
+    expect(calls).toEqual(['fillRect #ffffff', 'drawImage'])
+    expect(ctx.fillRect).toHaveBeenCalledWith(0, 0, 100, 50)
   })
 })

@@ -25,7 +25,7 @@ class NotificationControllerTest extends IntegrationTest {
         String marco = TestUsers.register(mvc, "Marco");
         UUID tripId = TestTrips.create(mvc, vale, "Roma");
         String code = TestTrips.inviteCode(mvc, vale, tripId);
-        TestTrips.join(mvc, marco, code);                      // → Vale: «Marco è entrata nel viaggio»
+        TestTrips.join(mvc, marco, code);                      // → Vale: «Marco ora fa parte del viaggio»
         UUID valeP = TestTrips.participantOf(mvc, vale, tripId);
         UUID marcoP = TestTrips.participantOf(mvc, marco, tripId);
         String pina = mvc.perform(post("/api/trips/" + tripId + "/participants").header("Authorization", "Bearer " + vale)

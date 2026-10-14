@@ -1,6 +1,5 @@
 package com.splittrip.photo;
 
-import com.splittrip.common.AppException;
 import com.splittrip.common.BadRequestException;
 import com.splittrip.common.ConflictException;
 import com.splittrip.common.FieldException;
@@ -14,18 +13,15 @@ import com.splittrip.trip.Trip;
 import com.splittrip.trip.TripAccessService;
 import com.splittrip.trip.TripRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Semaphore;
 
 /**
  * Foto e scontrini (D-35). L'elaborazione dell'immagine avviene fuori transazione e al massimo due alla volta:
@@ -42,14 +38,15 @@ public class PhotoService {
     private final TripAccessService access;
     private final Clock clock;
     private final int maxPerTrip;
-    private final Semaphore slots = new Semaphore(2);
+    private final ImageSlots slots;
 
     public PhotoService(PhotoRepository photos, TripRepository trips, ExpenseRepository expenses, TripAccessService access,
-                        Clock clock, @Value("${app.photos.max-per-trip:200}") int maxPerTrip) {
+                        ImageSlots slots, Clock clock, @Value("${app.photos.max-per-trip:200}") int maxPerTrip) {
         this.photos = photos;
         this.trips = trips;
         this.expenses = expenses;
         this.access = access;
+        this.slots = slots;
         this.clock = clock;
         this.maxPerTrip = maxPerTrip;
     }
@@ -71,7 +68,7 @@ public class PhotoService {
             throw new ConflictException("Questo viaggio ha raggiunto il limite di " + maxPerTrip + " foto");
         }
 
-        ImageProcessor.Processed img = process(file);
+        ImageProcessor.Processed img = slots.process(file, ImageProcessor::process);
         String cleanCaption = caption == null || caption.isBlank() ? null : caption.strip();
         if (cleanCaption != null && cleanCaption.length() > 200) throw new FieldException("caption", "Al massimo 200 caratteri");
         Photo saved = photos.save(new Photo(trip, me.getUser(), kind, expenseId, img, cleanCaption, takenAt,
@@ -105,22 +102,6 @@ public class PhotoService {
             throw new ForbiddenException("Solo chi l'ha caricata o l'organizzatore può eliminarla");
         }
         photos.deleteById(photoId);
-    }
-
-    private ImageProcessor.Processed process(MultipartFile file) {
-        try {
-            slots.acquire();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new AppException(HttpStatus.SERVICE_UNAVAILABLE, "Server occupato", "Riprova tra qualche secondo");
-        }
-        try {
-            return ImageProcessor.process(file.getBytes());
-        } catch (IOException e) {
-            throw new InvalidImageException();
-        } finally {
-            slots.release();
-        }
     }
 
     /** Posizione solo con consenso: o entrambe le coordinate o nessuna, nei limiti geografici (D-35). */

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +30,12 @@ public class WeatherService {
     private static final Duration TTL = Duration.ofHours(1);
     private static final Duration FAILURE_TTL = Duration.ofMinutes(10);
 
-    private record Cached(Instant expiresAt, List<DayForecast> days) {}
+    /** La chiave comprende destinazione e date: se l'organizzatore le cambia, la cache non vale più. */
+    private record Cached(Instant expiresAt, String destination, LocalDate start, LocalDate end, List<DayForecast> days) {
+        boolean validFor(Trip t, Instant now) {
+            return expiresAt.isAfter(now) && destination.equals(t.getDestination()) && start.equals(t.getStartDate()) && end.equals(t.getEndDate());
+        }
+    }
 
     private final OpenMeteoClient openMeteo;
     private final TripRepository trips;
@@ -47,10 +53,10 @@ public class WeatherService {
     public List<DayForecast> forecast(UUID tripId, UUID userId) {
         access.requireMember(tripId, userId);
         Instant now = clock.instant();
-        Cached hit = cache.get(tripId);
-        if (hit != null && hit.expiresAt().isAfter(now)) return hit.days();
-
         Trip trip = trips.findById(tripId).orElseThrow();
+        Cached hit = cache.get(tripId);
+        if (hit != null && hit.validFor(trip, now)) return hit.days();
+
         try {
             Optional<Coordinates> where = coordinates(trip);
             List<DayForecast> days = where
@@ -59,13 +65,17 @@ public class WeatherService {
                     .stream()
                     .filter(d -> !d.date().isBefore(trip.getStartDate()) && !d.date().isAfter(trip.getEndDate()))
                     .toList();
-            cache.put(tripId, new Cached(now.plus(TTL), days));
+            cache.put(tripId, cached(trip, now.plus(TTL), days));
             return days;
         } catch (RuntimeException e) {
             log.warn("Meteo non disponibile per il viaggio {}: {}", tripId, e.getMessage());
-            cache.put(tripId, new Cached(now.plus(FAILURE_TTL), List.of()));
+            cache.put(tripId, cached(trip, now.plus(FAILURE_TTL), List.of()));
             return List.of();
         }
+    }
+
+    private static Cached cached(Trip trip, Instant expiresAt, List<DayForecast> days) {
+        return new Cached(expiresAt, trip.getDestination(), trip.getStartDate(), trip.getEndDate(), days);
     }
 
     /** Coordinate salvate sul viaggio; al primo uso le chiede al geocoding e le salva. */

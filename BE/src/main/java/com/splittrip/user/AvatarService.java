@@ -4,13 +4,12 @@ import com.splittrip.common.FieldException;
 import com.splittrip.common.NotFoundException;
 import com.splittrip.common.PayloadTooLargeException;
 import com.splittrip.photo.ImageProcessor;
-import com.splittrip.photo.InvalidImageException;
+import com.splittrip.photo.ImageSlots;
 import com.splittrip.trip.ParticipantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.Clock;
 import java.util.UUID;
 
@@ -23,33 +22,31 @@ public class AvatarService {
     private final UserAvatarRepository avatars;
     private final ParticipantRepository participants;
     private final UserService users;
+    private final ImageSlots slots;
     private final Clock clock;
 
-    public AvatarService(UserAvatarRepository avatars, ParticipantRepository participants, UserService users, Clock clock) {
+    public AvatarService(UserAvatarRepository avatars, ParticipantRepository participants, UserService users, ImageSlots slots, Clock clock) {
         this.avatars = avatars;
         this.participants = participants;
         this.users = users;
+        this.slots = slots;
         this.clock = clock;
     }
 
-    @Transactional
+    /** Come le foto: l'immagine si elabora fuori transazione e con gli stessi due posti (D-35). */
     public void set(UUID userId, MultipartFile file) {
         users.require(userId);
         if (file == null || file.isEmpty()) throw new FieldException("file", "Scegli una foto");
         if (file.getSize() > MAX_BYTES) throw new PayloadTooLargeException();
-        byte[] image;
-        try {
-            image = ImageProcessor.avatar(file.getBytes());
-        } catch (IOException e) {
-            throw new InvalidImageException();
-        }
+        byte[] image = slots.process(file, ImageProcessor::avatar);
         UserAvatar avatar = avatars.findById(userId).orElse(null);
         if (avatar == null) {
-            avatars.save(new UserAvatar(userId, image, clock.instant()));
+            avatar = new UserAvatar(userId, image, clock.instant());
         } else {
             avatar.setImage(image);
             avatar.setUpdatedAt(clock.instant());
         }
+        avatars.save(avatar);
     }
 
     @Transactional

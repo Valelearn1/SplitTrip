@@ -33,7 +33,11 @@ export async function downscale(file: Blob, maxSide = 1600, quality = 0.85): Pro
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
-  canvas.getContext('2d')!.drawImage(bitmap, 0, 0, width, height)
+  const ctx = canvas.getContext('2d')!
+  // Il JPEG non ha trasparenza: senza fondo bianco i pixel trasparenti di un PNG diventerebbero neri
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, width, height)
+  ctx.drawImage(bitmap, 0, 0, width, height)
   bitmap.close()
   return new Promise((resolve, reject) =>
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Impossibile preparare la foto'))), 'image/jpeg', quality))

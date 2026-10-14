@@ -100,8 +100,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 129 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 51 test
+cd BE && sh mvnw test   # 132 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 53 test
 ```
 
 Cosa coprono:

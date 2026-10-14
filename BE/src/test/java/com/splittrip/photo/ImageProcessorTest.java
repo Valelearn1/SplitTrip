@@ -104,4 +104,28 @@ class ImageProcessorTest {
         assertThat(p.image()[0] & 0xFF).isEqualTo(0xFF);
         assertThat(p.image()[1] & 0xFF).isEqualTo(0xD8);
     }
+
+    /** PNG valido di 10×10 con le dimensioni dichiarate nell'header (IHDR) cambiate: pochi byte, tanti pixel. */
+    static byte[] pngDeclaring(int w, int h) throws IOException {
+        byte[] b = png(10, 10, false);
+        java.nio.ByteBuffer.wrap(b, 16, 8).putInt(w).putInt(h);
+        java.util.zip.CRC32 crc = new java.util.zip.CRC32();
+        crc.update(b, 12, 17); // tipo del chunk + 13 byte di dati
+        java.nio.ByteBuffer.wrap(b, 29, 4).putInt((int) crc.getValue());
+        return b;
+    }
+
+    @Test
+    void troppiPixelSonoRifiutatiPrimaDiDecodificare() throws IOException {
+        byte[] bomb = pngDeclaring(30000, 30000); // pochi KB, ma 900 MP: decodificato saturerebbe la memoria
+        assertThatThrownBy(() -> ImageProcessor.process(bomb)).isInstanceOf(InvalidImageException.class).hasMessage("L'immagine è troppo grande");
+        assertThatThrownBy(() -> ImageProcessor.avatar(bomb)).isInstanceOf(InvalidImageException.class).hasMessage("L'immagine è troppo grande");
+    }
+
+    @Test
+    void unaFotoGrandeVieneDecodificataRidottaEProdottaNormalmente() throws IOException {
+        ImageProcessor.Processed p = ImageProcessor.process(jpeg(6000, 4000));
+        assertThat(p.width()).isEqualTo(1600);
+        assertThat(p.height()).isEqualTo(1067);
+    }
 }

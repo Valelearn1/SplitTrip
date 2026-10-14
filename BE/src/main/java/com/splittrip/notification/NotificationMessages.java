@@ -26,7 +26,7 @@ final class NotificationMessages {
                 : actorName + " ha registrato un tuo rimborso di " + money(amount) + " a " + otherName;
     }
 
-    static String joined(String name) { return name + " è entrata nel viaggio"; }
+    static String joined(String name) { return name + " ora fa parte del viaggio"; }
 
     static String todo(String actorName, String itemText, String listTitle) {
         String head = actorName + " ti ha assegnato «";

@@ -2,8 +2,11 @@ package com.splittrip.photo;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -12,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 
 /** Ridecodifica, ridimensiona e riscrive come JPEG senza metadati: nel DB entra solo ciò che produce il server (D-35). */
 public final class ImageProcessor {
@@ -20,6 +24,10 @@ public final class ImageProcessor {
     public static final int THUMB_SIDE = 300;
     public static final int AVATAR_SIDE = 256;
     private static final float QUALITY = 0.85f;
+    /** Oltre questa soglia l'immagine si rifiuta prima di decodificarla: pochi MB di PNG possono dichiarare miliardi di pixel. */
+    static final long MAX_PIXELS = 50_000_000L;
+    /** Le immagini grandi si decodificano già ridotte (un pixel ogni n) fino a questo lato: memoria limitata anche con foto da 48 MP. */
+    private static final int DECODE_SIDE = 2 * MAX_SIDE;
 
     public record Processed(byte[] image, byte[] thumbnail, int width, int height) {}
 
@@ -41,10 +49,23 @@ public final class ImageProcessor {
 
     private static BufferedImage decode(byte[] input) {
         if (!looksLikeImage(input)) throw new InvalidImageException();
-        try {
-            BufferedImage img = ImageIO.read(new ByteArrayInputStream(input));
-            if (img == null) throw new InvalidImageException();
-            return img;
+        try (ImageInputStream in = ImageIO.createImageInputStream(new ByteArrayInputStream(input))) {
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
+            if (!readers.hasNext()) throw new InvalidImageException();
+            ImageReader reader = readers.next();
+            try {
+                reader.setInput(in, true, true);
+                int w = reader.getWidth(0), h = reader.getHeight(0); // letti dall'header, senza decodificare
+                if ((long) w * h > MAX_PIXELS) throw new InvalidImageException("L'immagine è troppo grande");
+                int step = (Math.max(w, h) + DECODE_SIDE - 1) / DECODE_SIDE;
+                ImageReadParam param = reader.getDefaultReadParam();
+                param.setSourceSubsampling(step, step, 0, 0);
+                BufferedImage img = reader.read(0, param);
+                if (img == null) throw new InvalidImageException();
+                return img;
+            } finally {
+                reader.dispose();
+            }
         } catch (IOException e) {
             throw new InvalidImageException();
         }
