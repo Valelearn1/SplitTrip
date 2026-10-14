@@ -14,7 +14,7 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI splitTripOpenApi() {
         return new OpenAPI()
-                .info(new Info().title("SplitTrip API").version("1.0.0")
+                .info(new Info().title("SplitTrip API").version("1.5.0")
                         .description("Vacanze tra amici: spese divise, conti chiari. Registrati o fai login, poi clicca Authorize e incolla il token."))
                 .components(new Components().addSecuritySchemes("bearer",
                         new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))

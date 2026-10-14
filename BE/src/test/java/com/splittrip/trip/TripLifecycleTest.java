@@ -115,33 +115,4 @@ class TripLifecycleTest extends IntegrationTest {
                 .contentType(APPLICATION_JSON).content("{\"code\":\"" + old + "\"}"))
                 .andExpect(status().isNotFound());
     }
-
-    @Test
-    void regoleDiRimozioneDeiMembri() throws Exception {
-        String vale = TestUsers.register(mvc, "Vale");
-        String marco = TestUsers.register(mvc, "Marco");
-        String giulia = TestUsers.register(mvc, "Giulia");
-        UUID tripId = TestTrips.create(mvc, vale, "Roma");
-        String code = TestTrips.inviteCode(mvc, vale, tripId);
-        TestTrips.join(mvc, marco, code);
-        TestTrips.join(mvc, giulia, code);
-        UUID valeId = TestTrips.participantOf(mvc, vale, tripId);
-        UUID marcoId = TestTrips.participantOf(mvc, marco, tripId);
-        UUID giuliaId = TestTrips.participantOf(mvc, giulia, tripId);
-
-        // un membro non rimuove gli altri
-        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + giuliaId).header("Authorization", "Bearer " + marco))
-                .andExpect(status().isForbidden());
-        // l'organizzatore non si rimuove
-        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + valeId).header("Authorization", "Bearer " + vale))
-                .andExpect(status().isConflict());
-        // un membro può uscire
-        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + marcoId).header("Authorization", "Bearer " + marco))
-                .andExpect(status().isNoContent());
-        // l'organizzatore rimuove un membro
-        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + giuliaId).header("Authorization", "Bearer " + vale))
-                .andExpect(status().isNoContent());
-        mvc.perform(get("/api/trips/" + tripId).header("Authorization", "Bearer " + vale))
-                .andExpect(jsonPath("$.participants", hasSize(1)));
-    }
 }

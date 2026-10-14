@@ -74,10 +74,4 @@ public class TripController {
     public TripResponse regenerate(@CurrentUserId UUID userId, @PathVariable UUID tripId) {
         return trips.regenerateInviteCode(tripId, userId);
     }
-
-    @DeleteMapping("/{tripId}/participants/{participantId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void leave(@CurrentUserId UUID userId, @PathVariable UUID tripId, @PathVariable UUID participantId) {
-        trips.leave(tripId, userId, participantId);
-    }
 }
