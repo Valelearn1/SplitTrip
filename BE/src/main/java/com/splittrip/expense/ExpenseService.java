@@ -2,6 +2,7 @@ package com.splittrip.expense;
 
 import com.splittrip.common.BadRequestException;
 import com.splittrip.common.ConflictException;
+import com.splittrip.common.FieldException;
 import com.splittrip.common.ForbiddenException;
 import com.splittrip.common.NotFoundException;
 import com.splittrip.expense.dto.ExpenseRequest;
@@ -182,8 +183,27 @@ public class ExpenseService {
                 throw new BadRequestException("Tutti i partecipanti alla spesa devono far parte del viaggio");
             }
         }
+        if ((req.splitType() == SplitType.DAYS) != (req.dayBasis() != null)) {
+            throw new FieldException("dayBasis", "Indica se contare notti o giorni (solo con la divisione per presenza)");
+        }
         if (req.splitType() == SplitType.WEIGHT || req.splitType() == SplitType.DAYS) {
-            throw new BadRequestException("Tipo di divisione non ancora disponibile");
+            Map<UUID, BigDecimal> weights = new LinkedHashMap<>();
+            for (int i = 0; i < req.shares().size(); i++) {
+                ShareRequest s = req.shares().get(i);
+                if (s.weight() == null) {
+                    throw new FieldException("shares[" + i + "].weight", req.splitType() == SplitType.DAYS
+                            ? "Indica le notti o i giorni di ogni partecipante" : "Indica il peso di ogni partecipante");
+                }
+                weights.put(s.participantId(), s.weight().setScale(2, RoundingMode.HALF_UP));
+            }
+            return WeightedSplitter.split(req.amount(), weights).stream()
+                    .map(sh -> new ComputedShare(sh.participantId(), sh.amount(), weights.get(sh.participantId())))
+                    .toList();
+        }
+        for (int i = 0; i < req.shares().size(); i++) {
+            if (req.shares().get(i).weight() != null) {
+                throw new FieldException("shares[" + i + "].weight", "Il peso si usa solo con la divisione per peso o per presenza");
+            }
         }
         if (req.splitType() == SplitType.EQUAL) {
             return EqualSplitter.split(req.amount(), ids).stream()

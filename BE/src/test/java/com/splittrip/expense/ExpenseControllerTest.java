@@ -7,6 +7,7 @@ import com.splittrip.TestUsers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -161,6 +162,94 @@ class ExpenseControllerTest extends IntegrationTest {
                 .andExpect(status().isCreated());
         mvc.perform(delete("/api/trips/" + tripId + "/participants/" + marcoP).header("Authorization", "Bearer " + marco))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void divisionePerPesoConLaCoppiaCheContaPerDue() throws Exception {
+        mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
+                .contentType(APPLICATION_JSON).content("""
+                {"description":"Cena","amount":100.00,"date":"2026-11-02","category":"FOOD","payerId":"%s",
+                 "splitType":"WEIGHT","shares":[{"participantId":"%s","weight":2},{"participantId":"%s","weight":1},{"participantId":"%s","weight":1}]}
+                """.formatted(valeP, valeP, marcoP, giuliaP)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.splitType").value("WEIGHT"))
+                .andExpect(jsonPath("$.shares[?(@.participantId=='" + valeP + "')].amount").value(50.00))
+                .andExpect(jsonPath("$.shares[?(@.participantId=='" + valeP + "')].weight").value(2.00))
+                .andExpect(jsonPath("$.shares[?(@.participantId=='" + marcoP + "')].amount").value(25.00));
+    }
+
+    @Test
+    void divisionePerPresenzaSalvaNottiEBase() throws Exception {
+        mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
+                .contentType(APPLICATION_JSON).content("""
+                {"description":"Casa","amount":500.00,"date":"2026-11-01","category":"LODGING","payerId":"%s",
+                 "splitType":"DAYS","dayBasis":"NIGHTS","shares":[{"participantId":"%s","weight":5},{"participantId":"%s","weight":5},{"participantId":"%s","weight":3}]}
+                """.formatted(valeP, valeP, marcoP, giuliaP)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.dayBasis").value("NIGHTS"))
+                .andExpect(jsonPath("$.shares[?(@.participantId=='" + giuliaP + "')].amount").value(115.38))
+                .andExpect(jsonPath("$.shares[?(@.participantId=='" + giuliaP + "')].weight").value(3.00))
+                .andExpect(jsonPath("$.shares[?(@.participantId=='" + valeP + "')].amount").value(192.31));
+    }
+
+    @Test
+    void presenzaSenzaBaseEPesoMancanteDanno400() throws Exception {
+        mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
+                .contentType(APPLICATION_JSON).content("""
+                {"description":"Casa","amount":100.00,"date":"2026-11-01","category":"LODGING","payerId":"%s",
+                 "splitType":"DAYS","shares":[{"participantId":"%s","weight":2}]}
+                """.formatted(valeP, valeP)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].field").value("dayBasis"));
+        mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
+                .contentType(APPLICATION_JSON).content("""
+                {"description":"Cena","amount":100.00,"date":"2026-11-02","category":"FOOD","payerId":"%s",
+                 "splitType":"WEIGHT","shares":[{"participantId":"%s","weight":2},{"participantId":"%s"}]}
+                """.formatted(valeP, valeP, marcoP)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].field").value(containsString("weight")));
+    }
+
+    @Test
+    void pesoEnormeOConTreDecimaliDa400() throws Exception {
+        for (String weight : List.of("1000000", "1.005")) {
+            mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
+                    .contentType(APPLICATION_JSON).content("""
+                    {"description":"Cena","amount":100.00,"date":"2026-11-02","category":"FOOD","payerId":"%s",
+                     "splitType":"WEIGHT","shares":[{"participantId":"%s","weight":%s}]}
+                    """.formatted(valeP, valeP, weight)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errors[0].field").value(containsString("weight")));
+        }
+    }
+
+    @Test
+    void tuttiAZeroNottiDa400() throws Exception {
+        mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
+                .contentType(APPLICATION_JSON).content("""
+                {"description":"Casa","amount":100.00,"date":"2026-11-01","category":"LODGING","payerId":"%s",
+                 "splitType":"DAYS","dayBasis":"NIGHTS","shares":[{"participantId":"%s","weight":0},{"participantId":"%s","weight":0}]}
+                """.formatted(valeP, valeP, marcoP)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(containsString("maggiore di zero")));
+    }
+
+    @Test
+    void modificaDiUnaSpesaPerPesoSovrascriveIPesi() throws Exception {
+        String created = mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
+                .contentType(APPLICATION_JSON).content("""
+                {"description":"Cena","amount":100.00,"date":"2026-11-02","category":"FOOD","payerId":"%s",
+                 "splitType":"WEIGHT","shares":[{"participantId":"%s","weight":2},{"participantId":"%s","weight":1}]}
+                """.formatted(valeP, valeP, marcoP))).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        UUID id = UUID.fromString(TestUsers.extract(created, "\"id\":\"([^\"]+)\""));
+        mvc.perform(put("/api/trips/" + tripId + "/expenses/" + id).header("Authorization", "Bearer " + vale)
+                .contentType(APPLICATION_JSON).content("""
+                {"description":"Cena","amount":100.00,"date":"2026-11-02","category":"FOOD","payerId":"%s",
+                 "splitType":"WEIGHT","shares":[{"participantId":"%s","weight":1},{"participantId":"%s","weight":3}]}
+                """.formatted(valeP, valeP, marcoP)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.shares[?(@.participantId=='" + marcoP + "')].amount").value(75.00))
+                .andExpect(jsonPath("$.shares[?(@.participantId=='" + marcoP + "')].weight").value(3.00));
     }
 
     @Test

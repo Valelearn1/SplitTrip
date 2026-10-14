@@ -21,6 +21,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(FieldException.class)
+    public ProblemDetail handleField(FieldException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Alcuni campi non sono validi");
+        pd.setTitle(ex.getTitle());
+        pd.setProperty("errors", List.of(Map.of("field", ex.getField(), "message", ex.getMessage())));
+        return pd;
+    }
+
     @ExceptionHandler(AppException.class)
     public ProblemDetail handleApp(AppException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(ex.getStatus(), ex.getMessage());
