@@ -43,6 +43,8 @@ describe('TripDashboardPage', () => {
     expect(screen.getByText(/120,00\s€/)).toBeInTheDocument()
     expect(screen.getByText('ROMA-7K2P')).toBeInTheDocument()
     expect(screen.getByText('Vale')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Impostazioni' })).toBeInTheDocument() // anche i membri: «La mia partecipazione»
+    expect(screen.getByRole('link', { name: 'Impostazioni del viaggio' })).toBeInTheDocument() // anche i membri: «La mia partecipazione»
+    expect(screen.getByRole('link', { name: 'Liste' })).toHaveAttribute('href', '/trips/t1/lists')
+    expect(screen.getByRole('link', { name: 'Foto' })).toHaveAttribute('href', '/trips/t1/photos')
   })
 })

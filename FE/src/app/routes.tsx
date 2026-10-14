@@ -12,6 +12,10 @@ import { TripDashboardPage } from '../features/trips/TripDashboardPage'
 import { TripLayout } from '../features/trips/TripLayout'
 import { TripSettingsPage } from '../features/trips/TripSettingsPage'
 import { TripsPage } from '../features/trips/TripsPage'
+import { NotificationsPage } from '../features/notifications/NotificationsPage'
+import { PhotosPage } from '../features/photos/PhotosPage'
+import { ProfilePage } from '../features/profile/ProfilePage'
+import { TodoListsPage } from '../features/todo/TodoListsPage'
 import { Layout } from './Layout'
 import { NotFoundPage } from './NotFoundPage'
 import { RequireAuth } from './RequireAuth'
@@ -30,6 +34,8 @@ export const routes: RouteObject[] = [
           { path: '/trips/new', element: <NewTripPage /> },
           { path: '/join', element: <JoinPage /> },
           { path: '/join/:code', element: <JoinPage /> },
+          { path: '/notifications', element: <NotificationsPage /> },
+          { path: '/profile', element: <ProfilePage /> },
           {
             path: '/trips/:tripId',
             element: <TripLayout />,
@@ -42,6 +48,8 @@ export const routes: RouteObject[] = [
               { path: 'balances', element: <BalancesPage /> },
               { path: 'settlements/new', element: <SettlementFormPage /> },
               { path: 'settings', element: <TripSettingsPage /> },
+              { path: 'lists', element: <TodoListsPage /> },
+              { path: 'photos', element: <PhotosPage /> },
             ],
           },
         ],

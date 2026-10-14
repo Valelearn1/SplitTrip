@@ -1,11 +1,11 @@
-export type User = { id: string; email: string; displayName: string }
+export type User = { id: string; email: string; displayName: string; hasAvatar: boolean }
 export type AuthResponse = { token: string; user: User }
 
 export type TripStatus = 'PLANNING' | 'ONGOING' | 'CLOSED'
 export type MemberRole = 'ORGANIZER' | 'MEMBER'
 export type Participant = {
   id: string; userId: string | null; displayName: string; role: MemberRole
-  defaultWeight: number; arrivalDate: string | null; departureDate: string | null
+  defaultWeight: number; arrivalDate: string | null; departureDate: string | null; hasAvatar: boolean
 }
 export type TripSummary = {
   id: string; name: string; destination: string; startDate: string; endDate: string
@@ -24,6 +24,7 @@ export type Share = { participantId: string; displayName: string; amount: number
 export type Expense = {
   id: string; description: string; amount: number; currency: string; date: string; category: ExpenseCategory
   splitType: SplitType; dayBasis: DayBasis | null; payerId: string; payerName: string; createdBy: string; shares: Share[]; createdAt: string
+  receiptPhotoId: string | null
 }
 export type ExpenseInput = {
   description: string; amount: number; date: string; category: ExpenseCategory; payerId: string
@@ -48,3 +49,24 @@ export const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
 export const STATUS_LABELS: Record<TripStatus, string> = {
   PLANNING: 'In pianificazione', ONGOING: 'In corso', CLOSED: 'Chiuso',
 }
+
+export type TodoListType = 'PACKING' | 'GENERAL'
+export type TodoItem = {
+  id: string; text: string; done: boolean; assigneeParticipantId: string | null; assigneeName: string | null
+  assigneeLeft: boolean; createdBy: string; createdAt: string
+}
+export type TodoList = { id: string; title: string; type: TodoListType; createdAt: string; items: TodoItem[] }
+
+export type PhotoKind = 'PHOTO' | 'RECEIPT'
+export type Photo = {
+  id: string; kind: PhotoKind; expenseId: string | null; uploaderId: string; uploaderName: string; caption: string | null
+  takenAt: string | null; latitude: number | null; longitude: number | null; width: number; height: number; createdAt: string
+}
+
+export type NotificationType = 'EXPENSE_ADDED' | 'SETTLEMENT_ADDED' | 'PARTICIPANT_JOINED' | 'TODO_ASSIGNED'
+export type AppNotification = {
+  id: string; tripId: string; type: NotificationType; message: string; link: string; readAt: string | null; createdAt: string
+}
+
+export type WeatherDay = { date: string; code: number; tMin: number; tMax: number }
+export type Weather = { days: WeatherDay[] }

@@ -30,14 +30,16 @@ type Options = { method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'; body?: un
 
 export async function api<T>(path: string, options: Options = {}): Promise<T> {
   const headers: Record<string, string> = {}
-  if (options.body !== undefined) headers['Content-Type'] = 'application/json'
+  // con FormData il browser imposta da solo multipart/form-data e il boundary
+  const isForm = options.body instanceof FormData
+  if (options.body !== undefined && !isForm) headers['Content-Type'] = 'application/json'
   const token = getToken()
   if (token) headers.Authorization = `Bearer ${token}`
 
   const res = await fetch(BASE + path, {
     method: options.method ?? 'GET',
     headers,
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    body: options.body === undefined ? undefined : isForm ? (options.body as FormData) : JSON.stringify(options.body),
     signal: options.signal,
   })
 
@@ -50,4 +52,15 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
     throw new ApiError(res.status, data?.title ?? 'Errore', data?.detail ?? `Errore ${res.status}`, data?.errors ?? [])
   }
   return data as T
+}
+
+/** Scarica un'immagine protetta dal Bearer; da mostrare con URL.createObjectURL (vedi AuthImage). */
+export async function apiBlob(path: string): Promise<Blob> {
+  const token = getToken()
+  const res = await fetch(BASE + path, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+  if (!res.ok) {
+    if (res.status === 401) onUnauthorized()
+    throw new ApiError(res.status, 'Errore', `Immagine non disponibile (${res.status})`)
+  }
+  return res.blob()
 }
