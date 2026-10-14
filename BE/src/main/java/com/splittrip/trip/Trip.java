@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -42,6 +43,10 @@ public class Trip {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id")
     private User owner;
+
+    /** Coordinate della destinazione per il meteo, calcolate al primo uso (D-37). */
+    @Setter @Column(precision = 9, scale = 6) private BigDecimal latitude;
+    @Setter @Column(precision = 9, scale = 6) private BigDecimal longitude;
 
     @Column(name = "created_at", nullable = false, updatable = false) private Instant createdAt;
     @Setter @Column(name = "updated_at", nullable = false) private Instant updatedAt;

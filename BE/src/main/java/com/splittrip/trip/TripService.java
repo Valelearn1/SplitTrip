@@ -89,7 +89,11 @@ public class TripService {
         access.requireOrganizer(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
         if (req.name() != null) trip.setName(req.name().strip());
-        if (req.destination() != null) trip.setDestination(req.destination().strip());
+        if (req.destination() != null && !req.destination().strip().equals(trip.getDestination())) {
+            trip.setDestination(req.destination().strip());
+            trip.setLatitude(null);   // il meteo ricalcola le coordinate della nuova destinazione
+            trip.setLongitude(null);
+        }
         if (req.startDate() != null) trip.setStartDate(req.startDate());
         if (req.endDate() != null) trip.setEndDate(req.endDate());
         validateDates(trip.getStartDate(), trip.getEndDate());
