@@ -1,6 +1,7 @@
 package com.splittrip;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -61,5 +63,19 @@ class SecurityHardeningTest extends IntegrationTest {
         mvc.perform(get("/api/trips/non-un-uuid").header("Authorization", "Bearer " + vale))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(not(containsString("Exception"))));
+    }
+
+    @Test
+    void xssNellaDidascaliaDellaFotoRestaTesto() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        String payload = "<img src=x onerror=alert(1)>";
+        mvc.perform(multipart("/api/trips/" + tripId + "/photos")
+                        .file(new MockMultipartFile("file", "f.jpg", "image/jpeg", com.splittrip.photo.PhotoControllerTest.jpeg(50, 50)))
+                        .param("caption", payload).header("Authorization", "Bearer " + vale))
+                .andExpect(status().isCreated());
+        mvc.perform(get("/api/trips/" + tripId + "/photos").header("Authorization", "Bearer " + vale))
+                .andExpect(header().string("Content-Type", containsString("application/json")))
+                .andExpect(jsonPath("$[0].caption").value(payload));
     }
 }

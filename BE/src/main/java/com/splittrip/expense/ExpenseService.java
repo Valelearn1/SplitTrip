@@ -10,6 +10,7 @@ import com.splittrip.expense.dto.ExpenseRequest;
 import com.splittrip.expense.dto.ExpenseResponse;
 import com.splittrip.expense.dto.ShareRequest;
 import com.splittrip.expense.dto.TrashedExpenseResponse;
+import com.splittrip.photo.PhotoRepository;
 import com.splittrip.trip.Participant;
 import com.splittrip.trip.ParticipantRepository;
 import com.splittrip.trip.Trip;
@@ -43,18 +44,20 @@ public class ExpenseService {
     private final TripRepository trips;
     private final ParticipantRepository participants;
     private final TripAccessService access;
+    private final PhotoRepository photos;
     private final ApplicationEventPublisher events;
     private final Clock clock;
 
     public ExpenseService(ExpenseRepository expenses, ExpenseShareRepository shares, ExpenseTrashRepository trash,
                           TripRepository trips, ParticipantRepository participants, TripAccessService access,
-                          ApplicationEventPublisher events, Clock clock) {
+                          PhotoRepository photos, ApplicationEventPublisher events, Clock clock) {
         this.expenses = expenses;
         this.shares = shares;
         this.trash = trash;
         this.trips = trips;
         this.participants = participants;
         this.access = access;
+        this.photos = photos;
         this.events = events;
         this.clock = clock;
     }
@@ -62,16 +65,17 @@ public class ExpenseService {
     @Transactional(readOnly = true)
     public List<ExpenseResponse> list(UUID tripId, UUID userId, ExpenseCategory category) {
         access.requireMember(tripId, userId);
+        Map<UUID, UUID> receipts = photos.findReceiptIdsByTripId(tripId);
         return expenses.findAllByTripIdWithShares(tripId).stream()
                 .filter(e -> category == null || e.getCategory() == category)
-                .map(ExpenseResponse::from)
+                .map(e -> ExpenseResponse.from(e, receipts.get(e.getId())))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public ExpenseResponse get(UUID tripId, UUID userId, UUID expenseId) {
         access.requireMember(tripId, userId);
-        return ExpenseResponse.from(require(tripId, expenseId));
+        return ExpenseResponse.from(require(tripId, expenseId), photos.findReceiptIdsByTripId(tripId).get(expenseId));
     }
 
     @Transactional
