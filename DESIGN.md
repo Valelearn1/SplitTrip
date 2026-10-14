@@ -349,9 +349,10 @@ Pieni, alti e decisi: si premono con il pollice.
 - **Nota sotto un campo (v1.5):** `.hint`, 0.875rem `muted`, attaccata al campo sopra (margine negativo) e staccata 16 px dal successivo. Spiega il significato del valore (es. «1 = una persona, 2 = una coppia…»), non ripete l'etichetta.
 
 ### Navigation
-- **Header:** bianco, sticky, marchio teal con icona valigia piena a sinistra; a destra avatar «tu», nome (nascosto su mobile) ed «Esci» secondario piccolo.
-- **Tab del viaggio:** desktop, barra segmentata `surface-2` con tab alti 44 px, 0.9375rem/600 `ink-2`, attivo bianco con testo teal e ombra card. Mobile, tab bar fissa in basso, icona 24 px sopra etichetta 0.6875rem, tab alti 52 px, attivo su `teal-tint`. Le voci non ancora disponibili usano `ink-3` a opacità 0.7 e la nota «presto».
-- **FAB:** cerchio teal da 60 px con «+» da 30 px e ombra galleggiante; hover `teal-2` e scala 1.04. Vive nelle liste (viaggi, spese), non nella dashboard.
+- **Header:** bianco, sticky, marchio teal con icona valigia piena a sinistra; a destra campanella, avatar «tu» (link al profilo), nome (nascosto su mobile) ed «Esci» secondario piccolo.
+- **Campanella (v2):** bottone rotondo 44 px con icona 24 px `ink-2`, hover `surface-1`; il contatore dei non letti è una pillola `coral` 18 px con numero bianco 0.6875rem/700 in alto a destra, e il nome accessibile dice il numero a parole («Notifiche, 2 non lette»).
+- **Tab del viaggio:** desktop, barra segmentata `surface-2` con tab alti 44 px, 0.9375rem/600 `ink-2`, attivo bianco con testo teal e ombra card. Mobile, tab bar fissa in basso, icona 24 px sopra etichetta 0.6875rem, tab alti 52 px, attivo su `teal-tint`. Cinque tab (v2): Panoramica, Spese, Saldi, Liste, Foto; le impostazioni del viaggio stanno in un bottone ingranaggio 44 px nell'intestazione (`aria-label` «Impostazioni del viaggio»), non in una sesta tab.
+- **FAB:** cerchio teal da 60 px con «+» da 30 px e ombra galleggiante; hover `teal-2` e scala 1.04. Vive nelle liste (viaggi, spese, foto), non nella dashboard. Nella pagina Foto l'icona è la fotocamera con «+».
 
 ### Pillola di saldo (signature)
 Pillola (padding 4/10/4/8 px, 0.875rem/600) con freccia Material Symbols da 18 px e testo: positiva `teal` su `teal-tint` con freccia in su, negativa `coral` su `coral-tint` con freccia in giù, in pari `ink-2` su `surface-2` con spunta. Sta sempre accanto a un importo con segno; in terza persona dice «Deve ricevere / Deve dare / In pari».
@@ -368,6 +369,30 @@ Binario `surface-2` alto 8 px, rientrato di 52 px per allinearsi al testo dopo l
 
 ### Stati vuoti, spinner, banner
 Stato vuoto centrato con icona da 40 px in un cerchio `teal-tint` da 72 px, titolo `h2` e azione. Spinner: anello 18 px `surface-3` con arco teal e testo `ink-3`. Banner di risveglio del server su `amber-tint` con testo `amber`.
+
+### Card lista (v2)
+Una `card` per lista: titolo `h3` 1.0625rem/700 `ink` con icona teal (valigia per «Valigia», spunta per le liste generali), contatore «2/5 fatte» a pillola e azioni piccole (rinomina, elimina) a destra. Ogni voce è una riga con checkbox `flex:none` e testo; la voce fatta è barrata in `ink-3`. Le azioni della voce (select dell'assegnatario `assign-select`, 40 px, raggio 10 px, fondo `surface-1`, e cestino) su mobile vanno sulla riga sotto, allineate a destra: il testo ha tutta la larghezza. L'assegnatario si legge nella select, senza avatar ripetuto accanto.
+
+### Griglia foto e visualizzatore (v2)
+Griglia a 3 colonne con gap 4 px, miniature quadrate (`object-fit: cover`) a raggio 10 px; ogni miniatura è un bottone con anello di focus teal. Mentre l'immagine protetta si scarica, al suo posto c'è un riquadro `surface-1` della stessa misura (`img-placeholder`), così la griglia non salta. Il visualizzatore è la modale con l'immagine `contain` (al massimo 70vh) e sotto «Caricata da … · data» in `muted`.
+
+### Mappa e popup (v2)
+Mappa OpenStreetMap alta 60vh (minimo 320 px) in un riquadro a raggio 16 px con bordo `line`; `isolation: isolate` tiene i livelli di Leaflet sotto la tab bar fissa. I segnaposto sono cerchi teal pieni da 10 px con bordo bianco 2 px, non le puntine blu di default. Il popup mostra la miniatura 160×120 a raggio 8 px e la didascalia, ed è un bottone che apre il visualizzatore. Sotto la mappa le stesse foto sono un elenco di link testuali (didascalia, data, autore): la mappa non è mai l'unico accesso. Senza foto con posizione, al posto della mappa c'è una frase che spiega come aggiungerla.
+
+### Caricamento foto (v2)
+Modale «Carica foto» con «Scegli dal telefono» secondario e una riga per ogni foto scelta: miniatura, e se la foto ha il GPS una checkbox «Mostra sulla mappa» non spuntata (la posizione si condivide solo per scelta). Il bottone primario dice «Carica 3 foto» con il numero, «Carica foto» disattivato quando non c'è niente da caricare. Le foto si riducono sul telefono prima dell'invio.
+
+### Scontrino (v2)
+Nel form della spesa, miniatura 120×160 a raggio 10 px con bordo `line` e i bottoni piccoli «Sostituisci lo scontrino» / «Rimuovi»; nell'elenco spese un'icona ricevuta `ink-3` dopo la descrizione dice che lo scontrino c'è, con etichetta «con scontrino» per i lettori di schermo.
+
+### Card meteo (v2)
+Nella panoramica, una fila orizzontale di giorni (scorre su mobile, senza barra visibile): ogni giorno è un riquadro `surface-1` a raggio 12 px con giorno abbreviato 0.8125rem/600 `ink-2`, icona Material Symbols 28 px teal, descrizione a parole per i lettori di schermo e minima/massima in cifre tabulari. Se il servizio non risponde la card non compare: il meteo è un extra, mai un errore.
+
+### Select (v2)
+`.select`: stessa famiglia dei campi (48 px, raggio 12 px, fondo `surface-1`, bordo `surface-3`, 16 px), focus su bianco con bordo teal. Le opzioni dicono codice e nome per esteso («EUR — Euro»), con il nome dalla lingua del browser (`Intl.DisplayNames`).
+
+### Foto profilo (v2)
+Dove c'è una foto profilo il cerchio delle iniziali diventa l'immagine ritagliata a cerchio, stessa misura e stesso anello per «tu»; senza foto restano le iniziali. Nel profilo l'avatar è grande, 88 px.
 
 ### Modale
 `<dialog>` bianco, raggio 16 px, padding 24 px, larghezza massima 420 px, ombra modale e backdrop d'inchiostro al 45%; azioni allineate a destra.

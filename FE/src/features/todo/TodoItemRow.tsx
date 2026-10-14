@@ -1,5 +1,4 @@
 import type { Participant, TodoItem } from '../../shared/api/types'
-import { Avatar } from '../../shared/ui/Avatar'
 import { Icon } from '../../shared/ui/Icon'
 
 type Props = {
@@ -22,7 +21,6 @@ export function TodoItemRow({ item, participants, canEdit, onToggle, onAssign, o
         {item.done && <span className="sr-only"> fatto</span>}
       </label>
       <span className="row-actions">
-        {item.assigneeName && <Avatar name={item.assigneeName} size="sm" />}
         <select
           aria-label={`Assegna ${item.text}`}
           className="assign-select"

@@ -301,9 +301,12 @@ fieldset.field.card { padding: var(--space-4); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 /* v2: liste */
-.todo-title { display: inline-flex; align-items: center; gap: var(--space-2); margin: 0; }
+.todo-title { display: inline-flex; align-items: center; gap: var(--space-2); margin: 0; color: var(--ink); font-size: 1.0625rem; font-weight: 700; }
 .todo-title .msi { color: var(--teal); }
 .todo-item .check { flex: 1; min-width: 0; }
+.todo-item .check input { flex: none; }
+/* sul telefono: testo su tutta la riga, assegnatario ed elimina sotto, allineati a destra */
+@media (max-width: 719px) { .todo-item .check { flex-basis: 100%; } .todo-item .row-actions { margin-left: auto; } }
 .todo-item.done .check > span:first-of-type { text-decoration: line-through; color: var(--ink-3); }
 .assign-select { min-height: 40px; max-width: 150px; padding: 0 8px; border: 1px solid var(--surface-3); border-radius: 10px; background: var(--surface-1); font: inherit; font-size: 0.9375rem; }
 .add-item { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
@@ -315,7 +318,7 @@ fieldset.field.card { padding: var(--space-4); }
 .photo-tile { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 10px; overflow: hidden; }
 .photo-tile img, .photo-tile .img-placeholder { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 0; }
 .photo-tile:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.photo-map { height: 60vh; min-height: 320px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); }
+.photo-map { position: relative; isolation: isolate; height: 60vh; min-height: 320px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); }
 .photo-map .leaflet-container { height: 100%; width: 100%; font: inherit; }
 .map-popup { display: grid; gap: 6px; width: 160px; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; font: inherit; color: var(--ink); }
 .map-popup img, .map-popup .img-placeholder { width: 160px; height: 120px; object-fit: cover; border-radius: 8px; }
@@ -345,3 +348,5 @@ fieldset.field.card { padding: var(--space-4); }
 .avatar-photo img, .avatar-photo .img-placeholder { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; aspect-ratio: auto; }
 .avatar-xl { width: 88px; height: 88px; font-size: 1.75rem; }
 .profile { max-width: 560px; }
+.select { min-height: 48px; padding: 0 12px; border: 1px solid var(--surface-3); border-radius: 12px; background: var(--surface-1); font: inherit; font-size: 1rem; color: var(--ink); }
+.select:focus { background: var(--surface); border-color: var(--teal); }

@@ -22,6 +22,12 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 🔁 **Rimborsi** registrabili con un tap da «Salda»
 - 🗑️ **Cestino** delle spese con ripristino (organizzatore)
 - 🔒 Viaggio chiuso in **sola lettura**: i conti restano consultabili
+- ✅ **Liste condivise** (valigia e cose da fare) con voci **assegnabili** a una persona e il filtro «Solo le mie»
+- 📷 **Foto del viaggio** in griglia e **sulla mappa** (OpenStreetMap): la posizione GPS si mostra solo se chi carica lo sceglie
+- 🧾 **Scontrino** fotografato e allegato alla spesa
+- 🔔 **Notifiche** in-app: nuova spesa, rimborso ricevuto, nuovo partecipante, voce assegnata a te
+- 🌤️ **Meteo della destinazione** nei giorni del viaggio (Open-Meteo)
+- 🙂 **Foto profilo**, visibile solo a chi viaggia con te
 - ♿ Interfaccia **mobile-first e accessibile**: ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore
 
 ## 📸 Screenshot
@@ -29,6 +35,10 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 | Dashboard del viaggio | Nuova spesa | Saldi |
 |---|---|---|
 | ![Dashboard mobile](docs/screenshots/mobile-dashboard.png) | ![Form nuova spesa](docs/screenshots/mobile-expense-form.png) | ![Saldi e pareggio](docs/screenshots/mobile-balances.png) |
+
+| Liste condivise | Foto sulla mappa |
+|---|---|
+| ![Liste con voci assegnate](docs/screenshots/mobile-lists.png) | ![Mappa delle foto](docs/screenshots/mobile-photos-map.png) |
 
 ![Dashboard desktop](docs/screenshots/desktop-dashboard.png)
 
@@ -38,7 +48,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 |---|---|---|
 | **v1 Core** | auth, viaggi, spese, rimborsi, saldi | ✅ |
 | **v1.5 Divisioni smart** | divisione per presenza e per peso, partecipanti senza account rivendicabili, modello dati pronto per multi-valuta | ✅ |
-| **v2 Social** | to-do e valigia condivisa, foto con mappa, notifiche | 📋 |
+| **v2 Social** | liste condivise con assegnatario, foto con mappa, scontrino sulla spesa, notifiche in-app, meteo, foto profilo | ✅ |
 | **v3 Live** | chat di gruppo e notifiche in tempo reale (WebSocket) | 📋 |
 
 La visione di prodotto oltre il capstone (ospiti senza registrazione, multi-valuta, scontrino diviso per voce, riepilogo condivisibile): [`docs/ROADMAP.md`](docs/ROADMAP.md).
@@ -47,9 +57,9 @@ La visione di prodotto oltre il capstone (ospiti senza registrazione, multi-valu
 
 | Livello | Tecnologie |
 |---|---|
-| **Backend** | Java 25, Spring Boot 4.1 (WebMVC, Data JPA / Hibernate 7, Security 7 + OAuth2 Resource Server, Validation, Actuator), Flyway, springdoc-openapi |
+| **Backend** | Java 25, Spring Boot 4.1 (WebMVC, Data JPA / Hibernate 7, Security 7 + OAuth2 Resource Server, Validation, Actuator), Flyway, springdoc-openapi, ImageIO + TwelveMonkeys (WebP) |
 | **Database** | PostgreSQL 16 |
-| **Frontend** | React 19, TypeScript, Vite, React Router, TanStack Query, React Hook Form + Zod, date-fns |
+| **Frontend** | React 19, TypeScript, Vite, React Router, TanStack Query, React Hook Form + Zod, date-fns, react-leaflet + OpenStreetMap, exifr |
 | **Design** | DM Sans, Material Symbols, token CSS (nessun framework CSS) — sistema documentato in [`DESIGN.md`](DESIGN.md) |
 | **Test** | JUnit 5, Mockito, Testcontainers, MockMvc · Vitest, Testing Library, MSW |
 | **Deploy** | Render (backend Docker, frontend statico, Postgres) via [`render.yaml`](render.yaml) |
@@ -90,8 +100,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 100 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 37 test
+cd BE && sh mvnw test   # 129 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 51 test
 ```
 
 Cosa coprono:
@@ -100,7 +110,10 @@ Cosa coprono:
 - 🗃️ **migrazione dei dati**: test che applica la V1, inserisce dati reali (anche un ex membro nel cestino) e verifica la V2
 - 🔄 **flussi API end-to-end** su Postgres reale (Testcontainers): registrazione → viaggio → invito → spese → rimborsi → saldi
 - 🔒 **sicurezza**: 401/403, SQL injection, XSS, id utente preso solo dal token, nessuno stack trace negli errori
-- 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda»
+- 🖼️ **immagini**: riscrittura lato server (niente EXIF), PNG trasparente su bianco, file finti rifiutati, limite di dimensione e di numero
+- 🔔 **notifiche**: un evento per azione, mai a chi l'ha fatta, scritte solo dopo il commit
+- 🌤️ **meteo**: servizio giù o lento → card vuota, mai un errore
+- 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda», liste, caricamento foto col consenso alla posizione, campanella
 
 Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il codice.
 
@@ -115,6 +128,7 @@ Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il cod
 | **Password** | BCrypt, mai in chiaro; messaggio di errore generico al login |
 | **Dati personali** | solo email e nome; il token contiene solo l'id utente; segreti in variabili d'ambiente; HTTPS su Render |
 | **Autorizzazione** | ogni operazione verifica l'appartenenza al viaggio; l'id utente viene sempre dal token, mai dal body |
+| **Immagini** | il server decodifica e riscrive ogni foto in JPEG (via EXIF e metadati, file finti rifiutati dal contenuto, non dal nome); la posizione si salva solo con il consenso esplicito di chi carica; le immagini si scaricano con il token (`Authorization: Bearer`), mai da URL pubblici; limiti di 3 MB a file e 200 foto a viaggio |
 
 ## 📐 Progettazione
 
@@ -122,7 +136,7 @@ Il progetto è sviluppato con un metodo **spec-driven**: prima la specifica, poi
 
 | Documento | Contenuto |
 |---|---|
-| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifiche di design: v1 (modello dati, motore dei saldi, API, sicurezza, frontend) e v1.5 (partecipanti, peso e presenza) |
+| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifiche di design: v1 (modello dati, motore dei saldi, API, sicurezza, frontend), v1.5 (partecipanti, peso e presenza) e v2 (liste, foto, notifiche, meteo) |
 | [`docs/superpowers/plans/`](docs/superpowers/plans/) | piani di implementazione task per task |
 | [`docs/decisioni.md`](docs/decisioni.md) | registro delle decisioni, con alternative scartate e motivazioni |
 | [`PRODUCT.md`](PRODUCT.md) · [`DESIGN.md`](DESIGN.md) | prodotto e sistema visivo |
@@ -136,16 +150,20 @@ SplitTrip/
 ├── BE/                         backend Spring Boot
 │   ├── src/main/java/com/splittrip/
 │   │   ├── auth/               JWT, sicurezza, registrazione e login
-│   │   ├── user/               utenti
+│   │   ├── user/               utenti, foto profilo
 │   │   ├── trip/               viaggi, membri, codice invito, controllo accessi
 │   │   ├── expense/            spese, quote, rimborsi, motore dei saldi
-│   │   └── common/             errori, configurazione
+│   │   ├── todo/               liste condivise e voci
+│   │   ├── photo/              foto, scontrini, ImageProcessor
+│   │   ├── notification/       notifiche (ascoltano gli eventi)
+│   │   ├── weather/            meteo da Open-Meteo
+│   │   └── common/             errori, configurazione, eventi
 │   ├── src/main/resources/db/migration/   migrazioni Flyway
 │   └── Dockerfile
 ├── FE/                         frontend React
 │   └── src/
 │       ├── app/                router, layout
-│       ├── features/           auth · trips · expenses · balances
+│       ├── features/           auth · trips · expenses · balances · todo · photos · notifications · weather · profile
 │       └── shared/             client API, componenti UI, formattazione
 ├── docs/                       spec, piani, decisioni, roadmap, screenshot
 ├── docker-compose.yml          Postgres locale

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
+import { currencyLabel, TRAVEL_CURRENCIES } from '../../shared/utils/currencies'
 import { tripSchema, type TripForm } from './tripSchema'
 import { useCreateTrip } from './useTrips'
 
@@ -23,7 +24,14 @@ export function NewTripPage() {
         <Field label="Destinazione" error={errors.destination?.message} {...register('destination')} />
         <Field label="Partenza" type="date" error={errors.startDate?.message} {...register('startDate')} />
         <Field label="Ritorno" type="date" error={errors.endDate?.message} {...register('endDate')} />
-        <Field label="Valuta" maxLength={3} error={errors.currency?.message} {...register('currency')} />
+        <div className="field">
+          <label htmlFor="trip-currency">Valuta</label>
+          <select id="trip-currency" className="select" {...register('currency')}>
+            {TRAVEL_CURRENCIES.map((c) => <option key={c} value={c}>{currencyLabel(c)}</option>)}
+          </select>
+          <small className="muted">Non si può cambiare dopo: tutte le spese del viaggio sono in questa valuta.</small>
+          {errors.currency && <p className="field-error">{errors.currency.message}</p>}
+        </div>
         <FormError error={create.error} />
         <Button type="submit" loading={create.isPending}>Crea viaggio</Button>
       </form>

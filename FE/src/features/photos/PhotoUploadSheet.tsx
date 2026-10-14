@@ -98,7 +98,7 @@ export function PhotoUploadSheet({ tripId, open, onClose }: Props) {
       <div className="modal-actions">
         <Button variant="secondary" onClick={onClose}>Chiudi</Button>
         <Button disabled={pending === 0} loading={upload.isPending} onClick={() => void uploadAll()}>
-          {`Carica ${pending} foto`}
+          {pending === 0 ? 'Carica foto' : `Carica ${pending} foto`}
         </Button>
       </div>
     </Modal>
