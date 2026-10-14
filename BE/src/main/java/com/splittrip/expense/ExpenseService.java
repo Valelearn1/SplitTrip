@@ -5,6 +5,7 @@ import com.splittrip.common.ConflictException;
 import com.splittrip.common.FieldException;
 import com.splittrip.common.ForbiddenException;
 import com.splittrip.common.NotFoundException;
+import com.splittrip.common.events.ExpenseCreated;
 import com.splittrip.expense.dto.ExpenseRequest;
 import com.splittrip.expense.dto.ExpenseResponse;
 import com.splittrip.expense.dto.ShareRequest;
@@ -14,6 +15,7 @@ import com.splittrip.trip.ParticipantRepository;
 import com.splittrip.trip.Trip;
 import com.splittrip.trip.TripAccessService;
 import com.splittrip.trip.TripRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,17 +43,19 @@ public class ExpenseService {
     private final TripRepository trips;
     private final ParticipantRepository participants;
     private final TripAccessService access;
+    private final ApplicationEventPublisher events;
     private final Clock clock;
 
     public ExpenseService(ExpenseRepository expenses, ExpenseShareRepository shares, ExpenseTrashRepository trash,
                           TripRepository trips, ParticipantRepository participants, TripAccessService access,
-                          Clock clock) {
+                          ApplicationEventPublisher events, Clock clock) {
         this.expenses = expenses;
         this.shares = shares;
         this.trash = trash;
         this.trips = trips;
         this.participants = participants;
         this.access = access;
+        this.events = events;
         this.clock = clock;
     }
 
@@ -84,6 +88,12 @@ public class ExpenseService {
             expense.getShares().add(new ExpenseShare(expense, active.get(s.participantId()), s.amount(), s.weight()));
         }
         expenses.save(expense);
+        // solo chi ha un account riceve la notifica (D-36)
+        Map<UUID, BigDecimal> shareByUserId = new LinkedHashMap<>();
+        for (ExpenseShare s : expense.getShares()) {
+            if (s.getParticipant().hasAccount()) shareByUserId.put(s.getParticipant().userId(), s.getAmount());
+        }
+        events.publishEvent(new ExpenseCreated(tripId, expense.getId(), userId, me.getDisplayName(), expense.getDescription(), shareByUserId));
         return get(tripId, userId, expense.getId());
     }
 

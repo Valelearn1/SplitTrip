@@ -3,6 +3,7 @@ package com.splittrip.trip;
 import com.splittrip.common.BadRequestException;
 import com.splittrip.common.ConflictException;
 import com.splittrip.common.NotFoundException;
+import com.splittrip.common.events.ParticipantJoined;
 import com.splittrip.expense.ExpenseRepository;
 import com.splittrip.trip.dto.JoinPreviewResponse;
 import com.splittrip.trip.dto.TripPatchRequest;
@@ -12,6 +13,7 @@ import com.splittrip.trip.dto.TripSummaryResponse;
 import com.splittrip.trip.dto.UnclaimedParticipant;
 import com.splittrip.user.User;
 import com.splittrip.user.UserService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,17 +33,19 @@ public class TripService {
     private final TripAccessService access;
     private final InviteCodeGenerator codes;
     private final ExpenseRepository expenses;
+    private final ApplicationEventPublisher events;
     private final Clock clock;
 
     public TripService(TripRepository trips, ParticipantRepository participants, UserService users,
                        TripAccessService access, InviteCodeGenerator codes,
-                       ExpenseRepository expenses, Clock clock) {
+                       ExpenseRepository expenses, ApplicationEventPublisher events, Clock clock) {
         this.trips = trips;
         this.participants = participants;
         this.users = users;
         this.access = access;
         this.codes = codes;
         this.expenses = expenses;
+        this.events = events;
         this.clock = clock;
     }
 
@@ -123,18 +127,23 @@ public class TripService {
         }
         access.requireWritable(trip);
         User user = users.require(userId);
+        Participant joined;
         if (mine.isPresent()) {               // aveva lasciato: riattiva la sua riga, ritrova i suoi soldi
-            mine.get().setLeftAt(null);
+            joined = mine.get();
+            joined.setLeftAt(null);
         } else if (participantId != null) {   // rivendica un posto senza account (D-32)
-            Participant target = participants.findByIdAndTripId(participantId, trip.getId())
+            joined = participants.findByIdAndTripId(participantId, trip.getId())
                     .orElseThrow(() -> new NotFoundException("Partecipante non trovato"));
-            if (target.hasAccount() || target.hasLeft()) {
+            if (joined.hasAccount() || joined.hasLeft()) {
                 throw new ConflictException("Questo posto non è più disponibile");
             }
-            target.setUser(user);
+            joined.setUser(user);
         } else {
-            participants.save(new Participant(trip, user, user.getDisplayName(), MemberRole.MEMBER, clock.instant()));
+            joined = participants.save(new Participant(trip, user, user.getDisplayName(), MemberRole.MEMBER, clock.instant()));
         }
+        List<UUID> recipients = participants.findByTripIdAndLeftAtIsNullOrderByJoinedAtAsc(trip.getId()).stream()
+                .filter(Participant::hasAccount).map(Participant::userId).toList();
+        events.publishEvent(new ParticipantJoined(trip.getId(), userId, joined.getDisplayName(), recipients));
         return get(trip.getId(), userId);
     }
 
