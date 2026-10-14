@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { expenseSchema, toExpenseInput } from './expenseSchema'
 
-const base = { description: 'Cena', amount: '90', date: '2026-11-02', category: 'FOOD', payerId: 'p1', splitType: 'EQUAL' as const,
+const base = { description: 'Cena', amount: '90', date: '2026-11-02', category: 'FOOD', payerId: 'p1', splitType: 'EQUAL' as const, dayBasis: 'DAYS' as const,
   shares: [{ participantId: 'p1', included: true }, { participantId: 'p2', included: true }, { participantId: 'p3', included: false }] }
 
 describe('expenseSchema', () => {
@@ -31,5 +31,15 @@ describe('expenseSchema', () => {
   it('serve almeno un partecipante', () => {
     const none = { ...base, shares: base.shares.map((s) => ({ ...s, included: false })) }
     expect(expenseSchema.safeParse(none).success).toBe(false)
+  })
+
+  it('WEIGHT: pesi validi passano, tutti a zero no', () => {
+    const weighted = { ...base, splitType: 'WEIGHT' as const, shares: [
+      { participantId: 'p1', included: true, weight: '2' }, { participantId: 'p2', included: true, weight: '0' }, { participantId: 'p3', included: false }] }
+    expect(toExpenseInput(expenseSchema.parse(weighted)).shares).toEqual([{ participantId: 'p1', weight: 2 }, { participantId: 'p2', weight: 0 }])
+    const zero = { ...weighted, shares: weighted.shares.map((s) => ({ ...s, weight: '0' })) }
+    const result = expenseSchema.safeParse(zero)
+    expect(result.success).toBe(false)
+    expect(result.error?.issues[0].message).toContain('maggiore di zero')
   })
 })

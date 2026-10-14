@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import type { Expense } from '../../shared/api/types'
 import { CategoryIcon } from '../../shared/ui/CategoryIcon'
 import { MoneyText } from '../../shared/ui/MoneyText'
+import { splitLabel } from './splitLabels'
 
 export function ExpenseRow({ expense, currency, meId }: { expense: Expense; currency: string; meId: string }) {
   const mine = expense.shares.find((s) => s.participantId === meId)
@@ -11,7 +12,7 @@ export function ExpenseRow({ expense, currency, meId }: { expense: Expense; curr
         <CategoryIcon category={expense.category} />
         <span className="row-text">
           <strong>{expense.description}</strong>
-          <small>{expense.shares.length} {expense.shares.length === 1 ? 'persona' : 'persone'} · pagato da {expense.payerId === meId ? 'te' : expense.payerName}</small>
+          <small>{expense.shares.length} {expense.shares.length === 1 ? 'persona' : 'persone'} · pagato da {expense.payerId === meId ? 'te' : expense.payerName} · {splitLabel(expense, meId)}</small>
         </span>
       </span>
       <span className="row-side">

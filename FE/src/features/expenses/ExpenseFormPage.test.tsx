@@ -17,6 +17,14 @@ const trip = {
   ],
 }
 
+const tripWeights = {
+  ...trip,
+  participants: [
+    { id: 'p1', userId: 'u1', displayName: 'Vale', role: 'ORGANIZER', defaultWeight: 1, arrivalDate: '2026-11-03', departureDate: null },
+    { id: 'p2', userId: 'u2', displayName: 'Marco', role: 'MEMBER', defaultWeight: 2, arrivalDate: null, departureDate: null },
+  ],
+}
+
 describe('ExpenseFormPage', () => {
   it('crea una spesa equa con me come pagante e tutti inclusi', async () => {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
@@ -44,5 +52,53 @@ describe('ExpenseFormPage', () => {
     expect(sent).toMatchObject({ description: 'Cena', amount: 90, payerId: 'p2', splitType: 'EQUAL', category: 'FOOD',
       shares: [{ participantId: 'p1' }, { participantId: 'p2' }] })
     expect(router.state.location.pathname).toBe('/trips/t1/expenses')
+  })
+
+  it('per peso: pesi precompilati, anteprima della quota e invio con weight', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
+    let sent: unknown
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(tripWeights)),
+      http.post('http://localhost/api/trips/t1/expenses', async ({ request }) => { sent = await request.json(); return HttpResponse.json({ id: 'e1' }, { status: 201 }) }),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }, { path: 'expenses', element: <h2>Lista spese</h2> }] }], '/trips/t1/expenses/new')
+    const user = userEvent.setup()
+    await user.type(await screen.findByLabelText('Importo'), '90')
+    await user.type(screen.getByLabelText('Descrizione'), 'Cena')
+    await user.click(screen.getByRole('radio', { name: 'Pesi' }))
+    expect(screen.getByLabelText('Peso di Marco')).toHaveValue('2')
+    expect(screen.getByLabelText('Peso di Vale')).toHaveValue('1')
+    expect(screen.getByText(/60,00\s€/)).toBeInTheDocument() // anteprima: 90 × 2/3
+    await user.click(screen.getByRole('button', { name: /Salva/ }))
+    expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
+    expect(sent).toMatchObject({ splitType: 'WEIGHT', shares: [{ participantId: 'p1', weight: 1 }, { participantId: 'p2', weight: 2 }] })
+    expect(sent).not.toHaveProperty('dayBasis')
+  })
+
+  it('per presenza: notti dalla categoria alloggio, ricalcolo se non toccate', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
+    let sent: unknown
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(tripWeights)),
+      http.post('http://localhost/api/trips/t1/expenses', async ({ request }) => { sent = await request.json(); return HttpResponse.json({ id: 'e1' }, { status: 201 }) }),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }, { path: 'expenses', element: <h2>Lista spese</h2> }] }], '/trips/t1/expenses/new')
+    const user = userEvent.setup()
+    await user.type(await screen.findByLabelText('Importo'), '500')
+    await user.type(screen.getByLabelText('Descrizione'), 'Casa')
+    await user.click(screen.getByRole('radio', { name: 'Alloggio' }))
+    await user.click(screen.getByRole('radio', { name: 'Presenza' }))
+    expect(screen.getByRole('radio', { name: 'Notti' })).toBeChecked()
+    expect(screen.getByLabelText('Notti di Vale')).toHaveValue('2')   // arriva il 3, viaggio 1–5 → 2 notti
+    expect(screen.getByLabelText('Notti di Marco')).toHaveValue('4')
+    await user.click(screen.getByRole('radio', { name: 'Giorni' }))
+    expect(screen.getByLabelText('Giorni di Vale')).toHaveValue('3')
+    await user.clear(screen.getByLabelText('Giorni di Vale'))
+    await user.type(screen.getByLabelText('Giorni di Vale'), '1')
+    await user.click(screen.getByRole('radio', { name: 'Notti' }))
+    expect(screen.getByLabelText('Notti di Vale')).toHaveValue('1')   // toccato a mano: non si ricalcola
+    await user.click(screen.getByRole('button', { name: /Salva/ }))
+    expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
+    expect(sent).toMatchObject({ splitType: 'DAYS', dayBasis: 'NIGHTS', shares: [{ participantId: 'p1', weight: 1 }, { participantId: 'p2', weight: 4 }] })
   })
 })

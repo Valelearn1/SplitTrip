@@ -14,6 +14,7 @@ const shareSchema = z.object({
   participantId: z.string(),
   included: z.boolean(),
   amount: z.string().optional(),
+  weight: z.string().optional(),
 })
 
 export const expenseSchema = z
@@ -24,12 +25,27 @@ export const expenseSchema = z
     category: z.enum(['FOOD', 'TRANSPORT', 'LODGING', 'ACTIVITY', 'OTHER']),
     payerId: z.string().min(1, 'Chi ha pagato?'),
     splitType: z.enum(['EQUAL', 'CUSTOM', 'WEIGHT', 'DAYS']),
+    dayBasis: z.enum(['DAYS', 'NIGHTS']),
     shares: z.array(shareSchema),
   })
   .superRefine((v, ctx) => {
     const included = v.shares.filter((s) => s.included)
     if (included.length === 0) {
       ctx.addIssue({ code: 'custom', path: ['shares'], message: 'Seleziona almeno un partecipante' })
+      return
+    }
+    if (v.splitType === 'WEIGHT' || v.splitType === 'DAYS') {
+      let sum = 0
+      for (const [i, s] of v.shares.entries()) {
+        if (!s.included) continue
+        const cents = parseCents(s.weight ?? '')
+        if (cents === null) {
+          ctx.addIssue({ code: 'custom', path: ['shares', i, 'weight'], message: 'Numero non valido' })
+          return
+        }
+        sum += cents
+      }
+      if (sum === 0) ctx.addIssue({ code: 'custom', path: ['shares'], message: 'Almeno uno deve avere un peso maggiore di zero' })
       return
     }
     if (v.splitType === 'CUSTOM') {
@@ -62,6 +78,11 @@ export function toExpenseInput(form: ExpenseForm): ExpenseInput {
     category: form.category,
     payerId: form.payerId,
     splitType: form.splitType,
-    shares: included.map((s) => (form.splitType === 'CUSTOM' ? { participantId: s.participantId, amount: (parseCents(s.amount) ?? 0) / 100 } : { participantId: s.participantId })),
+    ...(form.splitType === 'DAYS' ? { dayBasis: form.dayBasis } : {}),
+    shares: included.map((s) => {
+      if (form.splitType === 'CUSTOM') return { participantId: s.participantId, amount: (parseCents(s.amount) ?? 0) / 100 }
+      if (form.splitType === 'WEIGHT' || form.splitType === 'DAYS') return { participantId: s.participantId, weight: (parseCents(s.weight) ?? 0) / 100 }
+      return { participantId: s.participantId }
+    }),
   }
 }

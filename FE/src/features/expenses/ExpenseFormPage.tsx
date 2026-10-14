@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useOutletContext, useParams } from 'react-router'
 import { CATEGORY_LABELS, type Expense, type ExpenseCategory } from '../../shared/api/types'
@@ -11,6 +11,8 @@ import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
 import { Spinner } from '../../shared/ui/Spinner'
+import { formatMoney } from '../../shared/utils/format'
+import { defaultBasis, presence, splitByWeight } from '../../shared/utils/split'
 import type { TripContext } from '../trips/TripLayout'
 import { expenseSchema, parseCents, toExpenseInput, type ExpenseForm } from './expenseSchema'
 import { useCreateExpense, useDeleteExpense, useExpense, useUpdateExpense } from './useExpenses'
@@ -22,6 +24,13 @@ function today() {
 function toInputAmount(n: number) {
   return n.toFixed(2).replace('.', ',')
 }
+
+/** 2 → "2", 0.5 → "0,5": come lo scriverebbe una persona. */
+function toInputNumber(n: number) {
+  return String(n).replace('.', ',')
+}
+
+const WEIGHT_LABEL = { WEIGHT: 'Peso', NIGHTS: 'Notti', DAYS: 'Giorni' } as const
 
 /** Stessa pagina per /expenses/new e /expenses/:expenseId/edit. */
 export function ExpenseFormPage() {
@@ -42,31 +51,58 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
   const [confirmDelete, setConfirmDelete] = useState(false)
   const canEdit = canWrite && (!expense || expense.createdBy === me.userId || isOrganizer)
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<ExpenseForm>({
+  const weighted = expense?.splitType === 'WEIGHT' || expense?.splitType === 'DAYS'
+  // I numeri scritti a mano non vengono ricalcolati; in modifica valgono quelli salvati sulla spesa
+  const [touched, setTouched] = useState<Set<number>>(() => new Set(weighted ? trip.participants.map((_, i) => i) : []))
+  const [basisTouched, setBasisTouched] = useState(expense?.splitType === 'DAYS')
+  const markTouched = (i: number) => setTouched((prev) => new Set(prev).add(i))
+
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ExpenseForm>({
     resolver: zodResolver(expenseSchema),
     defaultValues: expense
       ? {
           description: expense.description, amount: toInputAmount(expense.amount), date: expense.date,
           category: expense.category, payerId: expense.payerId, splitType: expense.splitType,
+          dayBasis: expense.dayBasis ?? defaultBasis(expense.category),
           shares: trip.participants.map((p) => {
             const s = expense.shares.find((x) => x.participantId === p.id)
-            return { participantId: p.id, included: !!s, amount: s ? toInputAmount(s.amount) : '' }
+            return { participantId: p.id, included: !!s, amount: s ? toInputAmount(s.amount) : '',
+              weight: toInputNumber(s?.weight ?? p.defaultWeight) }
           }),
         }
       : {
-          description: '', amount: '', date: today(), category: 'FOOD', payerId: me.id, splitType: 'EQUAL',
-          shares: trip.participants.map((p) => ({ participantId: p.id, included: true, amount: '' })),
+          description: '', amount: '', date: today(), category: 'FOOD', payerId: me.id, splitType: 'EQUAL', dayBasis: 'DAYS',
+          shares: trip.participants.map((p) => ({ participantId: p.id, included: true, amount: '', weight: toInputNumber(p.defaultWeight) })),
         },
   })
 
   const splitType = watch('splitType')
   const shares = watch('shares')
   const amount = watch('amount')
+  const category = watch('category')
+  const dayBasis = watch('dayBasis')
+  const isWeighted = splitType === 'WEIGHT' || splitType === 'DAYS'
+
+  // Presenza: notti per l'alloggio, giorni per il resto, finché l'utente non sceglie (D-31)
+  useEffect(() => {
+    if (splitType === 'DAYS' && !basisTouched) setValue('dayBasis', defaultBasis(category))
+  }, [splitType, category, basisTouched, setValue])
+
+  // Precompila pesi o notti/giorni dal viaggio; il form propone, la spesa decide (D-33)
+  useEffect(() => {
+    if (splitType !== 'WEIGHT' && splitType !== 'DAYS') return
+    trip.participants.forEach((p, i) => {
+      if (touched.has(i)) return
+      setValue(`shares.${i}.weight`, toInputNumber(splitType === 'DAYS' ? presence(trip, p, dayBasis) : p.defaultWeight))
+    })
+  }, [splitType, dayBasis, touched, trip, setValue])
   const includedCount = shares.filter((s) => s.included).length
   const totalCents = parseCents(amount) ?? 0
   const perHead = includedCount > 0 ? Math.floor(totalCents / includedCount) / 100 : 0
   const assigned = shares.filter((s) => s.included).reduce((sum, s) => sum + (parseCents(s.amount) ?? 0), 0)
   const remaining = (totalCents - assigned) / 100
+  const preview = splitByWeight(totalCents, shares.flatMap((s) => (s.included ? [{ id: s.participantId, weight: (parseCents(s.weight) ?? 0) / 100 }] : [])))
+  const weightLabel = splitType === 'DAYS' ? WEIGHT_LABEL[dayBasis] : WEIGHT_LABEL.WEIGHT
 
   const mutation = expense ? update : create
   const onSubmit = handleSubmit((values) =>
@@ -114,7 +150,19 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
         <div className="chips">
           <label className="chip"><input type="radio" value="EQUAL" {...register('splitType')} /><Icon name="pie_chart" />Parti uguali</label>
           <label className="chip"><input type="radio" value="CUSTOM" {...register('splitType')} /><Icon name="tune" />Importi personalizzati</label>
+          <label className="chip"><input type="radio" value="WEIGHT" {...register('splitType')} /><Icon name="scale" />Pesi</label>
+          <label className="chip"><input type="radio" value="DAYS" {...register('splitType')} /><Icon name="date_range" />Presenza</label>
         </div>
+        {splitType === 'DAYS' && (
+          <fieldset className="field" style={{ marginBottom: 8 }}>
+            <legend>Conta</legend>
+            <div className="chips" style={{ marginBottom: 4 }}>
+              <label className="chip"><input type="radio" value="NIGHTS" {...register('dayBasis', { onChange: () => setBasisTouched(true) })} />Notti</label>
+              <label className="chip"><input type="radio" value="DAYS" {...register('dayBasis', { onChange: () => setBasisTouched(true) })} />Giorni</label>
+            </div>
+            <p className="muted">Le date di ognuno si impostano in Impostazioni → La mia partecipazione.</p>
+          </fieldset>
+        )}
         {splitType === 'EQUAL' && includedCount > 0 && totalCents > 0 && (
           <div className="info" style={{ marginBottom: 8 }}>
             <Icon name="groups" />
@@ -128,6 +176,13 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
               <Avatar name={p.displayName} size="sm" />
               <span>{p.id === me.id ? 'Tu (io)' : p.displayName}</span>
             </label>
+            {isWeighted && shares[i]?.included && (
+              <span className="row-side">
+                <input aria-label={`${weightLabel} di ${p.displayName}`} inputMode="decimal" className="share-input"
+                  {...register(`shares.${i}.weight`, { onChange: () => markTouched(i) })} />
+                <small className="muted" style={{ display: 'block' }}>{formatMoney((preview.get(p.id) ?? 0) / 100, trip.currency)}</small>
+              </span>
+            )}
             {splitType === 'CUSTOM' && shares[i]?.included && (
               <input aria-label={`Quota di ${p.displayName}`} inputMode="decimal" placeholder="0,00" className="share-input" {...register(`shares.${i}.amount`)} />
             )}
