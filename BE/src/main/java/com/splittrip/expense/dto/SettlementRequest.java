@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record SettlementRequest(
-        @NotNull UUID fromUserId,
-        @NotNull UUID toUserId,
+        @NotNull UUID fromParticipantId,
+        @NotNull UUID toParticipantId,
         @NotNull @DecimalMin("0.01") @Digits(integer = 10, fraction = 2) BigDecimal amount,
         @NotNull LocalDate date,
         @Size(max = 200) String note) {}

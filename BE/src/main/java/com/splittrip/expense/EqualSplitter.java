@@ -13,8 +13,8 @@ public final class EqualSplitter {
 
     private EqualSplitter() {}
 
-    public static List<ShareInput> split(BigDecimal total, Collection<UUID> userIds) {
-        List<UUID> sorted = userIds.stream().distinct().sorted().toList();
+    public static List<ShareInput> split(BigDecimal total, Collection<UUID> participantIds) {
+        List<UUID> sorted = participantIds.stream().distinct().sorted().toList();
         if (sorted.isEmpty()) {
             throw new IllegalArgumentException("Serve almeno un partecipante");
         }

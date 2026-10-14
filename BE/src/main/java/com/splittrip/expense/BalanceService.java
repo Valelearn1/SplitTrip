@@ -9,9 +9,8 @@ import com.splittrip.expense.dto.MemberBalanceResponse;
 import com.splittrip.expense.dto.SummaryResponse;
 import com.splittrip.expense.dto.TransferResponse;
 import com.splittrip.trip.TripAccessService;
-import com.splittrip.trip.TripMember;
-import com.splittrip.trip.TripMemberRepository;
-import com.splittrip.user.User;
+import com.splittrip.trip.Participant;
+import com.splittrip.trip.ParticipantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,39 +30,42 @@ public class BalanceService {
 
     private final ExpenseRepository expenses;
     private final SettlementRepository settlements;
-    private final TripMemberRepository members;
+    private final ParticipantRepository participants;
     private final TripAccessService access;
     private final BalanceCalculator calculator = new BalanceCalculator();
 
     public BalanceService(ExpenseRepository expenses, SettlementRepository settlements,
-                          TripMemberRepository members, TripAccessService access) {
+                          ParticipantRepository participants, TripAccessService access) {
         this.expenses = expenses;
         this.settlements = settlements;
-        this.members = members;
+        this.participants = participants;
         this.access = access;
     }
 
     @Transactional(readOnly = true)
     public BalancesResponse balances(UUID tripId, UUID userId) {
         access.requireMember(tripId, userId);
-        Map<UUID, String> names = names(tripId);
+        Map<UUID, Participant> all = allParticipants(tripId);
+        List<UUID> activeIds = all.values().stream().filter(p -> !p.hasLeft()).map(Participant::getId).toList();
         List<ExpenseInput> expenseInputs = expenses.findAllByTripIdWithShares(tripId).stream()
                 .map(e -> new ExpenseInput(e.getPayer().getId(), e.getAmount(),
-                        e.getShares().stream().map(s -> new ShareInput(s.getUser().getId(), s.getAmount())).toList()))
+                        e.getShares().stream().map(s -> new ShareInput(s.getParticipant().getId(), s.getAmount())).toList()))
                 .toList();
-        List<SettlementInput> settlementInputs = settlements.findAllByTripIdWithUsers(tripId).stream()
-                .map(s -> new SettlementInput(s.getFromUser().getId(), s.getToUser().getId(), s.getAmount()))
+        List<SettlementInput> settlementInputs = settlements.findAllByTripIdWithParticipants(tripId).stream()
+                .map(s -> new SettlementInput(s.getFromParticipant().getId(), s.getToParticipant().getId(), s.getAmount()))
                 .toList();
 
-        Result result = calculator.compute(names.keySet(), expenseInputs, settlementInputs);
+        Result result = calculator.compute(activeIds, expenseInputs, settlementInputs);
         return new BalancesResponse(
                 result.balances().stream()
-                        .map(b -> new MemberBalanceResponse(b.userId(), names.getOrDefault(b.userId(), EX_MEMBER),
-                                b.paid(), b.owed(), b.net()))
+                        .map(b -> new MemberBalanceResponse(b.participantId(), name(all, b.participantId()),
+                                hasLeft(all, b.participantId()), b.paid(), b.owed(), b.net()))
+                        // chi ha lasciato il viaggio compare solo se ha ancora un saldo aperto
+                        .filter(b -> !b.left() || b.net().signum() != 0)
                         .toList(),
                 result.suggestedTransfers().stream()
-                        .map(t -> new TransferResponse(t.fromUserId(), names.getOrDefault(t.fromUserId(), EX_MEMBER),
-                                t.toUserId(), names.getOrDefault(t.toUserId(), EX_MEMBER), t.amount()))
+                        .map(t -> new TransferResponse(t.fromParticipantId(), name(all, t.fromParticipantId()),
+                                t.toParticipantId(), name(all, t.toParticipantId()), t.amount()))
                         .toList());
     }
 
@@ -70,7 +73,7 @@ public class BalanceService {
     public SummaryResponse summary(UUID tripId, UUID userId) {
         access.requireMember(tripId, userId);
         List<Expense> all = expenses.findAllByTripIdWithShares(tripId);
-        Map<UUID, String> names = names(tripId);
+        Map<UUID, Participant> people = allParticipants(tripId);
         BigDecimal total = all.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2);
         Map<String, BigDecimal> byCategory = new TreeMap<>();
         Map<UUID, BigDecimal> payerTotals = new LinkedHashMap<>();
@@ -80,14 +83,24 @@ public class BalanceService {
         }
         List<SummaryResponse.PayerTotal> byPayer = payerTotals.entrySet().stream()
                 .sorted(Map.Entry.<UUID, BigDecimal>comparingByValue().reversed())
-                .map(en -> new SummaryResponse.PayerTotal(en.getKey(), names.getOrDefault(en.getKey(), EX_MEMBER), en.getValue()))
+                .map(en -> new SummaryResponse.PayerTotal(en.getKey(), name(people, en.getKey()), en.getValue()))
                 .toList();
         return new SummaryResponse(total, byCategory, byPayer);
     }
 
-    private Map<UUID, String> names(UUID tripId) {
-        return members.findByTripIdOrderByJoinedAtAsc(tripId).stream()
-                .map(TripMember::getUser)
-                .collect(Collectors.toMap(User::getId, User::getDisplayName, (a, b) -> a, LinkedHashMap::new));
+    /** Tutti i partecipanti, anche chi ha lasciato: i loro soldi restano nei conti con il loro nome. */
+    private Map<UUID, Participant> allParticipants(UUID tripId) {
+        return participants.findByTripIdOrderByJoinedAtAsc(tripId).stream()
+                .collect(Collectors.toMap(Participant::getId, Function.identity(), (a, b) -> a, LinkedHashMap::new));
+    }
+
+    private static String name(Map<UUID, Participant> all, UUID id) {
+        Participant p = all.get(id);
+        return p == null ? EX_MEMBER : p.getDisplayName();
+    }
+
+    private static boolean hasLeft(Map<UUID, Participant> all, UUID id) {
+        Participant p = all.get(id);
+        return p == null || p.hasLeft();
     }
 }

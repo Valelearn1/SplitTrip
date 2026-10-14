@@ -28,9 +28,9 @@ class TripControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.status").value("PLANNING"))
                 .andExpect(jsonPath("$.currency").value("EUR"))
                 .andExpect(jsonPath("$.inviteCode").value(matchesPattern("^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$")))
-                .andExpect(jsonPath("$.members", hasSize(1)))
-                .andExpect(jsonPath("$.members[0].role").value("ORGANIZER"))
-                .andExpect(jsonPath("$.members[0].displayName").value("Vale"));
+                .andExpect(jsonPath("$.participants", hasSize(1)))
+                .andExpect(jsonPath("$.participants[0].role").value("ORGANIZER"))
+                .andExpect(jsonPath("$.participants[0].displayName").value("Vale"));
     }
 
     @Test

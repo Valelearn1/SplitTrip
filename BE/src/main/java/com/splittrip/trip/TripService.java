@@ -27,7 +27,7 @@ import java.util.UUID;
 public class TripService {
 
     private final TripRepository trips;
-    private final TripMemberRepository members;
+    private final ParticipantRepository participants;
     private final UserService users;
     private final TripAccessService access;
     private final InviteCodeGenerator codes;
@@ -36,12 +36,12 @@ public class TripService {
     private final SettlementRepository settlements;
     private final Clock clock;
 
-    public TripService(TripRepository trips, TripMemberRepository members, UserService users,
+    public TripService(TripRepository trips, ParticipantRepository participants, UserService users,
                        TripAccessService access, InviteCodeGenerator codes,
                        ExpenseRepository expenses, ExpenseShareRepository shares,
                        SettlementRepository settlements, Clock clock) {
         this.trips = trips;
-        this.members = members;
+        this.participants = participants;
         this.users = users;
         this.access = access;
         this.codes = codes;
@@ -59,7 +59,7 @@ public class TripService {
         String currency = req.currency() == null ? "EUR" : req.currency();
         Trip trip = trips.save(new Trip(req.name().strip(), req.destination().strip(), req.startDate(), req.endDate(),
                 currency, uniqueCode(), owner, now));
-        members.save(new TripMember(trip, owner, MemberRole.ORGANIZER, now));
+        participants.save(new Participant(trip, owner, owner.getDisplayName(), MemberRole.ORGANIZER, now));
         return get(trip.getId(), userId);
     }
 
@@ -67,8 +67,8 @@ public class TripService {
     public List<TripSummaryResponse> listForUser(UUID userId) {
         return trips.findAllByMemberUserId(userId).stream()
                 .map(t -> new TripSummaryResponse(t.getId(), t.getName(), t.getDestination(), t.getStartDate(),
-                        t.getEndDate(), t.getCurrency(), t.getStatus(), members.countByTripId(t.getId()),
-                        members.findByTripIdAndUserId(t.getId(), userId).map(TripMember::getRole).orElse(MemberRole.MEMBER)))
+                        t.getEndDate(), t.getCurrency(), t.getStatus(), participants.countByTripIdAndLeftAtIsNull(t.getId()),
+                        participants.findByTripIdAndUserIdAndLeftAtIsNull(t.getId(), userId).map(Participant::getRole).orElse(MemberRole.MEMBER)))
                 .toList();
     }
 
@@ -76,7 +76,7 @@ public class TripService {
     public TripResponse get(UUID tripId, UUID userId) {
         access.requireMember(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
-        return TripResponse.from(trip, members.findByTripIdOrderByJoinedAtAsc(tripId));
+        return TripResponse.from(trip, participants.findByTripIdAndLeftAtIsNullOrderByJoinedAtAsc(tripId));
     }
 
     @Transactional
@@ -115,15 +115,16 @@ public class TripService {
     public JoinPreviewResponse joinPreview(String code) {
         Trip trip = findByCode(code);
         return new JoinPreviewResponse(trip.getName(), trip.getDestination(), trip.getStartDate(), trip.getEndDate(),
-                members.countByTripId(trip.getId()));
+                participants.countByTripIdAndLeftAtIsNull(trip.getId()));
     }
 
     @Transactional
     public TripResponse join(UUID userId, String code) {
         Trip trip = findByCode(code);
-        if (!members.existsByTripIdAndUserId(trip.getId(), userId)) {
+        if (participants.findByTripIdAndUserIdAndLeftAtIsNull(trip.getId(), userId).isEmpty()) {
             access.requireWritable(trip);
-            members.save(new TripMember(trip, users.require(userId), MemberRole.MEMBER, clock.instant()));
+            User user = users.require(userId);
+            participants.save(new Participant(trip, user, user.getDisplayName(), MemberRole.MEMBER, clock.instant()));
         }
         return get(trip.getId(), userId);
     }
@@ -138,23 +139,24 @@ public class TripService {
     }
 
     @Transactional
-    public void removeMember(UUID tripId, UUID actorId, UUID targetUserId) {
-        TripMember actor = access.requireMember(tripId, actorId);
-        if (!actor.isOrganizer() && !actorId.equals(targetUserId)) {
+    public void leave(UUID tripId, UUID actorId, UUID participantId) {
+        Participant actor = access.requireMember(tripId, actorId);
+        Participant target = participants.findByIdAndTripId(participantId, tripId)
+                .filter(p -> !p.hasLeft())
+                .orElseThrow(() -> new NotFoundException("Partecipante non trovato"));
+        if (!actor.isOrganizer() && !actor.getId().equals(target.getId())) {
             throw new ForbiddenException("Puoi rimuovere solo te stesso");
         }
-        TripMember target = members.findByTripIdAndUserId(tripId, targetUserId)
-                .orElseThrow(() -> new NotFoundException("Membro non trovato"));
         if (target.isOrganizer()) {
             throw new ConflictException("L'organizzatore non può lasciare il viaggio");
         }
-        if (expenses.existsByTripIdAndPayerId(tripId, targetUserId) || shares.existsByUserIdAndExpenseTripId(targetUserId, tripId)) {
+        if (expenses.existsByTripIdAndPayerId(tripId, participantId) || shares.existsByParticipantIdAndExpenseTripId(participantId, tripId)) {
             throw new ConflictException("Il membro ha spese o quote nel viaggio: non si può rimuovere");
         }
-        if (settlements.existsByTripIdAndUserInvolved(tripId, targetUserId)) {
+        if (settlements.existsByTripIdAndParticipantInvolved(tripId, participantId)) {
             throw new ConflictException("Il membro ha rimborsi nel viaggio: non si può rimuovere");
         }
-        members.delete(target);
+        target.setLeftAt(clock.instant()); // mai cancellato: il nome resta nei saldi e nel cestino (D-30)
     }
 
     private Trip findByCode(String code) {

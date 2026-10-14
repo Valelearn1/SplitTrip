@@ -1,5 +1,6 @@
 package com.splittrip.expense;
 
+import com.splittrip.trip.Participant;
 import com.splittrip.trip.Trip;
 import com.splittrip.user.User;
 import jakarta.persistence.Column;
@@ -34,19 +35,19 @@ public class Settlement {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "trip_id") private Trip trip;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "from_user_id") private User fromUser;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "to_user_id") private User toUser;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "from_participant_id") private Participant fromParticipant;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "to_participant_id") private Participant toParticipant;
     @Column(nullable = false, precision = 12, scale = 2) private BigDecimal amount;
     @Column(nullable = false) private LocalDate date;
     @Column(length = 200) private String note;
     @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "created_by") private User createdBy;
     @Column(name = "created_at", nullable = false, updatable = false) private Instant createdAt;
 
-    public Settlement(Trip trip, User fromUser, User toUser, BigDecimal amount, LocalDate date, String note,
+    public Settlement(Trip trip, Participant fromParticipant, Participant toParticipant, BigDecimal amount, LocalDate date, String note,
                       User createdBy, Instant now) {
         this.trip = trip;
-        this.fromUser = fromUser;
-        this.toUser = toUser;
+        this.fromParticipant = fromParticipant;
+        this.toParticipant = toParticipant;
         this.amount = amount;
         this.date = date;
         this.note = note;

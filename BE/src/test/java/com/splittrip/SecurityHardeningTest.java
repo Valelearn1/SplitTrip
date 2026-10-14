@@ -19,8 +19,8 @@ class SecurityHardeningTest extends IntegrationTest {
     @Test
     void sqlInjectionNellaDescrizioneVieneSalvataComeTesto() throws Exception {
         String vale = TestUsers.register(mvc, "Vale");
-        UUID valeId = TestUsers.idOf(mvc, vale);
         UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        UUID valeId = TestTrips.participantOf(mvc, vale, tripId);
         String payload = "Cena'); DROP TABLE expenses; --";
         TestExpenses.createEqual(mvc, vale, tripId, payload, "10.00", valeId, valeId);
 
@@ -32,8 +32,8 @@ class SecurityHardeningTest extends IntegrationTest {
     @Test
     void xssNellaDescrizioneRestaTestoEIlJsonEEscapato() throws Exception {
         String vale = TestUsers.register(mvc, "Vale");
-        UUID valeId = TestUsers.idOf(mvc, vale);
         UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        UUID valeId = TestTrips.participantOf(mvc, vale, tripId);
         TestExpenses.createEqual(mvc, vale, tripId, "<script>alert(1)</script>", "10.00", valeId, valeId);
 
         mvc.perform(get("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale))
@@ -48,8 +48,8 @@ class SecurityHardeningTest extends IntegrationTest {
         // Marco prova a creare una spesa in un viaggio altrui: l'id viene dal token, quindi 403.
         String vale = TestUsers.register(mvc, "Vale");
         String marco = TestUsers.register(mvc, "Marco");
-        UUID valeId = TestUsers.idOf(mvc, vale);
         UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        UUID valeId = TestTrips.participantOf(mvc, vale, tripId);
         mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + marco)
                 .contentType(APPLICATION_JSON).content(TestExpenses.equalBody("Cena", "10.00", valeId, valeId)))
                 .andExpect(status().isForbidden());

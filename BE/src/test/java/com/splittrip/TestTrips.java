@@ -1,7 +1,9 @@
 package com.splittrip;
 
+import com.jayway.jsonpath.JsonPath;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -34,5 +36,14 @@ public final class TestTrips {
         mvc.perform(post("/api/trips/join").header("Authorization", "Bearer " + token)
                 .contentType(APPLICATION_JSON).content("{\"code\":\"" + code + "\"}"))
                 .andExpect(status().isOk());
+    }
+
+    /** Id del partecipante dell'utente che possiede il token, dentro il viaggio. */
+    public static UUID participantOf(MockMvc mvc, String token, UUID tripId) throws Exception {
+        UUID userId = TestUsers.idOf(mvc, token);
+        String body = mvc.perform(get("/api/trips/" + tripId).header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        List<String> ids = JsonPath.read(body, "$.participants[?(@.userId=='" + userId + "')].id");
+        return UUID.fromString(ids.getFirst());
     }
 }

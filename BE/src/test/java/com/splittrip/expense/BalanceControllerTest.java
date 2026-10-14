@@ -22,23 +22,23 @@ class BalanceControllerTest extends IntegrationTest {
         String marco = TestUsers.register(mvc, "Marco");
         String giulia = TestUsers.register(mvc, "Giulia");
         String vale = TestUsers.register(mvc, "Vale");
-        UUID marcoId = TestUsers.idOf(mvc, marco);
-        UUID giuliaId = TestUsers.idOf(mvc, giulia);
-        UUID valeId = TestUsers.idOf(mvc, vale);
         UUID tripId = TestTrips.create(mvc, marco, "Roma");
         String code = TestTrips.inviteCode(mvc, marco, tripId);
         TestTrips.join(mvc, giulia, code);
         TestTrips.join(mvc, vale, code);
+        UUID marcoId = TestTrips.participantOf(mvc, marco, tripId);
+        UUID giuliaId = TestTrips.participantOf(mvc, giulia, tripId);
+        UUID valeId = TestTrips.participantOf(mvc, vale, tripId);
 
         TestExpenses.createEqual(mvc, marco, tripId, "Cena", "90.00", marcoId, marcoId, giuliaId, valeId);
         mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + giulia)
                 .contentType(APPLICATION_JSON).content("""
                 {"description":"Taxi","amount":30.00,"date":"2026-11-02","category":"TRANSPORT","payerId":"%s",
-                 "splitType":"EQUAL","shares":[{"userId":"%s"},{"userId":"%s"}]}
+                 "splitType":"EQUAL","shares":[{"participantId":"%s"},{"participantId":"%s"}]}
                 """.formatted(giuliaId, giuliaId, valeId))).andExpect(status().isCreated());
         mvc.perform(post("/api/trips/" + tripId + "/settlements").header("Authorization", "Bearer " + vale)
                 .contentType(APPLICATION_JSON).content("""
-                {"fromUserId":"%s","toUserId":"%s","amount":10.00,"date":"2026-11-03"}
+                {"fromParticipantId":"%s","toParticipantId":"%s","amount":10.00,"date":"2026-11-03"}
                 """.formatted(valeId, marcoId))).andExpect(status().isCreated());
 
         mvc.perform(get("/api/trips/" + tripId + "/balances").header("Authorization", "Bearer " + vale))

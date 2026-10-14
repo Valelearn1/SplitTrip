@@ -6,5 +6,5 @@ import java.util.Map;
 import java.util.UUID;
 
 public record SummaryResponse(BigDecimal total, Map<String, BigDecimal> byCategory, List<PayerTotal> byPayer) {
-    public record PayerTotal(UUID userId, String displayName, BigDecimal amount) {}
+    public record PayerTotal(UUID participantId, String displayName, BigDecimal amount) {}
 }

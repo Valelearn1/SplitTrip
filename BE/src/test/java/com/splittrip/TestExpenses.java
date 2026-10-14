@@ -14,8 +14,8 @@ public final class TestExpenses {
 
     private TestExpenses() {}
 
-    public static String equalBody(String description, String amount, UUID payerId, UUID... userIds) {
-        String shares = Arrays.stream(userIds).map(id -> "{\"userId\":\"" + id + "\"}").collect(Collectors.joining(","));
+    public static String equalBody(String description, String amount, UUID payerId, UUID... participantIds) {
+        String shares = Arrays.stream(participantIds).map(id -> "{\"participantId\":\"" + id + "\"}").collect(Collectors.joining(","));
         return """
                 {"description":"%s","amount":%s,"date":"2026-11-02","category":"FOOD",
                  "payerId":"%s","splitType":"EQUAL","shares":[%s]}
@@ -23,9 +23,9 @@ public final class TestExpenses {
     }
 
     public static UUID createEqual(MockMvc mvc, String token, UUID tripId, String description, String amount,
-                                   UUID payerId, UUID... userIds) throws Exception {
+                                   UUID payerId, UUID... participantIds) throws Exception {
         String body = mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + token)
-                .contentType(APPLICATION_JSON).content(equalBody(description, amount, payerId, userIds)))
+                .contentType(APPLICATION_JSON).content(equalBody(description, amount, payerId, participantIds)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         return UUID.fromString(TestUsers.extract(body, "\"id\":\"([^\"]+)\""));

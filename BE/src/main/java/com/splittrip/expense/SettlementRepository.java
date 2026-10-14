@@ -10,16 +10,16 @@ import java.util.UUID;
 public interface SettlementRepository extends JpaRepository<Settlement, UUID> {
 
     @Query("""
-            select s from Settlement s join fetch s.fromUser join fetch s.toUser join fetch s.createdBy
+            select s from Settlement s join fetch s.fromParticipant join fetch s.toParticipant join fetch s.createdBy
             where s.trip.id = :tripId order by s.date desc, s.createdAt desc
             """)
-    List<Settlement> findAllByTripIdWithUsers(UUID tripId);
+    List<Settlement> findAllByTripIdWithParticipants(UUID tripId);
 
     Optional<Settlement> findByIdAndTripId(UUID id, UUID tripId);
 
     @Query("""
             select count(s) > 0 from Settlement s
-            where s.trip.id = :tripId and (s.fromUser.id = :userId or s.toUser.id = :userId)
+            where s.trip.id = :tripId and (s.fromParticipant.id = :participantId or s.toParticipant.id = :participantId)
             """)
-    boolean existsByTripIdAndUserInvolved(UUID tripId, UUID userId);
+    boolean existsByTripIdAndParticipantInvolved(UUID tripId, UUID participantId);
 }

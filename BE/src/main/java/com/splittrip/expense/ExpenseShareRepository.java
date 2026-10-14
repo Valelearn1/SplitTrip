@@ -13,6 +13,6 @@ public interface ExpenseShareRepository extends JpaRepository<ExpenseShare, UUID
     void deleteAllByExpenseId(UUID expenseId);
 
     /** Solo quote di spese attive: Hibernate aggiunge da solo il filtro sul soft delete della spesa. */
-    @Query("select count(s) > 0 from ExpenseShare s where s.user.id = :userId and s.expense.trip.id = :tripId")
-    boolean existsByUserIdAndExpenseTripId(UUID userId, UUID tripId);
+    @Query("select count(s) > 0 from ExpenseShare s where s.participant.id = :participantId and s.expense.trip.id = :tripId")
+    boolean existsByParticipantIdAndExpenseTripId(UUID participantId, UUID tripId);
 }

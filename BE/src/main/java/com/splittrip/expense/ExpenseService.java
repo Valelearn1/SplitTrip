@@ -4,22 +4,20 @@ import com.splittrip.common.BadRequestException;
 import com.splittrip.common.ConflictException;
 import com.splittrip.common.ForbiddenException;
 import com.splittrip.common.NotFoundException;
-import com.splittrip.expense.BalanceCalculator.ShareInput;
 import com.splittrip.expense.dto.ExpenseRequest;
 import com.splittrip.expense.dto.ExpenseResponse;
 import com.splittrip.expense.dto.ShareRequest;
 import com.splittrip.expense.dto.TrashedExpenseResponse;
+import com.splittrip.trip.Participant;
+import com.splittrip.trip.ParticipantRepository;
 import com.splittrip.trip.Trip;
 import com.splittrip.trip.TripAccessService;
-import com.splittrip.trip.TripMember;
-import com.splittrip.trip.TripMemberRepository;
 import com.splittrip.trip.TripRepository;
-import com.splittrip.user.User;
-import com.splittrip.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,25 +31,26 @@ import java.util.stream.Collectors;
 @Service
 public class ExpenseService {
 
+    /** Quota pronta da salvare: importo calcolato e input da cui deriva (peso o notti/giorni, null per EQUAL e CUSTOM). */
+    record ComputedShare(UUID participantId, BigDecimal amount, BigDecimal weight) {}
+
     private final ExpenseRepository expenses;
     private final ExpenseShareRepository shares;
     private final ExpenseTrashRepository trash;
     private final TripRepository trips;
-    private final TripMemberRepository members;
+    private final ParticipantRepository participants;
     private final TripAccessService access;
-    private final UserRepository users;
     private final Clock clock;
 
     public ExpenseService(ExpenseRepository expenses, ExpenseShareRepository shares, ExpenseTrashRepository trash,
-                          TripRepository trips, TripMemberRepository members, TripAccessService access,
-                          UserRepository users, Clock clock) {
+                          TripRepository trips, ParticipantRepository participants, TripAccessService access,
+                          Clock clock) {
         this.expenses = expenses;
         this.shares = shares;
         this.trash = trash;
         this.trips = trips;
-        this.members = members;
+        this.participants = participants;
         this.access = access;
-        this.users = users;
         this.clock = clock;
     }
 
@@ -72,16 +71,16 @@ public class ExpenseService {
 
     @Transactional
     public ExpenseResponse create(UUID tripId, UUID userId, ExpenseRequest req) {
-        TripMember me = access.requireMember(tripId, userId);
+        Participant me = access.requireMember(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
         access.requireWritable(trip);
-        Map<UUID, User> memberUsers = memberUsers(tripId);
-        List<ShareInput> computed = computeShares(req, memberUsers);
+        Map<UUID, Participant> active = activeParticipants(tripId);
+        List<ComputedShare> computed = computeShares(req, active);
 
-        Expense expense = new Expense(trip, memberUsers.get(req.payerId()), req.description().strip(), req.amount(),
-                req.date(), req.category(), req.splitType(), me.getUser(), clock.instant());
-        for (ShareInput s : computed) {
-            expense.getShares().add(new ExpenseShare(expense, memberUsers.get(s.userId()), s.amount()));
+        Expense expense = new Expense(trip, active.get(req.payerId()), req.description().strip(), req.amount(),
+                req.date(), req.category(), req.splitType(), req.dayBasis(), me.getUser(), clock.instant());
+        for (ComputedShare s : computed) {
+            expense.getShares().add(new ExpenseShare(expense, active.get(s.participantId()), s.amount(), s.weight()));
         }
         expenses.save(expense);
         return get(tripId, userId, expense.getId());
@@ -89,26 +88,27 @@ public class ExpenseService {
 
     @Transactional
     public ExpenseResponse update(UUID tripId, UUID userId, UUID expenseId, ExpenseRequest req) {
-        TripMember me = access.requireMember(tripId, userId);
+        Participant me = access.requireMember(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
         access.requireWritable(trip);
         Expense expense = require(tripId, expenseId);
         requireOwnerOrOrganizer(expense, me);
-        Map<UUID, User> memberUsers = memberUsers(tripId);
-        List<ShareInput> computed = computeShares(req, memberUsers);
+        Map<UUID, Participant> active = activeParticipants(tripId);
+        List<ComputedShare> computed = computeShares(req, active);
 
-        expense.setPayer(memberUsers.get(req.payerId()));
+        expense.setPayer(active.get(req.payerId()));
         expense.setDescription(req.description().strip());
         expense.setAmount(req.amount());
         expense.setDate(req.date());
         expense.setCategory(req.category());
         expense.setSplitType(req.splitType());
+        expense.setDayBasis(req.dayBasis());
         expense.setUpdatedAt(clock.instant());
         shares.deleteAllByExpenseId(expenseId);
         shares.flush();
         expense.getShares().clear();
-        for (ShareInput s : computed) {
-            expense.getShares().add(new ExpenseShare(expense, memberUsers.get(s.userId()), s.amount()));
+        for (ComputedShare s : computed) {
+            expense.getShares().add(new ExpenseShare(expense, active.get(s.participantId()), s.amount(), s.weight()));
         }
         expenses.saveAndFlush(expense);
         return get(tripId, userId, expenseId);
@@ -116,7 +116,7 @@ public class ExpenseService {
 
     @Transactional
     public void delete(UUID tripId, UUID userId, UUID expenseId) {
-        TripMember me = access.requireMember(tripId, userId);
+        Participant me = access.requireMember(tripId, userId);
         access.requireWritable(trips.findById(tripId).orElseThrow());
         // Caricata senza quote: con le quote in sessione Hibernate rifiuterebbe la rimozione del padre
         Expense expense = expenses.findByIdAndTripId(expenseId, tripId)
@@ -138,12 +138,12 @@ public class ExpenseService {
         if (!trash.isTrashed(tripId, expenseId)) {
             throw new NotFoundException("Spesa non trovata nel cestino");
         }
-        Map<UUID, User> memberUsers = memberUsers(tripId);
-        List<UUID> involved = new ArrayList<>(trash.shareUserIds(expenseId));
-        involved.addFirst(trash.payerId(expenseId));
-        for (UUID userIdInvolved : involved) {
-            if (!memberUsers.containsKey(userIdInvolved)) {
-                String name = users.findById(userIdInvolved).map(User::getDisplayName).orElse("un ex membro");
+        List<UUID> involved = new ArrayList<>(trash.shareParticipantIds(expenseId));
+        involved.addFirst(trash.payerParticipantId(expenseId));
+        for (UUID participantId : involved) {
+            Participant p = participants.findById(participantId).orElse(null);
+            if (p == null || p.hasLeft()) {
+                String name = p == null ? "un ex membro" : p.getDisplayName();
                 throw new ConflictException("Non si può ripristinare: " + name + " non fa più parte del viaggio");
             }
         }
@@ -156,48 +156,52 @@ public class ExpenseService {
                 .orElseThrow(() -> new NotFoundException("Spesa non trovata"));
     }
 
-    private static void requireOwnerOrOrganizer(Expense expense, TripMember me) {
-        boolean owner = expense.getCreatedBy().getId().equals(me.getUser().getId());
+    private static void requireOwnerOrOrganizer(Expense expense, Participant me) {
+        boolean owner = expense.getCreatedBy().getId().equals(me.userId());
         if (!owner && !me.isOrganizer()) {
             throw new ForbiddenException("Solo chi ha creato la spesa o l'organizzatore può modificarla");
         }
     }
 
-    private Map<UUID, User> memberUsers(UUID tripId) {
-        return members.findByTripIdOrderByJoinedAtAsc(tripId).stream()
-                .map(TripMember::getUser)
-                .collect(Collectors.toMap(User::getId, Function.identity(), (a, b) -> a, LinkedHashMap::new));
+    private Map<UUID, Participant> activeParticipants(UUID tripId) {
+        return participants.findByTripIdAndLeftAtIsNullOrderByJoinedAtAsc(tripId).stream()
+                .collect(Collectors.toMap(Participant::getId, Function.identity(), (a, b) -> a, LinkedHashMap::new));
     }
 
     /** Valida pagante e partecipanti e produce le quote da salvare (anche per EQUAL). */
-    static List<ShareInput> computeShares(ExpenseRequest req, Map<UUID, User> memberUsers) {
-        if (!memberUsers.containsKey(req.payerId())) {
+    static List<ComputedShare> computeShares(ExpenseRequest req, Map<UUID, Participant> active) {
+        if (!active.containsKey(req.payerId())) {
             throw new BadRequestException("Chi ha pagato deve far parte del viaggio");
         }
-        List<UUID> userIds = req.shares().stream().map(ShareRequest::userId).toList();
-        if (new HashSet<>(userIds).size() != userIds.size()) {
+        List<UUID> ids = req.shares().stream().map(ShareRequest::participantId).toList();
+        if (new HashSet<>(ids).size() != ids.size()) {
             throw new BadRequestException("Un partecipante compare più di una volta");
         }
-        for (UUID id : userIds) {
-            if (!memberUsers.containsKey(id)) {
+        for (UUID id : ids) {
+            if (!active.containsKey(id)) {
                 throw new BadRequestException("Tutti i partecipanti alla spesa devono far parte del viaggio");
             }
         }
+        if (req.splitType() == SplitType.WEIGHT || req.splitType() == SplitType.DAYS) {
+            throw new BadRequestException("Tipo di divisione non ancora disponibile");
+        }
         if (req.splitType() == SplitType.EQUAL) {
-            return EqualSplitter.split(req.amount(), userIds);
+            return EqualSplitter.split(req.amount(), ids).stream()
+                    .map(s -> new ComputedShare(s.participantId(), s.amount(), null))
+                    .toList();
         }
         BigDecimal sum = BigDecimal.ZERO;
-        List<ShareInput> result = new ArrayList<>();
+        List<ComputedShare> result = new ArrayList<>();
         for (ShareRequest s : req.shares()) {
             if (s.amount() == null) {
                 throw new BadRequestException("Con la divisione personalizzata ogni quota deve avere un importo");
             }
             sum = sum.add(s.amount());
-            result.add(new ShareInput(s.userId(), s.amount().setScale(2)));
+            result.add(new ComputedShare(s.participantId(), s.amount().setScale(2, RoundingMode.HALF_UP), null));
         }
         if (sum.compareTo(req.amount()) != 0) {
-            throw new BadRequestException("La somma delle quote (" + sum.setScale(2) + ") non corrisponde al totale ("
-                    + req.amount().setScale(2) + ")");
+            throw new BadRequestException("La somma delle quote (" + sum.setScale(2, RoundingMode.HALF_UP)
+                    + ") non corrisponde al totale (" + req.amount().setScale(2, RoundingMode.HALF_UP) + ")");
         }
         return result;
     }

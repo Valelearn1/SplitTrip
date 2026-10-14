@@ -25,7 +25,7 @@ class EqualSplitterTest {
     @Test
     void iCentesimiDiRestoVannoAiPrimiPerId() {
         var shares = EqualSplitter.split(new BigDecimal("100.00"), List.of(c, a, b));
-        assertThat(shares).extracting(s -> s.userId()).containsExactly(a, b, c);
+        assertThat(shares).extracting(s -> s.participantId()).containsExactly(a, b, c);
         assertThat(shares).extracting(s -> s.amount()).containsExactly(
                 new BigDecimal("33.34"), new BigDecimal("33.33"), new BigDecimal("33.33"));
     }

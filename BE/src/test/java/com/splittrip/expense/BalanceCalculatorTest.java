@@ -76,7 +76,7 @@ class BalanceCalculatorTest {
     void unMembroSenzaMovimentiCompareConZero() {
         Result r = calc.compute(List.of(marco, giulia, vale),
                 List.of(new ExpenseInput(marco, eur("10.00"), List.of(new ShareInput(giulia, eur("10.00"))))), List.of());
-        assertThat(r.balances()).extracting(MemberBalance::userId).containsExactly(marco, giulia, vale);
+        assertThat(r.balances()).extracting(MemberBalance::participantId).containsExactly(marco, giulia, vale);
         assertThat(r.balances().get(2).net()).isEqualByComparingTo("0");
     }
 

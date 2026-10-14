@@ -18,11 +18,11 @@ import java.util.UUID;
  */
 public final class BalanceCalculator {
 
-    public record ShareInput(UUID userId, BigDecimal amount) {}
+    public record ShareInput(UUID participantId, BigDecimal amount) {}
     public record ExpenseInput(UUID payerId, BigDecimal amount, List<ShareInput> shares) {}
-    public record SettlementInput(UUID fromUserId, UUID toUserId, BigDecimal amount) {}
-    public record MemberBalance(UUID userId, BigDecimal paid, BigDecimal owed, BigDecimal net) {}
-    public record Transfer(UUID fromUserId, UUID toUserId, BigDecimal amount) {}
+    public record SettlementInput(UUID fromParticipantId, UUID toParticipantId, BigDecimal amount) {}
+    public record MemberBalance(UUID participantId, BigDecimal paid, BigDecimal owed, BigDecimal net) {}
+    public record Transfer(UUID fromParticipantId, UUID toParticipantId, BigDecimal amount) {}
     public record Result(List<MemberBalance> balances, List<Transfer> suggestedTransfers) {}
 
     public Result compute(Collection<UUID> memberIds, List<ExpenseInput> expenses, List<SettlementInput> settlements) {
@@ -33,12 +33,12 @@ public final class BalanceCalculator {
         for (ExpenseInput e : expenses) {
             acc.computeIfAbsent(e.payerId(), k -> new long[4])[0] += cents(e.amount());
             for (ShareInput s : e.shares()) {
-                acc.computeIfAbsent(s.userId(), k -> new long[4])[1] += cents(s.amount());
+                acc.computeIfAbsent(s.participantId(), k -> new long[4])[1] += cents(s.amount());
             }
         }
         for (SettlementInput s : settlements) {
-            acc.computeIfAbsent(s.fromUserId(), k -> new long[4])[2] += cents(s.amount());
-            acc.computeIfAbsent(s.toUserId(), k -> new long[4])[3] += cents(s.amount());
+            acc.computeIfAbsent(s.fromParticipantId(), k -> new long[4])[2] += cents(s.amount());
+            acc.computeIfAbsent(s.toParticipantId(), k -> new long[4])[3] += cents(s.amount());
         }
 
         List<MemberBalance> balances = new ArrayList<>();

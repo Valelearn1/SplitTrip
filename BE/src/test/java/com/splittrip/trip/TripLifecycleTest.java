@@ -81,7 +81,7 @@ class TripLifecycleTest extends IntegrationTest {
                     .contentType(APPLICATION_JSON).content("{\"code\":\"" + sloppy + "\"}"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(tripId.toString()))
-                    .andExpect(jsonPath("$.members", hasSize(2)));
+                    .andExpect(jsonPath("$.participants", hasSize(2)));
         }
     }
 
@@ -121,27 +121,27 @@ class TripLifecycleTest extends IntegrationTest {
         String vale = TestUsers.register(mvc, "Vale");
         String marco = TestUsers.register(mvc, "Marco");
         String giulia = TestUsers.register(mvc, "Giulia");
-        UUID valeId = TestUsers.idOf(mvc, vale);
-        UUID marcoId = TestUsers.idOf(mvc, marco);
-        UUID giuliaId = TestUsers.idOf(mvc, giulia);
         UUID tripId = TestTrips.create(mvc, vale, "Roma");
         String code = TestTrips.inviteCode(mvc, vale, tripId);
         TestTrips.join(mvc, marco, code);
         TestTrips.join(mvc, giulia, code);
+        UUID valeId = TestTrips.participantOf(mvc, vale, tripId);
+        UUID marcoId = TestTrips.participantOf(mvc, marco, tripId);
+        UUID giuliaId = TestTrips.participantOf(mvc, giulia, tripId);
 
         // un membro non rimuove gli altri
-        mvc.perform(delete("/api/trips/" + tripId + "/members/" + giuliaId).header("Authorization", "Bearer " + marco))
+        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + giuliaId).header("Authorization", "Bearer " + marco))
                 .andExpect(status().isForbidden());
         // l'organizzatore non si rimuove
-        mvc.perform(delete("/api/trips/" + tripId + "/members/" + valeId).header("Authorization", "Bearer " + vale))
+        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + valeId).header("Authorization", "Bearer " + vale))
                 .andExpect(status().isConflict());
         // un membro può uscire
-        mvc.perform(delete("/api/trips/" + tripId + "/members/" + marcoId).header("Authorization", "Bearer " + marco))
+        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + marcoId).header("Authorization", "Bearer " + marco))
                 .andExpect(status().isNoContent());
         // l'organizzatore rimuove un membro
-        mvc.perform(delete("/api/trips/" + tripId + "/members/" + giuliaId).header("Authorization", "Bearer " + vale))
+        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + giuliaId).header("Authorization", "Bearer " + vale))
                 .andExpect(status().isNoContent());
         mvc.perform(get("/api/trips/" + tripId).header("Authorization", "Bearer " + vale))
-                .andExpect(jsonPath("$.members", hasSize(1)));
+                .andExpect(jsonPath("$.participants", hasSize(1)));
     }
 }

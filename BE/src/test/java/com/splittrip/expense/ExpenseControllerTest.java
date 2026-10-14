@@ -24,29 +24,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ExpenseControllerTest extends IntegrationTest {
 
     String vale, marco, giulia;
-    UUID valeId, marcoId, giuliaId, tripId;
+    UUID tripId, valeP, marcoP, giuliaP;
 
     @BeforeEach
     void setUp() throws Exception {
         vale = TestUsers.register(mvc, "Vale");
         marco = TestUsers.register(mvc, "Marco");
         giulia = TestUsers.register(mvc, "Giulia");
-        valeId = TestUsers.idOf(mvc, vale);
-        marcoId = TestUsers.idOf(mvc, marco);
-        giuliaId = TestUsers.idOf(mvc, giulia);
         tripId = TestTrips.create(mvc, vale, "Roma");
         String code = TestTrips.inviteCode(mvc, vale, tripId);
         TestTrips.join(mvc, marco, code);
         TestTrips.join(mvc, giulia, code);
+        valeP = TestTrips.participantOf(mvc, vale, tripId);
+        marcoP = TestTrips.participantOf(mvc, marco, tripId);
+        giuliaP = TestTrips.participantOf(mvc, giulia, tripId);
     }
 
     @Test
     void divisioneEquaSalvaLeQuoteConIlResto() throws Exception {
         mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + marco)
-                .contentType(APPLICATION_JSON).content(TestExpenses.equalBody("Cena", "100.00", marcoId, valeId, marcoId, giuliaId)))
+                .contentType(APPLICATION_JSON).content(TestExpenses.equalBody("Cena", "100.00", marcoP, valeP, marcoP, giuliaP)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.payerId").value(marcoId.toString()))
-                .andExpect(jsonPath("$.createdBy").value(marcoId.toString()))
+                .andExpect(jsonPath("$.payerId").value(marcoP.toString()))
+                .andExpect(jsonPath("$.createdBy").value(TestUsers.idOf(mvc, marco).toString()))
                 .andExpect(jsonPath("$.splitType").value("EQUAL"))
                 .andExpect(jsonPath("$.shares", hasSize(3)))
                 .andExpect(jsonPath("$.shares[*].amount", containsInAnyOrder(33.34, 33.33, 33.33)));
@@ -57,8 +57,8 @@ class ExpenseControllerTest extends IntegrationTest {
         mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
                 .contentType(APPLICATION_JSON).content("""
                 {"description":"Taxi","amount":30.00,"date":"2026-11-02","category":"TRANSPORT","payerId":"%s",
-                 "splitType":"CUSTOM","shares":[{"userId":"%s","amount":10.00},{"userId":"%s","amount":15.00}]}
-                """.formatted(valeId, valeId, marcoId)))
+                 "splitType":"CUSTOM","shares":[{"participantId":"%s","amount":10.00},{"participantId":"%s","amount":15.00}]}
+                """.formatted(valeP, valeP, marcoP)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value(containsString("25.00")))
                 .andExpect(jsonPath("$.detail").value(containsString("30.00")));
@@ -67,7 +67,7 @@ class ExpenseControllerTest extends IntegrationTest {
     @Test
     void descrizioneDiSoliSpaziDa400SulCampo() throws Exception {
         mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
-                .contentType(APPLICATION_JSON).content(TestExpenses.equalBody("   ", "10.00", valeId, valeId)))
+                .contentType(APPLICATION_JSON).content(TestExpenses.equalBody("   ", "10.00", valeP, valeP)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("description"));
     }
@@ -77,8 +77,8 @@ class ExpenseControllerTest extends IntegrationTest {
         mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
                 .contentType(APPLICATION_JSON).content("""
                 {"description":"Gelato","amount":10.00,"date":"2026-11-02","category":"FOOD","payerId":"%s",
-                 "splitType":"CUSTOM","shares":[{"userId":"%s","amount":10.005}]}
-                """.formatted(valeId, valeId)))
+                 "splitType":"CUSTOM","shares":[{"participantId":"%s","amount":10.005}]}
+                """.formatted(valeP, valeP)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value(containsString("amount")));
     }
@@ -86,14 +86,14 @@ class ExpenseControllerTest extends IntegrationTest {
     @Test
     void partecipanteNonMembroDa400() throws Exception {
         mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
-                .contentType(APPLICATION_JSON).content(TestExpenses.equalBody("Cena", "10.00", valeId, UUID.randomUUID())))
+                .contentType(APPLICATION_JSON).content(TestExpenses.equalBody("Cena", "10.00", valeP, UUID.randomUUID())))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void modificaECancellazioneSoloAutoreOOrganizzatore() throws Exception {
-        UUID expenseId = TestExpenses.createEqual(mvc, marco, tripId, "Cena", "90.00", marcoId, valeId, marcoId, giuliaId);
-        String update = TestExpenses.equalBody("Cena rivista", "60.00", marcoId, valeId, marcoId);
+        UUID expenseId = TestExpenses.createEqual(mvc, marco, tripId, "Cena", "90.00", marcoP, valeP, marcoP, giuliaP);
+        String update = TestExpenses.equalBody("Cena rivista", "60.00", marcoP, valeP, marcoP);
 
         mvc.perform(put("/api/trips/" + tripId + "/expenses/" + expenseId).header("Authorization", "Bearer " + giulia)
                 .contentType(APPLICATION_JSON).content(update)).andExpect(status().isForbidden());
@@ -110,7 +110,7 @@ class ExpenseControllerTest extends IntegrationTest {
 
     @Test
     void cestinoERipristino() throws Exception {
-        UUID expenseId = TestExpenses.createEqual(mvc, vale, tripId, "Cena", "90.00", valeId, valeId, marcoId);
+        UUID expenseId = TestExpenses.createEqual(mvc, vale, tripId, "Cena", "90.00", valeP, valeP, marcoP);
         mvc.perform(delete("/api/trips/" + tripId + "/expenses/" + expenseId).header("Authorization", "Bearer " + vale))
                 .andExpect(status().isNoContent());
         mvc.perform(get("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale))
@@ -130,10 +130,10 @@ class ExpenseControllerTest extends IntegrationTest {
 
     @Test
     void ripristinoBloccatoSeUnCoinvoltoHaLasciatoIlViaggio() throws Exception {
-        UUID expenseId = TestExpenses.createEqual(mvc, vale, tripId, "Cena", "90.00", valeId, valeId, marcoId);
+        UUID expenseId = TestExpenses.createEqual(mvc, vale, tripId, "Cena", "90.00", valeP, valeP, marcoP);
         mvc.perform(delete("/api/trips/" + tripId + "/expenses/" + expenseId).header("Authorization", "Bearer " + vale))
                 .andExpect(status().isNoContent());
-        mvc.perform(delete("/api/trips/" + tripId + "/members/" + marcoId).header("Authorization", "Bearer " + marco))
+        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + marcoP).header("Authorization", "Bearer " + marco))
                 .andExpect(status().isNoContent());
         mvc.perform(post("/api/trips/" + tripId + "/expenses/" + expenseId + "/restore").header("Authorization", "Bearer " + vale))
                 .andExpect(status().isConflict())
@@ -142,10 +142,10 @@ class ExpenseControllerTest extends IntegrationTest {
 
     @Test
     void ripristinoBloccatoSeChiHaPagatoHaLasciatoIlViaggio() throws Exception {
-        UUID expenseId = TestExpenses.createEqual(mvc, giulia, tripId, "Taxi", "20.00", giuliaId, valeId, marcoId);
+        UUID expenseId = TestExpenses.createEqual(mvc, giulia, tripId, "Taxi", "20.00", giuliaP, valeP, marcoP);
         mvc.perform(delete("/api/trips/" + tripId + "/expenses/" + expenseId).header("Authorization", "Bearer " + giulia))
                 .andExpect(status().isNoContent());
-        mvc.perform(delete("/api/trips/" + tripId + "/members/" + giuliaId).header("Authorization", "Bearer " + giulia))
+        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + giuliaP).header("Authorization", "Bearer " + giulia))
                 .andExpect(status().isNoContent());
         mvc.perform(post("/api/trips/" + tripId + "/expenses/" + expenseId + "/restore").header("Authorization", "Bearer " + vale))
                 .andExpect(status().isConflict())
@@ -156,10 +156,10 @@ class ExpenseControllerTest extends IntegrationTest {
     void conRimborsiAttiviNonSiRimuoveIlMembro() throws Exception {
         mvc.perform(post("/api/trips/" + tripId + "/settlements").header("Authorization", "Bearer " + marco)
                 .contentType(APPLICATION_JSON).content("""
-                {"fromUserId":"%s","toUserId":"%s","amount":35.00,"date":"2026-11-04"}
-                """.formatted(marcoId, valeId)))
+                {"fromParticipantId":"%s","toParticipantId":"%s","amount":35.00,"date":"2026-11-04"}
+                """.formatted(marcoP, valeP)))
                 .andExpect(status().isCreated());
-        mvc.perform(delete("/api/trips/" + tripId + "/members/" + marcoId).header("Authorization", "Bearer " + marco))
+        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + marcoP).header("Authorization", "Bearer " + marco))
                 .andExpect(status().isConflict());
     }
 
@@ -168,27 +168,27 @@ class ExpenseControllerTest extends IntegrationTest {
         mvc.perform(patch("/api/trips/" + tripId).header("Authorization", "Bearer " + vale)
                 .contentType(APPLICATION_JSON).content("{\"status\":\"CLOSED\"}")).andExpect(status().isOk());
         mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
-                .contentType(APPLICATION_JSON).content(TestExpenses.equalBody("Cena", "10.00", valeId, valeId)))
+                .contentType(APPLICATION_JSON).content(TestExpenses.equalBody("Cena", "10.00", valeP, valeP)))
                 .andExpect(status().isConflict());
     }
 
     @Test
     void conSpeseAttiveNonSiCancellaIlViaggioNeSiRimuoveIlMembro() throws Exception {
-        TestExpenses.createEqual(mvc, vale, tripId, "Cena", "90.00", valeId, valeId, marcoId);
+        TestExpenses.createEqual(mvc, vale, tripId, "Cena", "90.00", valeP, valeP, marcoP);
         mvc.perform(delete("/api/trips/" + tripId).header("Authorization", "Bearer " + vale))
                 .andExpect(status().isConflict());
-        mvc.perform(delete("/api/trips/" + tripId + "/members/" + marcoId).header("Authorization", "Bearer " + vale))
+        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + marcoP).header("Authorization", "Bearer " + vale))
                 .andExpect(status().isConflict());
     }
 
     @Test
     void filtroPerCategoriaEOrdinePerData() throws Exception {
-        TestExpenses.createEqual(mvc, vale, tripId, "Cena", "10.00", valeId, valeId);
+        TestExpenses.createEqual(mvc, vale, tripId, "Cena", "10.00", valeP, valeP);
         mvc.perform(post("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale)
                 .contentType(APPLICATION_JSON).content("""
                 {"description":"Treno","amount":20.00,"date":"2026-11-03","category":"TRANSPORT","payerId":"%s",
-                 "splitType":"EQUAL","shares":[{"userId":"%s"}]}
-                """.formatted(valeId, valeId))).andExpect(status().isCreated());
+                 "splitType":"EQUAL","shares":[{"participantId":"%s"}]}
+                """.formatted(valeP, valeP))).andExpect(status().isCreated());
 
         mvc.perform(get("/api/trips/" + tripId + "/expenses").header("Authorization", "Bearer " + vale))
                 .andExpect(jsonPath("$[0].description").value("Treno"))

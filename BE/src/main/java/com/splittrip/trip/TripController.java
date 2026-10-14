@@ -75,9 +75,9 @@ public class TripController {
         return trips.regenerateInviteCode(tripId, userId);
     }
 
-    @DeleteMapping("/{tripId}/members/{memberUserId}")
+    @DeleteMapping("/{tripId}/participants/{participantId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeMember(@CurrentUserId UUID userId, @PathVariable UUID tripId, @PathVariable UUID memberUserId) {
-        trips.removeMember(tripId, userId, memberUserId);
+    public void leave(@CurrentUserId UUID userId, @PathVariable UUID tripId, @PathVariable UUID participantId) {
+        trips.leave(tripId, userId, participantId);
     }
 }

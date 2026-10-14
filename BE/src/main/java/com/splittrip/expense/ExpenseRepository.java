@@ -12,7 +12,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     @Query("""
             select distinct e from Expense e
             left join fetch e.shares s
-            left join fetch s.user
+            left join fetch s.participant
             join fetch e.payer
             join fetch e.createdBy
             where e.trip.id = :tripId
@@ -23,7 +23,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     @Query("""
             select e from Expense e
             left join fetch e.shares s
-            left join fetch s.user
+            left join fetch s.participant
             join fetch e.payer
             join fetch e.createdBy
             where e.id = :expenseId and e.trip.id = :tripId

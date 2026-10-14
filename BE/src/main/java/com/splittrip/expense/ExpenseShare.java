@@ -1,6 +1,6 @@
 package com.splittrip.expense;
 
-import com.splittrip.user.User;
+import com.splittrip.trip.Participant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,12 +29,15 @@ public class ExpenseShare {
 
     // EAGER obbligatorio: Hibernate non permette to-one LAZY verso un'entità con @SoftDelete
     @ManyToOne(fetch = FetchType.EAGER, optional = false) @JoinColumn(name = "expense_id") private Expense expense;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "user_id") private User user;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "participant_id") private Participant participant;
     @Column(nullable = false, precision = 12, scale = 2) private BigDecimal amount;
+    /** Input da cui è stata calcolata la quota (peso o notti/giorni), per riaprire il form; null per EQUAL e CUSTOM. */
+    @Column(precision = 8, scale = 2) private BigDecimal weight;
 
-    public ExpenseShare(Expense expense, User user, BigDecimal amount) {
+    public ExpenseShare(Expense expense, Participant participant, BigDecimal amount, BigDecimal weight) {
         this.expense = expense;
-        this.user = user;
+        this.participant = participant;
         this.amount = amount;
+        this.weight = weight;
     }
 }

@@ -15,8 +15,8 @@ import static org.mockito.Mockito.when;
 class TripAccessServiceTest {
 
     TripRepository trips = mock(TripRepository.class);
-    TripMemberRepository members = mock(TripMemberRepository.class);
-    TripAccessService access = new TripAccessService(trips, members);
+    ParticipantRepository participants = mock(ParticipantRepository.class);
+    TripAccessService access = new TripAccessService(trips, participants);
     UUID tripId = UUID.randomUUID();
     UUID userId = UUID.randomUUID();
 
@@ -29,16 +29,16 @@ class TripAccessServiceTest {
     @Test
     void nonMembroDa403() {
         when(trips.existsById(tripId)).thenReturn(true);
-        when(members.findByTripIdAndUserId(tripId, userId)).thenReturn(Optional.empty());
+        when(participants.findByTripIdAndUserIdAndLeftAtIsNull(tripId, userId)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> access.requireMember(tripId, userId)).isInstanceOf(ForbiddenException.class);
     }
 
     @Test
     void membroSempliceNonEOrganizzatore() {
-        TripMember m = mock(TripMember.class);
+        Participant m = mock(Participant.class);
         when(m.getRole()).thenReturn(MemberRole.MEMBER);
         when(trips.existsById(tripId)).thenReturn(true);
-        when(members.findByTripIdAndUserId(tripId, userId)).thenReturn(Optional.of(m));
+        when(participants.findByTripIdAndUserIdAndLeftAtIsNull(tripId, userId)).thenReturn(Optional.of(m));
         assertThatThrownBy(() -> access.requireOrganizer(tripId, userId)).isInstanceOf(ForbiddenException.class);
     }
 

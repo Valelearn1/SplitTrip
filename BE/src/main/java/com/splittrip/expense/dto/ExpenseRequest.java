@@ -1,5 +1,6 @@
 package com.splittrip.expense.dto;
 
+import com.splittrip.expense.DayBasis;
 import com.splittrip.expense.ExpenseCategory;
 import com.splittrip.expense.SplitType;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ public record ExpenseRequest(
         @NotNull @DecimalMin("0.01") @Digits(integer = 10, fraction = 2) BigDecimal amount,
         @NotNull LocalDate date,
         @NotNull ExpenseCategory category,
-        @NotNull UUID payerId,
+        @NotNull UUID payerId, // id del partecipante
         @NotNull SplitType splitType,
+        DayBasis dayBasis,
         @NotEmpty @Valid List<ShareRequest> shares) {}

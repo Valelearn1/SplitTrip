@@ -39,14 +39,14 @@ public class ExpenseTrashRepository {
                 .query(Long.class).single() > 0;
     }
 
-    public List<UUID> shareUserIds(UUID expenseId) {
-        return jdbc.sql("select user_id from expense_shares where expense_id = :id")
+    public List<UUID> shareParticipantIds(UUID expenseId) {
+        return jdbc.sql("select participant_id from expense_shares where expense_id = :id")
                 .param("id", expenseId)
                 .query(UUID.class).list();
     }
 
-    public UUID payerId(UUID expenseId) {
-        return jdbc.sql("select payer_id from expenses where id = :id")
+    public UUID payerParticipantId(UUID expenseId) {
+        return jdbc.sql("select payer_participant_id from expenses where id = :id")
                 .param("id", expenseId)
                 .query(UUID.class).single();
     }

@@ -19,6 +19,6 @@ class SchemaTest extends IntegrationTest {
                 select table_name from information_schema.tables
                 where table_schema = 'public' order by table_name
                 """).query(String.class).list();
-        assertThat(tables).contains("users", "trips", "trip_members", "expenses", "expense_shares", "settlements");
+        assertThat(tables).contains("users", "trips", "participants", "expenses", "expense_shares", "settlements");
     }
 }

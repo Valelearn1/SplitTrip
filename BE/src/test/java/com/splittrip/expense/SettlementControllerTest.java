@@ -27,17 +27,17 @@ class SettlementControllerTest extends IntegrationTest {
         vale = TestUsers.register(mvc, "Vale");
         marco = TestUsers.register(mvc, "Marco");
         giulia = TestUsers.register(mvc, "Giulia");
-        valeId = TestUsers.idOf(mvc, vale);
-        marcoId = TestUsers.idOf(mvc, marco);
         tripId = TestTrips.create(mvc, vale, "Roma");
         String code = TestTrips.inviteCode(mvc, vale, tripId);
         TestTrips.join(mvc, marco, code);
         TestTrips.join(mvc, giulia, code);
+        valeId = TestTrips.participantOf(mvc, vale, tripId);
+        marcoId = TestTrips.participantOf(mvc, marco, tripId);
     }
 
     String body(UUID from, UUID to, String amount) {
         return """
-                {"fromUserId":"%s","toUserId":"%s","amount":%s,"date":"2026-11-04","note":"contanti"}
+                {"fromParticipantId":"%s","toParticipantId":"%s","amount":%s,"date":"2026-11-04","note":"contanti"}
                 """.formatted(from, to, amount);
     }
 
@@ -46,7 +46,7 @@ class SettlementControllerTest extends IntegrationTest {
         String created = mvc.perform(post("/api/trips/" + tripId + "/settlements").header("Authorization", "Bearer " + marco)
                 .contentType(APPLICATION_JSON).content(body(marcoId, valeId, "10.00")))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.fromUserId").value(marcoId.toString()))
+                .andExpect(jsonPath("$.fromParticipantId").value(marcoId.toString()))
                 .andExpect(jsonPath("$.fromName").value("Marco"))
                 .andExpect(jsonPath("$.toName").value("Vale"))
                 .andExpect(jsonPath("$.amount").value(10.00))

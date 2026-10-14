@@ -12,23 +12,23 @@ import java.util.UUID;
 public class TripAccessService {
 
     private final TripRepository trips;
-    private final TripMemberRepository members;
+    private final ParticipantRepository participants;
 
-    public TripAccessService(TripRepository trips, TripMemberRepository members) {
+    public TripAccessService(TripRepository trips, ParticipantRepository participants) {
         this.trips = trips;
-        this.members = members;
+        this.participants = participants;
     }
 
-    public TripMember requireMember(UUID tripId, UUID userId) {
+    public Participant requireMember(UUID tripId, UUID userId) {
         if (!trips.existsById(tripId)) {
             throw new NotFoundException("Viaggio non trovato");
         }
-        return members.findByTripIdAndUserId(tripId, userId)
+        return participants.findByTripIdAndUserIdAndLeftAtIsNull(tripId, userId)
                 .orElseThrow(() -> new ForbiddenException("Non fai parte di questo viaggio"));
     }
 
-    public TripMember requireOrganizer(UUID tripId, UUID userId) {
-        TripMember m = requireMember(tripId, userId);
+    public Participant requireOrganizer(UUID tripId, UUID userId) {
+        Participant m = requireMember(tripId, userId);
         if (!m.isOrganizer()) {
             throw new ForbiddenException("Solo l'organizzatore può farlo");
         }

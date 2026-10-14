@@ -5,8 +5,8 @@ import com.splittrip.expense.ExpenseShare;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record ShareResponse(UUID userId, String displayName, BigDecimal amount) {
+public record ShareResponse(UUID participantId, String displayName, BigDecimal amount, BigDecimal weight) {
     public static ShareResponse from(ExpenseShare s) {
-        return new ShareResponse(s.getUser().getId(), s.getUser().getDisplayName(), s.getAmount());
+        return new ShareResponse(s.getParticipant().getId(), s.getParticipant().getDisplayName(), s.getAmount(), s.getWeight());
     }
 }

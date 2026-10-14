@@ -1,5 +1,6 @@
 package com.splittrip.expense;
 
+import com.splittrip.trip.Participant;
 import com.splittrip.trip.Trip;
 import com.splittrip.user.User;
 import jakarta.persistence.CascadeType;
@@ -41,12 +42,17 @@ public class Expense {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "trip_id") private Trip trip;
-    @Setter @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "payer_id") private User payer;
+    @Setter @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "payer_participant_id") private Participant payer;
     @Setter @Column(nullable = false, length = 120) private String description;
-    @Setter @Column(nullable = false, precision = 12, scale = 2) private BigDecimal amount;
+    @Column(nullable = false, precision = 12, scale = 2) private BigDecimal amount;
+    // S2: per ora sempre la valuta del viaggio con tasso 1 (D-28)
+    @Column(nullable = false, length = 3) private String currency;
+    @Column(name = "fx_rate", nullable = false, precision = 18, scale = 8) private BigDecimal fxRate;
+    @Column(name = "amount_base", nullable = false, precision = 12, scale = 2) private BigDecimal amountBase;
     @Setter @Column(nullable = false) private LocalDate date;
     @Setter @Enumerated(EnumType.STRING) @Column(nullable = false, length = 16) private ExpenseCategory category;
     @Setter @Enumerated(EnumType.STRING) @Column(name = "split_type", nullable = false, length = 16) private SplitType splitType;
+    @Setter @Enumerated(EnumType.STRING) @Column(name = "day_basis", length = 8) private DayBasis dayBasis;
     @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "created_by") private User createdBy;
     @Column(name = "created_at", nullable = false, updatable = false) private Instant createdAt;
     @Setter @Column(name = "updated_at", nullable = false) private Instant updatedAt;
@@ -55,17 +61,26 @@ public class Expense {
     @OneToMany(mappedBy = "expense", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ExpenseShare> shares = new ArrayList<>();
 
-    public Expense(Trip trip, User payer, String description, BigDecimal amount, LocalDate date,
-                   ExpenseCategory category, SplitType splitType, User createdBy, Instant now) {
+    public Expense(Trip trip, Participant payer, String description, BigDecimal amount, LocalDate date,
+                   ExpenseCategory category, SplitType splitType, DayBasis dayBasis, User createdBy, Instant now) {
         this.trip = trip;
         this.payer = payer;
         this.description = description;
-        this.amount = amount;
+        this.currency = trip.getCurrency();
+        this.fxRate = BigDecimal.ONE;
+        setAmount(amount);
         this.date = date;
         this.category = category;
         this.splitType = splitType;
+        this.dayBasis = dayBasis;
         this.createdBy = createdBy;
         this.createdAt = now;
         this.updatedAt = now;
+    }
+
+    /** S2: con tasso 1 l'importo base coincide con l'importo. */
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+        this.amountBase = amount;
     }
 }
