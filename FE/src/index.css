@@ -308,3 +308,25 @@ fieldset.field.card { padding: var(--space-4); }
 .assign-select { min-height: 40px; max-width: 150px; padding: 0 8px; border: 1px solid var(--surface-3); border-radius: 10px; background: var(--surface-1); font: inherit; font-size: 0.9375rem; }
 .add-item { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
 .add-item input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid var(--surface-3); border-radius: 12px; background: var(--surface-1); font: inherit; font-size: 1rem; }
+
+/* v2: foto, mappa, upload, scontrino */
+.photo-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+@media (min-width: 720px) { .photo-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; } }
+.photo-tile { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 10px; overflow: hidden; }
+.photo-tile img, .photo-tile .img-placeholder { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 0; }
+.photo-tile:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.photo-map { height: 60vh; min-height: 320px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); }
+.photo-map .leaflet-container { height: 100%; width: 100%; font: inherit; }
+.map-popup { display: grid; gap: 6px; width: 160px; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; font: inherit; color: var(--ink); }
+.map-popup img, .map-popup .img-placeholder { width: 160px; height: 120px; object-fit: cover; border-radius: 8px; }
+.link-button { padding: 0; border: 0; background: none; color: var(--teal); font: inherit; text-align: left; cursor: pointer; text-decoration: underline; min-height: 44px; }
+.viewer-img { display: block; width: 100%; max-height: 70vh; object-fit: contain; border-radius: 12px; background: var(--surface-1); }
+.viewer-img.img-placeholder { aspect-ratio: 4 / 3; }
+.file-pick { position: relative; overflow: hidden; }
+.file-pick input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-list { margin: var(--space-3) 0; }
+.upload-item { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-2) 0; border-bottom: 1px solid var(--line); }
+.upload-item input[type="text"], .upload-item input:not([type]) { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--surface-3); border-radius: 12px; background: var(--surface-1); font: inherit; font-size: 1rem; }
+.upload-thumb { width: 72px; height: 72px; flex: none; object-fit: cover; border-radius: 10px; }
+.receipt-thumb { display: block; width: 120px; height: 160px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+.receipt-mark { margin-left: 6px; color: var(--ink-3); }

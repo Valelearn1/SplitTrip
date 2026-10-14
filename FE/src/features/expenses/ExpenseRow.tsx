@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import type { Expense } from '../../shared/api/types'
 import { CategoryIcon } from '../../shared/ui/CategoryIcon'
+import { Icon } from '../../shared/ui/Icon'
 import { MoneyText } from '../../shared/ui/MoneyText'
 import { splitLabel } from './splitLabels'
 
@@ -11,7 +12,7 @@ export function ExpenseRow({ expense, currency, meId }: { expense: Expense; curr
       <span className="row-main">
         <CategoryIcon category={expense.category} />
         <span className="row-text">
-          <strong>{expense.description}</strong>
+          <strong>{expense.description}{expense.receiptPhotoId && <Icon name="receipt" label="con scontrino" className="inline-icon receipt-mark" />}</strong>
           <small>{expense.shares.length} {expense.shares.length === 1 ? 'persona' : 'persone'} · pagato da {expense.payerId === meId ? 'te' : expense.payerName} · {splitLabel(expense, meId)}</small>
         </span>
       </span>

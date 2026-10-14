@@ -15,6 +15,7 @@ import { formatMoney } from '../../shared/utils/format'
 import { defaultBasis, presence, splitByWeight } from '../../shared/utils/split'
 import type { TripContext } from '../trips/TripLayout'
 import { expenseSchema, parseCents, toExpenseInput, type ExpenseForm } from './expenseSchema'
+import { ReceiptSection } from './ReceiptSection'
 import { useCreateExpense, useDeleteExpense, useExpense, useUpdateExpense } from './useExpenses'
 
 function today() {
@@ -203,6 +204,8 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
         {errors.shares?.message && <p className="field-error"><Icon name="error" /><span>{errors.shares.message}</span></p>}
         {errors.shares?.root?.message && <p className="field-error"><Icon name="error" /><span>{errors.shares.root.message}</span></p>}
       </fieldset>
+
+      <ReceiptSection tripId={trip.id} expense={expense} canEdit={canEdit} />
 
       <FormError error={mutation.error} />
       {canEdit ? (

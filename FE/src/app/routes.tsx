@@ -13,7 +13,6 @@ import { TripLayout } from '../features/trips/TripLayout'
 import { TripSettingsPage } from '../features/trips/TripSettingsPage'
 import { TripsPage } from '../features/trips/TripsPage'
 import { NotificationsPage } from '../features/notifications/NotificationsPage'
-import { PhotosPage } from '../features/photos/PhotosPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { TodoListsPage } from '../features/todo/TodoListsPage'
 import { Layout } from './Layout'
@@ -49,7 +48,8 @@ export const routes: RouteObject[] = [
               { path: 'settlements/new', element: <SettlementFormPage /> },
               { path: 'settings', element: <TripSettingsPage /> },
               { path: 'lists', element: <TodoListsPage /> },
-              { path: 'photos', element: <PhotosPage /> },
+              // Leaflet pesa: la pagina Foto si scarica solo quando la si apre
+              { path: 'photos', lazy: () => import('../features/photos/PhotosPage').then((m) => ({ Component: m.PhotosPage })) },
             ],
           },
         ],
