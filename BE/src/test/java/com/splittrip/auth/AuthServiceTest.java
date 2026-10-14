@@ -23,7 +23,7 @@ class AuthServiceTest {
 
     UserRepository users = mock(UserRepository.class);
     JwtService jwt = mock(JwtService.class);
-    AuthService service = new AuthService(users, new BCryptPasswordEncoder(4), jwt, Clock.systemUTC());
+    AuthService service = new AuthService(users, mock(com.splittrip.user.UserAvatarRepository.class), new BCryptPasswordEncoder(4), jwt, Clock.systemUTC());
 
     @Test
     void registrazioneNormalizzaEmailEHashaLaPassword() {

@@ -12,6 +12,7 @@ import com.splittrip.trip.dto.TripResponse;
 import com.splittrip.trip.dto.TripSummaryResponse;
 import com.splittrip.trip.dto.UnclaimedParticipant;
 import com.splittrip.user.User;
+import com.splittrip.user.UserAvatarRepository;
 import com.splittrip.user.UserService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -34,11 +36,13 @@ public class TripService {
     private final InviteCodeGenerator codes;
     private final ExpenseRepository expenses;
     private final ApplicationEventPublisher events;
+    private final UserAvatarRepository avatars;
     private final Clock clock;
 
     public TripService(TripRepository trips, ParticipantRepository participants, UserService users,
                        TripAccessService access, InviteCodeGenerator codes,
-                       ExpenseRepository expenses, ApplicationEventPublisher events, Clock clock) {
+                       ExpenseRepository expenses, ApplicationEventPublisher events, UserAvatarRepository avatars,
+                       Clock clock) {
         this.trips = trips;
         this.participants = participants;
         this.users = users;
@@ -46,6 +50,7 @@ public class TripService {
         this.codes = codes;
         this.expenses = expenses;
         this.events = events;
+        this.avatars = avatars;
         this.clock = clock;
     }
 
@@ -74,7 +79,9 @@ public class TripService {
     public TripResponse get(UUID tripId, UUID userId) {
         access.requireMember(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
-        return TripResponse.from(trip, participants.findByTripIdAndLeftAtIsNullOrderByJoinedAtAsc(tripId));
+        List<Participant> active = participants.findByTripIdAndLeftAtIsNullOrderByJoinedAtAsc(tripId);
+        Set<UUID> withAvatar = avatars.findUserIdsWithAvatar(active.stream().filter(Participant::hasAccount).map(Participant::userId).toList());
+        return TripResponse.from(trip, active, withAvatar);
     }
 
     @Transactional

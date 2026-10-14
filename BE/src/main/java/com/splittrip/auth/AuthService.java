@@ -6,6 +6,7 @@ import com.splittrip.auth.dto.RegisterRequest;
 import com.splittrip.common.ConflictException;
 import com.splittrip.common.UnauthorizedException;
 import com.splittrip.user.User;
+import com.splittrip.user.UserAvatarRepository;
 import com.splittrip.user.UserRepository;
 import com.splittrip.user.dto.UserResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,12 +20,14 @@ import java.util.Locale;
 public class AuthService {
 
     private final UserRepository users;
+    private final UserAvatarRepository avatars;
     private final PasswordEncoder encoder;
     private final JwtService jwt;
     private final Clock clock;
 
-    public AuthService(UserRepository users, PasswordEncoder encoder, JwtService jwt, Clock clock) {
+    public AuthService(UserRepository users, UserAvatarRepository avatars, PasswordEncoder encoder, JwtService jwt, Clock clock) {
         this.users = users;
+        this.avatars = avatars;
         this.encoder = encoder;
         this.jwt = jwt;
         this.clock = clock;
@@ -37,7 +40,7 @@ public class AuthService {
             throw new ConflictException("Esiste già un account con questa email");
         }
         User user = users.save(new User(email, encoder.encode(req.password()), req.displayName().strip(), clock.instant()));
-        return new AuthResponse(jwt.issue(user.getId()), UserResponse.from(user));
+        return new AuthResponse(jwt.issue(user.getId()), UserResponse.from(user, false));
     }
 
     @Transactional(readOnly = true)
@@ -46,7 +49,7 @@ public class AuthService {
         User user = users.findByEmail(normalize(req.email()))
                 .filter(u -> encoder.matches(req.password(), u.getPasswordHash()))
                 .orElseThrow(() -> new UnauthorizedException("Credenziali non valide"));
-        return new AuthResponse(jwt.issue(user.getId()), UserResponse.from(user));
+        return new AuthResponse(jwt.issue(user.getId()), UserResponse.from(user, avatars.existsById(user.getId())));
     }
 
     static String normalize(String email) {

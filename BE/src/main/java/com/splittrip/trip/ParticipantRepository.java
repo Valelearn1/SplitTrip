@@ -2,6 +2,7 @@ package com.splittrip.trip;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,4 +19,11 @@ public interface ParticipantRepository extends JpaRepository<Participant, UUID> 
     Optional<Participant> findByIdAndTripId(UUID id, UUID tripId);
     List<Participant> findByTripIdAndUserIsNullAndLeftAtIsNullOrderByJoinedAtAsc(UUID tripId);
     long countByTripIdAndLeftAtIsNull(UUID tripId);
+
+    /** Vero se i due utenti sono attivi in almeno un viaggio comune. */
+    @Query("""
+            select count(p1) > 0 from Participant p1, Participant p2
+            where p1.trip = p2.trip and p1.user.id = :a and p2.user.id = :b and p1.leftAt is null and p2.leftAt is null
+            """)
+    boolean sharesActiveTrip(UUID a, UUID b);
 }

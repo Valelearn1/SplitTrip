@@ -8,9 +8,9 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record ParticipantResponse(UUID id, UUID userId, String displayName, MemberRole role, BigDecimal defaultWeight,
-                                  LocalDate arrivalDate, LocalDate departureDate) {
-    public static ParticipantResponse from(Participant p) {
+                                  LocalDate arrivalDate, LocalDate departureDate, boolean hasAvatar) {
+    public static ParticipantResponse from(Participant p, boolean hasAvatar) {
         return new ParticipantResponse(p.getId(), p.userId(), p.getDisplayName(), p.getRole(), p.getDefaultWeight(),
-                p.getArrivalDate(), p.getDepartureDate());
+                p.getArrivalDate(), p.getDepartureDate(), hasAvatar);
     }
 }

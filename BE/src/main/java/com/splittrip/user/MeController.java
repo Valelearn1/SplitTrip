@@ -12,11 +12,15 @@ import java.util.UUID;
 @RequestMapping("/api/me")
 public class MeController {
     private final UserService users;
+    private final AvatarService avatars;
 
-    public MeController(UserService users) { this.users = users; }
+    public MeController(UserService users, AvatarService avatars) {
+        this.users = users;
+        this.avatars = avatars;
+    }
 
     @GetMapping
     public UserResponse me(@CurrentUserId UUID userId) {
-        return UserResponse.from(users.require(userId));
+        return UserResponse.from(users.require(userId), avatars.has(userId));
     }
 }
