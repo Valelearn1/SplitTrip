@@ -38,6 +38,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => configureClient({ getToken, onUnauthorized: () => {} })
   }, [logout])
 
-  const value = useMemo(() => ({ auth, login, logout }), [auth, login, logout])
+  const updateUser = useCallback((patch: Partial<AuthState['user']>) => {
+    setAuth((prev) => {
+      if (!prev) return prev
+      const next = { ...prev, user: { ...prev.user, ...patch } }
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(next))
+      return next
+    })
+  }, [])
+
+  const value = useMemo(() => ({ auth, login, logout, updateUser }), [auth, login, logout, updateUser])
   return <AuthContext value={value}>{children}</AuthContext>
 }

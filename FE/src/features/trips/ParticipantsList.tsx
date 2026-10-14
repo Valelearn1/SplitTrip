@@ -14,7 +14,7 @@ export function ParticipantsList({ participants, onEdit, onUnlink, onRemove }: P
       {participants.map((m) => (
         <li key={m.id} className="row row-wrap">
           <span className="row-main">
-            <Avatar name={m.displayName} />
+            <Avatar name={m.displayName} userId={m.userId} hasAvatar={m.hasAvatar} />
             <span className="row-text">
               <strong>{m.displayName}</strong>
               {m.role === 'ORGANIZER' && <small>organizzatore</small>}

@@ -16,7 +16,7 @@ export function Layout() {
           <nav aria-label="Account">
             <NotificationBell />
             <Link to="/profile" className="avatar-link" aria-label="Il tuo profilo">
-              <Avatar name={auth.user.displayName} me size="sm" />
+              <Avatar name={auth.user.displayName} me size="sm" userId={auth.user.id} hasAvatar={auth.user.hasAvatar} />
               <span className="muted">{auth.user.displayName}</span>
             </Link>
             <button type="button" className="btn btn-secondary btn-sm" onClick={logout}><Icon name="logout" />Esci</button>

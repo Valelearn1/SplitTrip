@@ -7,6 +7,7 @@ import { MoneyText } from '../../shared/ui/MoneyText'
 import { formatDate } from '../../shared/utils/format'
 import { useBalances, useSummary } from '../balances/useBalances'
 import { useExpenses } from '../expenses/useExpenses'
+import { WeatherCard } from '../weather/WeatherCard'
 import { InviteCodeBox } from './InviteCodeBox'
 import type { TripContext } from './TripLayout'
 
@@ -36,6 +37,8 @@ export function TripDashboardPage() {
         </div>
       </div>
 
+      <WeatherCard tripId={trip.id} />
+
       <div className="card">
         <div className="page-head" style={{ marginBottom: 8 }}>
           <h2>Compagni di viaggio</h2>
@@ -44,7 +47,7 @@ export function TripDashboardPage() {
         <div className="people">
           {trip.participants.map((p) => (
             <div key={p.id} className="person">
-              <Avatar name={p.displayName} me={p.id === me.id} size="lg" />
+              <Avatar name={p.displayName} me={p.id === me.id} size="lg" userId={p.userId} hasAvatar={p.hasAvatar} />
               <span>{p.id === me.id ? 'Tu' : firstName(p.displayName)}</span>
               {p.userId === null && <small className="muted">senza account</small>}
             </div>

@@ -32,6 +32,7 @@ describe('TripDashboardPage', () => {
         }),
       ),
       http.get('http://localhost/api/trips/t1/expenses', () => HttpResponse.json([])),
+      http.get('http://localhost/api/trips/t1/weather', () => HttpResponse.json({ days: [] })),
     )
     renderWithProviders(
       [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ index: true, element: <TripDashboardPage /> }] }],
