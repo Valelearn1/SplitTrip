@@ -53,11 +53,7 @@ export function TripLayout() {
         <NavLink to="" end><Icon name="explore" />Panoramica</NavLink>
         <NavLink to="expenses"><Icon name="receipt_long" />Spese</NavLink>
         <NavLink to="balances"><Icon name="balance" />Saldi</NavLink>
-        {ctx.isOrganizer ? (
-          <NavLink to="settings"><Icon name="settings" />Impostazioni</NavLink>
-        ) : (
-          <span className="tab-soon" aria-disabled="true" title="In arrivo nella v2"><Icon name="checklist" />Liste<small>presto</small></span>
-        )}
+        <NavLink to="settings"><Icon name="settings" />Impostazioni</NavLink>
       </nav>
       <Outlet context={ctx} />
     </section>

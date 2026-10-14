@@ -330,6 +330,7 @@ Pieni, alti e decisi: si premono con il pollice.
 ### Chips
 - **Style:** pillola alta 40 px, fondo bianco, bordo `surface-3`, testo `ink-2` 0.9375rem/500, icona 18 px opzionale. Avvolgono un radio nascosto (categorie nel form spesa), in una fila scorrevole su mobile.
 - **State:** hover `surface-1`; selezionato fondo e bordo `teal`, testo bianco; il focus del radio interno mostra l'anello sul chip.
+- **Scelta in linea (v1.5):** gli stessi chip, senza icona, fanno da gruppo di radio con `legend` per scelte secondarie dentro una sezione (Notti / Giorni nella divisione per presenza). Il nome accessibile è il testo del chip: le icone sono `aria-hidden`.
 
 ### Cards / Containers
 - **Corner Style:** 16 px.
@@ -344,6 +345,8 @@ Pieni, alti e decisi: si premono con il pollice.
 - **Error:** bordo `coral` e fondo `coral-tint`; messaggio sotto con icona e testo `coral` 0.875rem/500.
 - **Importo:** campo gigante 2.5rem/800 centrato, alto 72 px, con il simbolo della valuta in teal a destra.
 - **Checkbox:** 22 px, riga cliccabile alta almeno 44 px, colore da `accent-color` teal.
+- **Numero in riga con anteprima (v1.5):** nelle righe «Diviso tra» per Pesi e Presenza, campo quota stretto (`weight-input`, 76 px) allineato a destra con l'anteprima della quota in euro sotto, `muted` 0.8125rem. Il campo è stretto apposta: il nome della persona non deve andare a capo. `aria-label` «Peso di …» / «Notti di …» / «Giorni di …».
+- **Nota sotto un campo (v1.5):** `.hint`, 0.875rem `muted`, attaccata al campo sopra (margine negativo) e staccata 16 px dal successivo. Spiega il significato del valore (es. «1 = una persona, 2 = una coppia…»), non ripete l'etichetta.
 
 ### Navigation
 - **Header:** bianco, sticky, marchio teal con icona valigia piena a sinistra; a destra avatar «tu», nome (nascosto su mobile) ed «Esci» secondario piccolo.
@@ -355,6 +358,7 @@ Pillola (padding 4/10/4/8 px, 0.875rem/600) con freccia Material Symbols da 18 p
 
 ### Cerchi delle iniziali (signature)
 Avatar circolari da 40 px (32 px piccoli, 56 px grandi) con due iniziali maiuscole 700. Gli altri partecipanti su `surface-2` / `ink-2`; «tu» su `teal-tint` / `teal` con doppio anello bianco + teal. Come selettore del pagante, la persona scelta diventa piena teal con testo bianco e nome in teal 700.
+Chi partecipa senza account (v1.5) ha lo stesso cerchio: la differenza è detta a parole, con «senza account» in `small` sotto il nome, mai con un colore o un'icona sola (D-24). Le azioni di riga sulle persone (`row-actions`) vanno a capo allineate a destra invece di uscire dallo schermo.
 
 ### Cerchi categoria e badge di stato
 Cerchi da 44 px con icona Material Symbols da 22 px nel colore della categoria su tinta della stessa famiglia. Badge di stato a pillola, 0.8125rem/600, con un pallino 7 px nel colore del testo e la parola dello stato.

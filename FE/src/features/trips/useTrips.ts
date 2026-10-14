@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { tripsApi, type TripInput, type TripPatch } from './tripsApi'
+import { tripsApi, type ParticipantInput, type ParticipantPatch, type TripInput, type TripPatch } from './tripsApi'
 
 export const tripKeys = {
   all: ['trips'] as const,
@@ -60,6 +60,30 @@ export function useLeaveTrip(tripId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (participantId: string) => tripsApi.leave(tripId, participantId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: tripKeys.all }),
+  })
+}
+
+export function useAddParticipant(tripId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: ParticipantInput) => tripsApi.addParticipant(tripId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: tripKeys.all }),
+  })
+}
+
+export function useUpdateParticipant(tripId: string, participantId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: ParticipantPatch) => tripsApi.updateParticipant(tripId, participantId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: tripKeys.all }),
+  })
+}
+
+export function useUnlinkParticipant(tripId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (participantId: string) => tripsApi.unlinkParticipant(tripId, participantId),
     onSuccess: () => qc.invalidateQueries({ queryKey: tripKeys.all }),
   })
 }

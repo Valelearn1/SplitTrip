@@ -139,6 +139,12 @@ fieldset.field.card { padding: var(--space-4); }
 .row-text small { color: var(--ink-3); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row-side { flex: none; text-align: right; display: grid; justify-items: end; gap: 2px; }
 .row-side small { font-size: 0.8125rem; white-space: nowrap; }
+/* Azioni di riga: a capo sotto i 390px invece di uscire dallo schermo */
+.row-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); min-width: 0; }
+/* Peso o notti/giorni: numeri brevi, il campo non deve rubare spazio al nome */
+.share-input.weight-input { width: 76px; }
+/* Nota sotto un campo: legata al campo sopra, staccata da quello dopo */
+.hint { margin: calc(-1 * var(--space-2)) 0 var(--space-4); font-size: 0.875rem; }
 .list { list-style: none; padding: 0; margin: 0; }
 .stack { display: grid; gap: var(--space-3); }
 .actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }

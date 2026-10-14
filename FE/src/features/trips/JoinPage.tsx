@@ -38,7 +38,7 @@ export function JoinPage() {
           <p>{formatDateRange(preview.data.startDate, preview.data.endDate)}</p>
           <p className="muted">{preview.data.memberCount} partecipanti</p>
           {preview.data.unclaimed.length > 0 && (
-            <fieldset className="field">
+            <fieldset className="field" style={{ marginTop: 16 }}>
               <legend>Qualcuno ti ha già aggiunto?</legend>
               <label className="check"><input type="radio" name="claim" value="" checked={claim === ''} onChange={() => setClaim('')} />No, sono nuovo</label>
               {preview.data.unclaimed.map((u) => (

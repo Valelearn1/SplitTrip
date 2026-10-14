@@ -178,7 +178,7 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
             </label>
             {isWeighted && shares[i]?.included && (
               <span className="row-side">
-                <input aria-label={`${weightLabel} di ${p.displayName}`} inputMode="decimal" className="share-input"
+                <input aria-label={`${weightLabel} di ${p.displayName}`} inputMode="decimal" className="share-input weight-input"
                   {...register(`shares.${i}.weight`, { onChange: () => markTouched(i) })} />
                 <small className="muted" style={{ display: 'block' }}>{formatMoney((preview.get(p.id) ?? 0) / 100, trip.currency)}</small>
               </span>
