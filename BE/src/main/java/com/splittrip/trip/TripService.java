@@ -9,6 +9,7 @@ import com.splittrip.trip.dto.TripPatchRequest;
 import com.splittrip.trip.dto.TripRequest;
 import com.splittrip.trip.dto.TripResponse;
 import com.splittrip.trip.dto.TripSummaryResponse;
+import com.splittrip.trip.dto.UnclaimedParticipant;
 import com.splittrip.user.User;
 import com.splittrip.user.UserService;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -107,15 +109,30 @@ public class TripService {
     public JoinPreviewResponse joinPreview(String code) {
         Trip trip = findByCode(code);
         return new JoinPreviewResponse(trip.getName(), trip.getDestination(), trip.getStartDate(), trip.getEndDate(),
-                participants.countByTripIdAndLeftAtIsNull(trip.getId()));
+                participants.countByTripIdAndLeftAtIsNull(trip.getId()),
+                participants.findByTripIdAndUserIsNullAndLeftAtIsNullOrderByJoinedAtAsc(trip.getId()).stream()
+                        .map(p -> new UnclaimedParticipant(p.getId(), p.getDisplayName())).toList());
     }
 
     @Transactional
-    public TripResponse join(UUID userId, String code) {
+    public TripResponse join(UUID userId, String code, UUID participantId) {
         Trip trip = findByCode(code);
-        if (participants.findByTripIdAndUserIdAndLeftAtIsNull(trip.getId(), userId).isEmpty()) {
-            access.requireWritable(trip);
-            User user = users.require(userId);
+        Optional<Participant> mine = participants.findByTripIdAndUserId(trip.getId(), userId);
+        if (mine.isPresent() && !mine.get().hasLeft()) {
+            return get(trip.getId(), userId);
+        }
+        access.requireWritable(trip);
+        User user = users.require(userId);
+        if (mine.isPresent()) {               // aveva lasciato: riattiva la sua riga, ritrova i suoi soldi
+            mine.get().setLeftAt(null);
+        } else if (participantId != null) {   // rivendica un posto senza account (D-32)
+            Participant target = participants.findByIdAndTripId(participantId, trip.getId())
+                    .orElseThrow(() -> new NotFoundException("Partecipante non trovato"));
+            if (target.hasAccount() || target.hasLeft()) {
+                throw new ConflictException("Questo posto non è più disponibile");
+            }
+            target.setUser(user);
+        } else {
             participants.save(new Participant(trip, user, user.getDisplayName(), MemberRole.MEMBER, clock.instant()));
         }
         return get(trip.getId(), userId);

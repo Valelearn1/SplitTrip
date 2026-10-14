@@ -50,7 +50,7 @@ public class TripController {
 
     @PostMapping("/join")
     public TripResponse join(@CurrentUserId UUID userId, @Valid @RequestBody JoinRequest req) {
-        return trips.join(userId, req.code());
+        return trips.join(userId, req.code(), req.participantId());
     }
 
     @GetMapping("/{tripId}")
