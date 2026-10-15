@@ -15,6 +15,8 @@ import { usePhotos } from './usePhotos'
 export function PhotosPage() {
   const { trip, me, isOrganizer, canWrite } = useOutletContext<TripContext>()
   const photos = usePhotos(trip.id)
+  // le proposte di luoghi preferiscono quelli vicini alla destinazione del viaggio (D-46)
+  const near = trip.latitude != null && trip.longitude != null ? { latitude: trip.latitude, longitude: trip.longitude } : undefined
   const [view, setView] = useState<'grid' | 'map'>('grid')
   const [open, setOpen] = useState<Photo | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -37,9 +39,10 @@ export function PhotosPage() {
       {canWrite && (
         <button type="button" className="fab" aria-label="Carica foto" onClick={() => setUploading(true)}><Icon name="add_a_photo" /></button>
       )}
-      {uploading && <PhotoUploadSheet tripId={trip.id} open onClose={() => setUploading(false)} />}
+      {uploading && <PhotoUploadSheet tripId={trip.id} open near={near} onClose={() => setUploading(false)} />}
       {open && (
-        <PhotoViewer tripId={trip.id} photo={open} canDelete={open.uploaderId === me.userId || isOrganizer} onClose={() => setOpen(null)} />
+        <PhotoViewer tripId={trip.id} photo={open} near={near} canDelete={open.uploaderId === me.userId || isOrganizer}
+          canEditPlace={canWrite && (open.uploaderId === me.userId || isOrganizer)} onClose={() => setOpen(null)} />
       )}
     </div>
   )

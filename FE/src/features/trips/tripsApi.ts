@@ -1,7 +1,7 @@
 import { api } from '../../shared/api/client'
 import type { JoinPreview, Participant, Trip, TripStatus, TripSummary } from '../../shared/api/types'
 
-export type TripInput = { name: string; destination: string; startDate: string; endDate: string; currency?: string }
+export type TripInput = { name: string; destination: string; startDate: string; endDate: string; currency?: string; latitude?: number; longitude?: number }
 export type TripPatch = Partial<Omit<TripInput, 'currency'>> & { status?: TripStatus }
 export type ParticipantInput = { displayName: string; defaultWeight?: number; arrivalDate?: string; departureDate?: string }
 /** Campi assenti = non toccare; clearDates azzera arrivo e partenza prima di applicare quelli presenti. */

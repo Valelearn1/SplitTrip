@@ -39,6 +39,7 @@ export function PhotoMap({ tripId, photos, onOpen }: Props) {
                 <button type="button" className="map-popup" onClick={() => onOpen(p)}>
                   <AuthImage path={photoPath(tripId, p.id, 'thumbnail')} alt={p.caption ?? `Foto di ${p.uploaderName}`} />
                   <span>{p.caption ?? 'Senza didascalia'}</span>
+                  {p.placeName && <small className="muted">{p.placeName}</small>}
                 </button>
               </Popup>
             </CircleMarker>

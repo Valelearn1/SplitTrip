@@ -7,6 +7,9 @@ export const tripSchema = z
     startDate: z.string().min(1, 'Scegli la data di partenza'),
     endDate: z.string().min(1, 'Scegli la data di ritorno'),
     currency: z.string().regex(/^[A-Z]{3}$/, 'Valuta a 3 lettere, es. EUR'),
+    // dalla proposta scelta (D-46): o entrambe o nessuna
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
   })
   .refine((v) => v.endDate >= v.startDate, { message: 'Il ritorno deve essere dopo la partenza', path: ['endDate'] })
 

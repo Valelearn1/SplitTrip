@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Ricerca luoghi (D-46): valida, limita, mette in cache; se Photon non risponde, lista vuota. */
+/** Ricerca luoghi (D-46, servizio D-51): valida, limita, mette in cache; se il servizio non risponde, lista vuota. */
 @Service
 public class PlaceService {
 

@@ -11,7 +11,12 @@ export type TripSummary = {
   id: string; name: string; destination: string; startDate: string; endDate: string
   currency: string; status: TripStatus; memberCount: number; myRole: MemberRole
 }
-export type Trip = Omit<TripSummary, 'memberCount' | 'myRole'> & { inviteCode: string; ownerId: string; participants: Participant[] }
+export type Trip = Omit<TripSummary, 'memberCount' | 'myRole'> & {
+  inviteCode: string; ownerId: string; participants: Participant[]
+  latitude: number | null; longitude: number | null // dalla proposta scelta o calcolate dal meteo
+}
+export type Place = { name: string; detail: string; latitude: number; longitude: number }
+export type PlaceValue = { name: string; latitude?: number; longitude?: number }
 export type JoinPreview = {
   name: string; destination: string; startDate: string; endDate: string; memberCount: number
   unclaimed: { id: string; displayName: string }[]
@@ -60,7 +65,8 @@ export type TodoList = { id: string; title: string; type: TodoListType; createdA
 export type PhotoKind = 'PHOTO' | 'RECEIPT'
 export type Photo = {
   id: string; kind: PhotoKind; expenseId: string | null; uploaderId: string; uploaderName: string; caption: string | null
-  takenAt: string | null; latitude: number | null; longitude: number | null; width: number; height: number; createdAt: string
+  takenAt: string | null; latitude: number | null; longitude: number | null; placeName: string | null
+  width: number; height: number; createdAt: string
 }
 
 export type NotificationType = 'EXPENSE_ADDED' | 'SETTLEMENT_ADDED' | 'PARTICIPANT_JOINED' | 'TODO_ASSIGNED'

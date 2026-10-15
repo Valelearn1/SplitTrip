@@ -3,6 +3,7 @@ import { ApiError } from '../../shared/api/client'
 import { Button } from '../../shared/ui/Button'
 import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
+import { PlaceInput, type PlaceValue } from '../../shared/ui/PlaceInput'
 import { downscale, readPhotoMeta, type PhotoMeta } from '../../shared/utils/image'
 import { useUploadPhoto } from './usePhotos'
 
@@ -13,13 +14,14 @@ type Item = {
   meta: PhotoMeta
   caption: string
   share: boolean       // consenso a mostrare la posizione sulla mappa: spento di default (D-35)
+  place?: PlaceValue   // luogo cercato a mano per le foto senza GPS (D-46): sceglierlo vale come consenso
   status: 'ready' | 'uploading' | 'done' | 'error'
   error?: string
 }
 
-type Props = { tripId: string; open: boolean; onClose: () => void }
+type Props = { tripId: string; open: boolean; onClose: () => void; near?: { latitude: number; longitude: number } }
 
-export function PhotoUploadSheet({ tripId, open, onClose }: Props) {
+export function PhotoUploadSheet({ tripId, open, onClose, near }: Props) {
   const upload = useUploadPhoto(tripId)
   const [items, setItems] = useState<Item[]>([])
   const [progress, setProgress] = useState<string>('')
@@ -51,10 +53,11 @@ export function PhotoUploadSheet({ tripId, open, onClose }: Props) {
       update(item.key, { status: 'uploading', error: undefined })
       try {
         const file = await downscale(item.file)
-        await upload.mutateAsync({
-          file, caption: item.caption, takenAt: item.meta.takenAt,
-          ...(item.share && item.meta.latitude !== undefined ? { latitude: item.meta.latitude, longitude: item.meta.longitude } : {}),
-        })
+        // il GPS con consenso ha la precedenza; altrimenti il luogo scelto tra le proposte
+        const where = item.share && item.meta.latitude !== undefined ? { latitude: item.meta.latitude, longitude: item.meta.longitude }
+          : item.place?.latitude !== undefined ? { placeName: item.place.name, latitude: item.place.latitude, longitude: item.place.longitude }
+          : {}
+        await upload.mutateAsync({ file, caption: item.caption, takenAt: item.meta.takenAt, ...where })
         update(item.key, { status: 'done' })
       } catch (e) {
         update(item.key, { status: 'error', error: e instanceof ApiError ? e.detail : 'Caricamento non riuscito' })
@@ -88,9 +91,15 @@ export function PhotoUploadSheet({ tripId, open, onClose }: Props) {
                   Mostra sulla mappa dove è stata scattata
                 </label>
               ) : (
-                <button type="button" className="btn btn-secondary btn-sm" onClick={() => askCurrentPosition(i.key)}>
-                  <Icon name="my_location" />Usa la mia posizione attuale
-                </button>
+                <>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => askCurrentPosition(i.key)}>
+                    <Icon name="my_location" />Usa la mia posizione attuale
+                  </button>
+                  {i.status !== 'done' && (
+                    <PlaceInput id={`place-${i.key}`} label="Cerca un luogo" placeholder="Es. Alfama, Trastevere" near={near}
+                      value={i.place ?? { name: '' }} onChange={(v) => update(i.key, { place: v, share: v.latitude !== undefined })} />
+                  )}
+                </>
               )}
               {i.status === 'done' && <small className="money-positive">Caricata</small>}
               {i.error && <p className="field-error"><Icon name="error" /><span>{i.error}</span></p>}

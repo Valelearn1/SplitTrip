@@ -16,6 +16,6 @@ public class PlaceConfig {
     PlaceSearchClient placeSearchClient() {
         var factory = new JdkClientHttpRequestFactory(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build());
         factory.setReadTimeout(Duration.ofSeconds(3));
-        return new PhotonPlaceClient(RestClient.builder().requestFactory(factory));
+        return new OpenMeteoPlaceClient(RestClient.builder().requestFactory(factory));
     }
 }

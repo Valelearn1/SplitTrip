@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
+import { PlaceInput } from '../../shared/ui/PlaceInput'
 import { currencyLabel, TRAVEL_CURRENCIES } from '../../shared/utils/currencies'
 import { tripSchema, type TripForm } from './tripSchema'
 import { useCreateTrip } from './useTrips'
@@ -11,17 +12,23 @@ import { useCreateTrip } from './useTrips'
 export function NewTripPage() {
   const navigate = useNavigate()
   const create = useCreateTrip()
-  const { register, handleSubmit, formState: { errors } } = useForm<TripForm>({
+  const { register, control, handleSubmit, setValue, formState: { errors } } = useForm<TripForm>({
     resolver: zodResolver(tripSchema),
     defaultValues: { currency: 'EUR' },
   })
+  const [latitude, longitude] = useWatch({ control, name: ['latitude', 'longitude'] })
 
   return (
     <section>
       <h1>Nuovo viaggio</h1>
       <form noValidate onSubmit={handleSubmit((values) => create.mutate(values, { onSuccess: (trip) => navigate(`/trips/${trip.id}`) }))}>
         <Field label="Nome del viaggio" placeholder="Es. Roma 2026" error={errors.name?.message} {...register('name')} />
-        <Field label="Destinazione" error={errors.destination?.message} {...register('destination')} />
+        <Controller control={control} name="destination" render={({ field }) => (
+          <PlaceInput id="trip-destination" label="Destinazione" placeholder="Es. Lisbona" error={errors.destination?.message}
+            hint="Scrivi almeno 3 lettere e scegli una proposta: il meteo sarà più preciso"
+            value={{ name: field.value ?? '', latitude, longitude }}
+            onChange={(v) => { field.onChange(v.name); setValue('latitude', v.latitude); setValue('longitude', v.longitude) }} />
+        )} />
         <Field label="Partenza" type="date" error={errors.startDate?.message} {...register('startDate')} />
         <Field label="Ritorno" type="date" error={errors.endDate?.message} {...register('endDate')} />
         <div className="field">

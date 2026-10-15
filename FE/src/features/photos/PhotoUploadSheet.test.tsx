@@ -1,7 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
 import { expect, it, vi } from 'vitest'
+import { server } from '../../test/server'
+import { readPhotoMeta } from '../../shared/utils/image'
 import { photosApi, type PhotoUpload } from './photosApi'
 import { PhotoUploadSheet } from './PhotoUploadSheet'
 
@@ -47,4 +50,21 @@ it('«Scatta foto» apre la fotocamera posteriore e la foto segue lo stesso perc
   expect(camera).toHaveAttribute('accept', 'image/*')
   await userEvent.setup().upload(camera, new File(['x'], 'scatto.jpg', { type: 'image/jpeg' }))
   expect(await screen.findByRole('button', { name: 'Carica 1 foto' })).toBeInTheDocument()
+})
+
+it('«Cerca un luogo» mette la foto sulla mappa con nome e coordinate', async () => {
+  vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:preview')
+  vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+  vi.mocked(readPhotoMeta).mockResolvedValueOnce({})            // foto senza GPS
+  server.use(http.get('http://localhost/api/places', () => HttpResponse.json([{ name: 'Belvedere di Santa Luzia', detail: 'Alfama, Lisbona', latitude: 38.7128, longitude: -9.1297 }])))
+  const sent: PhotoUpload[] = []
+  vi.spyOn(photosApi, 'upload').mockImplementation(async (_tripId, p) => { sent.push(p); return { id: 'p1' } as never })
+  render(<QueryClientProvider client={new QueryClient()}><PhotoUploadSheet tripId="t1" open onClose={() => {}} near={{ latitude: 38.72, longitude: -9.14 }} /></QueryClientProvider>)
+  const user = userEvent.setup()
+  await user.upload(screen.getByLabelText('Scegli le foto'), new File(['x'], 'a.jpg', { type: 'image/jpeg' }))
+  await user.type(await screen.findByRole('combobox', { name: 'Cerca un luogo' }), 'belv')
+  await user.click(await screen.findByRole('option', { name: /Belvedere/ }))
+  await user.click(screen.getByRole('button', { name: 'Carica 1 foto' }))
+  await waitFor(() => expect(sent).toHaveLength(1))
+  expect(sent[0]).toMatchObject({ placeName: 'Belvedere di Santa Luzia', latitude: 38.7128, longitude: -9.1297 })
 })
