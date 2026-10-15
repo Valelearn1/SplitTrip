@@ -45,7 +45,7 @@ export function ParticipantForm({ tripId, participant, submitLabel, onSaved }: P
       <Field label="Nome nel viaggio" error={errors.displayName?.message} {...register('displayName')} />
       <CountsFor legend="Conta per" showLegend value={defaultWeight} error={errors.defaultWeight?.message}
         onChange={(v) => setValue('defaultWeight', v, { shouldDirty: true, shouldValidate: true })} />
-      <p className="muted hint">1 = una persona · 2 = una coppia con un solo account · ½ = un bambino. Vale per le spese in parti uguali; si può cambiare spesa per spesa.</p>
+      <p className="muted hint">1 = una persona · 2 = una coppia con un solo account · ½ = un bambino · con «altro» si sommano: 2,5 = una coppia con un bambino. Vale per le spese in parti uguali; si può cambiare spesa per spesa.</p>
       <div className="grid-2">
         <Field label="Arrivo" type="date" error={errors.arrivalDate?.message} {...register('arrivalDate')} />
         <Field label="Partenza" type="date" error={errors.departureDate?.message} {...register('departureDate')} />

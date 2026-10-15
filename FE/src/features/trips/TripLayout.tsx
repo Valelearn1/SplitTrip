@@ -7,6 +7,7 @@ import { StatusBadge } from '../../shared/ui/StatusBadge'
 import { formatDateRange } from '../../shared/utils/format'
 import { useAuth } from '../auth/useAuth'
 import { ChatButton } from '../chat/ChatButton'
+import { NewMessageToast } from '../chat/NewMessageToast'
 import { useTripLiveSync } from '../chat/useTripLiveSync'
 import { useBalances } from '../balances/useBalances'
 import { BalancePill } from '../../shared/ui/BalancePill'
@@ -66,6 +67,7 @@ export function TripLayout() {
         <NavLink to="photos"><Icon name="photo_library" />Foto</NavLink>
       </nav>
       <Outlet context={ctx} />
+      <NewMessageToast tripId={trip.id} myParticipantId={me.id} onChatPage={path.endsWith('/chat')} />
     </section>
   )
 }

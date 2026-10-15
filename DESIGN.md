@@ -404,6 +404,12 @@ Il piede (`chat-footer`) tiene insieme «Marco sta scrivendo…» (0.875rem `mut
 Card «Consigli per {destinazione}» con icona `auto_awesome` nel titolo: 3–5 righe con icona teal 24 px per categoria, categoria in testo piccolo `muted`, titolo 700 e testo `ink-2`. Bottone `soft` piccolo «Genera consigli» / «Rigenera (4 rimaste oggi)»; sotto, su riga propria, «Generato con AI · può contenere errori» in `muted`. Mentre genera, righe-segnaposto `surface-2` e «Sto pensando…» (`role="status"`). Senza chiave sul server la card non c'è.
 Nelle liste Valigia, in fondo alla card sotto l'aggiunta voci, «Suggerisci voci» `soft` piccolo: apre una modale con le proposte già spuntate (checkbox 22 px), la stessa nota AI e «Aggiungi N voci» primario.
 
+### Ritocchi dopo i test con gli amici (v3.1)
+- **Chat:** in testa «Indietro» (secondario piccolo, torna da dove si è venuti o alla panoramica), titolo «Chat» e a destra il bottone 44 px del suono (`volume_up`/`volume_off`, `aria-pressed`).
+- **Messaggio nuovo fuori dalla chat:** avviso in basso (sopra la tab bar su mobile, 400 px a destra su desktop), card bianca con ombra galleggiante, icona chat teal, «**Marco:** testo» su al massimo due righe, «Apri la chat» primario piccolo e chiudi 44 px; sparisce dopo 6 s; `role="status"`. Accompagnato da due note brevi generate dal browser, se il suono è attivo: mai solo il suono.
+- **Righe espandibili:** spese e rimborsi hanno a destra un bottone 44 px `expand_more`/`expand_less` (`aria-expanded`, «Dettagli di …»); il dettaglio è un riquadro `surface-1` a raggio 12 px con il testo intero (divisione, nota) e, per le spese, la quota di ognuno con «conta per» o notti/giorni.
+- **Campi data:** larghezza bloccata al contenitore anche in Safari su iPhone.
+
 ### Illustrazioni in movimento (v3, D-43)
 SVG nostri con colori dai token: **busta** (32×26, `ink-2`, teal se non letta) davanti a ogni notifica, il lembo si ribalta in 250 ms quando la si legge; **valigia** (24 px teal, coperchio su cerniera) nel titolo delle liste Valigia, si chiude e disegna una spunta quando l'ultima voce è fatta, e saltella nel banner di risveglio del server. I messaggi arrivati dal vivo entrano con dissolvenza e 8 px di scivolata in 200 ms. Animazioni con Motion (`m.*` con funzioni caricate a parte), sempre azzerate da `prefers-reduced-motion`.
 

@@ -46,7 +46,8 @@ function mount(status = 'ONGOING', items: ChatMessage[] = [], older?: { items: C
       return HttpResponse.json(msg({ id: 'mine', authorParticipantId: 'p1', authorName: 'Vale', authorUserId: 'u1', content: body.content }), { status: 201 })
     }),
   )
-  renderWithProviders([{ path: '/trips/:tripId', element: <LiveContext value={live}><TripLayout /></LiveContext>, children: [{ path: 'chat', element: <ChatPage /> }] }], '/trips/t1/chat')
+  renderWithProviders([{ path: '/trips/:tripId', element: <LiveContext value={live}><TripLayout /></LiveContext>, children: [
+    { index: true, element: <p>Panoramica del viaggio</p> }, { path: 'chat', element: <ChatPage /> }] }], '/trips/t1/chat')
 }
 
 beforeEach(() => {
@@ -120,4 +121,19 @@ it('caricando i messaggi precedenti la posizione di lettura resta ferma', async 
   await userEvent.setup().click(screen.getByRole('button', { name: 'Messaggi precedenti' }))
   expect(await screen.findByText('Vecchio')).toBeInTheDocument()
   await waitFor(() => expect(scrollBy).toHaveBeenCalledWith(0, 600))
+})
+
+it('«Indietro» riporta al viaggio anche se la chat è stata aperta da un link', async () => {
+  mount()
+  await userEvent.setup().click(await screen.findByRole('button', { name: 'Indietro' }))
+  expect(await screen.findByText('Panoramica del viaggio')).toBeInTheDocument()
+})
+
+it('il suono dei messaggi si spegne dalla chat e la scelta resta', async () => {
+  mount()
+  const toggle = await screen.findByRole('button', { name: 'Suono dei messaggi' })
+  expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  await userEvent.setup().click(toggle)
+  expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  expect(localStorage.getItem('splittrip.sound')).toBe('off')
 })

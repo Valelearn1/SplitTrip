@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
 import { renderWithProviders } from '../../test/renderWithProviders'
@@ -40,5 +41,27 @@ describe('BalancesPage', () => {
     expect(await screen.findByText('Giulia → Marco')).toBeInTheDocument()
     expect(screen.getAllByText(/15,00\s€/).length).toBeGreaterThan(0)
     expect(screen.getByRole('link', { name: 'Salda' })).toHaveAttribute('href', '/trips/t1/settlements/new?from=p2&to=p1&amount=15.00')
+  })
+
+  it('un rimborso si espande e la nota si legge per intero', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'g@e.it', displayName: 'Giulia' } }))
+    const note = 'Cena di ieri sera più i biglietti del tram 28 e il caffè a Belém'
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
+      http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+      http.get('http://localhost/api/trips/t1/settlements', () => HttpResponse.json([
+        { id: 's1', fromParticipantId: 'p2', fromName: 'Giulia', toParticipantId: 'p1', toName: 'Marco', amount: 15, date: '2026-11-04', note, createdBy: 'u2', createdAt: '2026-11-04T10:00:00Z' },
+      ])),
+    )
+    renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'balances', element: <BalancesPage /> }] }],
+      '/trips/t1/balances',
+    )
+    const toggle = await screen.findByRole('button', { name: 'Dettagli del rimborso Giulia → Marco' })
+    expect(screen.queryByText(`Nota: ${note}`)).not.toBeInTheDocument()
+    await userEvent.setup().click(toggle)
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByText(`Nota: ${note}`)).toBeInTheDocument()
   })
 })

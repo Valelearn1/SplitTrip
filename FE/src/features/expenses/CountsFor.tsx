@@ -24,7 +24,7 @@ export function CountsFor({ legend, value, onChange, showLegend = false, error }
         ))}
         <label className="chip"><input type="radio" name={name} checked={other} onChange={() => setOther(true)} />altro</label>
       </div>
-      {other && <input aria-label={`${legend} (numero)`} inputMode="decimal" className="share-input weight-input" value={value} onChange={(e) => onChange(e.target.value)} />}
+      {other && <input aria-label={`${legend} (numero)`} placeholder="es. 2,5" inputMode="decimal" className="share-input weight-input" value={value} onChange={(e) => onChange(e.target.value)} />}
       {error && <p className="field-error"><span>{error}</span></p>}
     </fieldset>
   )

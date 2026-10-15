@@ -2,14 +2,13 @@ import { Link, useOutletContext } from 'react-router'
 import type { Transfer } from '../../shared/api/types'
 import { Avatar } from '../../shared/ui/Avatar'
 import { BalancePill } from '../../shared/ui/BalancePill'
-import { Button } from '../../shared/ui/Button'
 import { EmptyState } from '../../shared/ui/EmptyState'
 import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { MoneyText } from '../../shared/ui/MoneyText'
 import { Spinner } from '../../shared/ui/Spinner'
-import { formatDate } from '../../shared/utils/format'
 import type { TripContext } from '../trips/TripLayout'
+import { SettlementRow } from './SettlementRow'
 import { useBalances, useDeleteSettlement, useSettlements } from './useBalances'
 
 /** Raggruppa i trasferimenti per chi paga: «Giulia → Tu 8 € e → Marco 10 €» (D-25). */
@@ -102,21 +101,8 @@ export function BalancesPage() {
         <FormError error={remove.error} />
         {settlements.data?.length === 0 && <p className="muted">Nessun rimborso ancora.</p>}
         {settlements.data?.map((s) => (
-          <div key={s.id} className="row row-wrap">
-            <span className="row-main">
-              <Icon name="check_circle" className="money-positive" />
-              <span className="row-text">
-                <strong>{s.fromName} → {s.toName}</strong>
-                <small>{formatDate(s.date)}{s.note ? ` · ${s.note}` : ''}</small>
-              </span>
-            </span>
-            <span className="row-main">
-              <MoneyText amount={s.amount} currency={trip.currency} />
-              {canWrite && (s.createdBy === me.userId || isOrganizer) && (
-                <Button variant="secondary" className="btn-sm" loading={remove.isPending} onClick={() => remove.mutate(s.id)}>Annulla</Button>
-              )}
-            </span>
-          </div>
+          <SettlementRow key={s.id} settlement={s} currency={trip.currency}
+            canCancel={canWrite && (s.createdBy === me.userId || isOrganizer)} cancelling={remove.isPending} onCancel={() => remove.mutate(s.id)} />
         ))}
       </section>
     </div>

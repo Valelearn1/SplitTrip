@@ -34,6 +34,9 @@ describe('TripSettingsPage', () => {
     expect(await screen.findByRole('heading', { name: 'La mia partecipazione' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Partecipanti' })).not.toBeInTheDocument()
     await user.type(screen.getByLabelText('Arrivo'), '2026-11-03')
+    expect(screen.getByText(/2,5 = una coppia con un bambino/)).toBeInTheDocument() // con «altro» si somma: si dice come
+    await user.click(within(screen.getByRole('group', { name: 'Conta per' })).getByRole('radio', { name: 'altro' }))
+    expect(screen.getByLabelText('Conta per (numero)')).toHaveAttribute('placeholder', 'es. 2,5')
     await user.click(within(screen.getByRole('group', { name: 'Conta per' })).getByRole('radio', { name: '2' }))
     await user.click(screen.getByRole('button', { name: 'Salva la mia partecipazione' }))
     await screen.findByText('Salvato')

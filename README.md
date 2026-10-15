@@ -32,6 +32,8 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 🔔 **Campanella live**: la notifica arriva subito, senza ricaricare la pagina
 - ✨ **Consigli AI** per la destinazione e **valigia suggerita** in base a meteo e durata (si aggiunge solo ciò che spunti)
 - 📷 **Scatta foto** direttamente dalla fotocamera del telefono
+- 🔊 **Messaggi che si notano**: suono breve (disattivabile) e avviso «Marco: …» con «Apri la chat» quando sei in un'altra pagina
+- 🔎 **Dettagli a portata di tocco**: ogni spesa e rimborso si espande per leggere quote e note per intero
 - 📩 Piccole animazioni con uno scopo: la busta che si apre leggendo una notifica, la valigia che si chiude a lista completata (spente con «riduci movimento»)
 - ♿ Interfaccia **mobile-first e accessibile**: ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore
 
@@ -106,7 +108,7 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 
 ```bash
 cd BE && sh mvnw test   # 162 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 83 test
+cd FE && npm test       # 89 test
 ```
 
 Cosa coprono:
