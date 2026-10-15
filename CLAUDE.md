@@ -30,7 +30,7 @@ Mission e scelte: `docs/superpowers/specs/2026-10-12-splittrip-design.md`, `docs
 v1 Core (auth, viaggi, spese, saldi) → v1.5 Divisioni smart (D-28: i soldi puntano ai partecipanti, valuta sulla spesa, divisione per giorni e pesi) → v2 Social (to-do, foto+mappa, notifiche) → v3 Live (chat, notifiche live). Tag `v1.0`, `v1.5`, `v2.0`, `v3.0`.
 
 ## Stato
-- v1 Core completa (2026-10-13, tag `v1.0`, `v1.0.1`). v1.5 Divisioni smart completa (2026-10-14, tag `v1.5`). v2 Social completa (2026-10-14): backend 132 test, frontend 53 test. Prossimo: revisione finale della v2, tag `v2.0`, poi v3 Live.
+- v1 Core completa (2026-10-13, tag `v1.0`, `v1.0.1`). v1.5 Divisioni smart completa (2026-10-14, tag `v1.5`). v2 Social completa (2026-10-14, tag `v2.0`): backend 132 test, frontend 53 test. Prossimo: v3 Live (spec e piano).
 - Punto di controllo sullo scope: sabato 18 ottobre 2026 (D-27).
 - Grafica: sistema visivo in `DESIGN.md` (token in `FE/src/index.css`), prodotto in `PRODUCT.md`, brief Impeccable in `.impeccable/surfaces/fe-src.md`.
 - Visione oltre il capstone: `docs/ROADMAP.md`.
