@@ -345,7 +345,8 @@ Pieni, alti e decisi: si premono con il pollice.
 - **Error:** bordo `coral` e fondo `coral-tint`; messaggio sotto con icona e testo `coral` 0.875rem/500.
 - **Importo:** campo gigante 2.5rem/800 centrato, alto 72 px, con il simbolo della valuta in teal a destra.
 - **Checkbox:** 22 px, riga cliccabile alta almeno 44 px, colore da `accent-color` teal.
-- **Numero in riga con anteprima (v1.5):** nelle righe «Diviso tra» per Pesi e Presenza, campo quota stretto (`weight-input`, 76 px) allineato a destra con l'anteprima della quota in euro sotto, `muted` 0.8125rem. Il campo è stretto apposta: il nome della persona non deve andare a capo. `aria-label` «Peso di …» / «Notti di …» / «Giorni di …».
+- **«Conta per» (v3, D-44):** in Parti uguali, il link «Qualcuno conta per più di una persona?» apre accanto a ogni nome un gruppo di chip `½ · 1 · 2 · altro` (legenda nascosta «Marco conta per»; «altro» apre il campo numerico) con la quota in euro sotto; sopra l'elenco un riquadro `info` spiega a parole «Marco conta per 2: 60,00 € invece di 45,00 €». Si apre da solo se qualcuno conta già per più o meno di uno. In «La mia partecipazione» lo stesso gruppo con legenda visibile «Conta per» sostituisce il campo «Peso».
+- **Numero in riga con anteprima (v1.5):** nelle righe «Diviso tra» per Presenza (e per «altro» in Conta per), campo quota stretto (`weight-input`, 76 px) allineato a destra con l'anteprima della quota in euro sotto, `muted` 0.8125rem. Il campo è stretto apposta: il nome della persona non deve andare a capo. `aria-label` «Peso di …» / «Notti di …» / «Giorni di …».
 - **Nota sotto un campo (v1.5):** `.hint`, 0.875rem `muted`, attaccata al campo sopra (margine negativo) e staccata 16 px dal successivo. Spiega il significato del valore (es. «1 = una persona, 2 = una coppia…»), non ripete l'etichetta.
 
 ### Navigation

@@ -40,6 +40,15 @@ describe('expenseSchema', () => {
     const zero = { ...weighted, shares: weighted.shares.map((s) => ({ ...s, weight: '0' })) }
     const result = expenseSchema.safeParse(zero)
     expect(result.success).toBe(false)
-    expect(result.error?.issues[0].message).toContain('maggiore di zero')
+    expect(result.error?.issues[0].message).toBe('Almeno uno deve contare per più di zero')
+  })
+
+  it('parti uguali: se qualcuno conta per più o meno di 1 si invia WEIGHT, altrimenti EQUAL senza pesi', () => {
+    const counts = (w1: string, w2: string) => ({ ...base, splitType: 'EQUAL' as const, shares: [
+      { participantId: 'p1', included: true, weight: w1 }, { participantId: 'p2', included: true, weight: w2 }, { participantId: 'p3', included: false, weight: '2' }] })
+    expect(toExpenseInput(expenseSchema.parse(counts('1', '2')))).toMatchObject({ splitType: 'WEIGHT', shares: [{ participantId: 'p1', weight: 1 }, { participantId: 'p2', weight: 2 }] })
+    expect(toExpenseInput(expenseSchema.parse(counts('1', '1')))).toMatchObject({ splitType: 'EQUAL', shares: [{ participantId: 'p1' }, { participantId: 'p2' }] })
+    expect(toExpenseInput(expenseSchema.parse(counts('1', '1'))).shares[0]).not.toHaveProperty('weight')
+    expect(expenseSchema.safeParse(counts('1', 'abc')).success).toBe(false)
   })
 })

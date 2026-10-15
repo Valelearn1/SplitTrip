@@ -11,9 +11,10 @@ import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
 import { Spinner } from '../../shared/ui/Spinner'
-import { formatMoney } from '../../shared/utils/format'
+import { formatCount, formatMoney } from '../../shared/utils/format'
 import { defaultBasis, presence, splitByWeight } from '../../shared/utils/split'
 import type { TripContext } from '../trips/TripLayout'
+import { CountsFor } from './CountsFor'
 import { expenseSchema, parseCents, toExpenseInput, type ExpenseForm } from './expenseSchema'
 import { ReceiptSection } from './ReceiptSection'
 import { useCreateExpense, useDeleteExpense, useExpense, useUpdateExpense } from './useExpenses'
@@ -31,7 +32,7 @@ function toInputNumber(n: number) {
   return String(n).replace('.', ',')
 }
 
-const WEIGHT_LABEL = { WEIGHT: 'Peso', NIGHTS: 'Notti', DAYS: 'Giorni' } as const
+const DAYS_LABEL = { NIGHTS: 'Notti', DAYS: 'Giorni' } as const
 
 /** Stessa pagina per /expenses/new e /expenses/:expenseId/edit. */
 export function ExpenseFormPage() {
@@ -52,13 +53,18 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
   const [confirmDelete, setConfirmDelete] = useState(false)
   const canEdit = canWrite && (!expense || expense.createdBy === me.userId || isOrganizer)
 
-  const weighted = expense?.splitType === 'WEIGHT' || expense?.splitType === 'DAYS'
+  // D-44: «Pesi» non è più un modo a sé; una spesa per peso si apre come Parti uguali con i suoi «conta per»
+  const initialMode: SplitType = expense?.splitType === 'WEIGHT' ? 'EQUAL' : expense?.splitType ?? 'EQUAL'
+  const keepsNumbers = !!expense && expense.splitType !== 'CUSTOM'
   // Numeri scritti a mano (o salvati sulla spesa) non vengono ricalcolati, ma solo nella modalità in cui sono nati:
-  // un peso non deve diventare «notti» passando da Pesi a Presenza
+  // un «conta per» non deve diventare «notti» passando a Presenza
   const [touched, setTouched] = useState<{ mode: SplitType; rows: Set<number> }>(() => ({
-    mode: expense?.splitType ?? 'EQUAL',
-    rows: new Set(weighted ? trip.participants.flatMap((p, i) => (expense.shares.some((s) => s.participantId === p.id) ? [i] : [])) : []),
+    mode: initialMode,
+    rows: new Set(keepsNumbers ? trip.participants.flatMap((p, i) => (expense.shares.some((s) => s.participantId === p.id) ? [i] : [])) : []),
   }))
+  // La scelta «conta per» si vede da sola se qualcuno conta già per più o meno di uno
+  const [showCounts, setShowCounts] = useState(() =>
+    expense ? expense.splitType === 'WEIGHT' : trip.participants.some((p) => p.defaultWeight !== 1))
   const [basisTouched, setBasisTouched] = useState(expense?.splitType === 'DAYS')
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ExpenseForm>({
@@ -66,12 +72,14 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
     defaultValues: expense
       ? {
           description: expense.description, amount: toInputAmount(expense.amount), date: expense.date,
-          category: expense.category, payerId: expense.payerId, splitType: expense.splitType,
+          category: expense.category, payerId: expense.payerId, splitType: initialMode,
           dayBasis: expense.dayBasis ?? defaultBasis(expense.category),
           shares: trip.participants.map((p) => {
             const s = expense.shares.find((x) => x.participantId === p.id)
+            // una spesa in parti uguali già salvata è stata divisa contando tutti per 1
+            const saved = expense.splitType === 'EQUAL' ? 1 : s?.weight
             return { participantId: p.id, included: !!s, amount: s ? toInputAmount(s.amount) : '',
-              weight: toInputNumber(s?.weight ?? p.defaultWeight) }
+              weight: toInputNumber(saved ?? p.defaultWeight) }
           }),
         }
       : {
@@ -85,7 +93,7 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
   const amount = watch('amount')
   const category = watch('category')
   const dayBasis = watch('dayBasis')
-  const isWeighted = splitType === 'WEIGHT' || splitType === 'DAYS'
+  const isDays = splitType === 'DAYS'
   const markTouched = (i: number) =>
     setTouched((prev) => ({ mode: splitType, rows: new Set(prev.mode === splitType ? prev.rows : []).add(i) }))
 
@@ -94,9 +102,9 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
     if (splitType === 'DAYS' && !basisTouched) setValue('dayBasis', defaultBasis(category))
   }, [splitType, category, basisTouched, setValue])
 
-  // Precompila pesi o notti/giorni dal viaggio; il form propone, la spesa decide (D-33)
+  // Precompila «conta per» o notti/giorni dal viaggio; il form propone, la spesa decide (D-33)
   useEffect(() => {
-    if (splitType !== 'WEIGHT' && splitType !== 'DAYS') return
+    if (splitType !== 'EQUAL' && splitType !== 'DAYS') return
     const manual = touched.mode === splitType ? touched.rows : new Set<number>()
     trip.participants.forEach((p, i) => {
       if (manual.has(i)) return
@@ -109,7 +117,13 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
   const assigned = shares.filter((s) => s.included).reduce((sum, s) => sum + (parseCents(s.amount) ?? 0), 0)
   const remaining = (totalCents - assigned) / 100
   const preview = splitByWeight(totalCents, shares.flatMap((s) => (s.included ? [{ id: s.participantId, weight: (parseCents(s.weight) ?? 0) / 100 }] : [])))
-  const weightLabel = splitType === 'DAYS' ? WEIGHT_LABEL[dayBasis] : WEIGHT_LABEL.WEIGHT
+  const daysLabel = DAYS_LABEL[dayBasis]
+  const countsDiffer = splitType === 'EQUAL' && shares.some((s) => s.included && parseCents(s.weight) !== 100)
+  const countsShown = splitType === 'EQUAL' && (showCounts || countsDiffer)
+  const setCount = (i: number, value: string) => {
+    setValue(`shares.${i}.weight`, value, { shouldValidate: true })
+    markTouched(i)
+  }
 
   const mutation = expense ? update : create
   const onSubmit = handleSubmit((values) =>
@@ -157,7 +171,6 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
         <div className="chips">
           <label className="chip"><input type="radio" value="EQUAL" {...register('splitType')} /><Icon name="pie_chart" />Parti uguali</label>
           <label className="chip"><input type="radio" value="CUSTOM" {...register('splitType')} /><Icon name="tune" />Importi personalizzati</label>
-          <label className="chip"><input type="radio" value="WEIGHT" {...register('splitType')} /><Icon name="scale" />Pesi</label>
           <label className="chip"><input type="radio" value="DAYS" {...register('splitType')} /><Icon name="date_range" />Presenza</label>
         </div>
         {splitType === 'DAYS' && (
@@ -170,22 +183,44 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
             <p className="muted">Le date di ognuno si impostano in Impostazioni → La mia partecipazione.</p>
           </fieldset>
         )}
-        {splitType === 'EQUAL' && includedCount > 0 && totalCents > 0 && (
+        {splitType === 'EQUAL' && !countsDiffer && includedCount > 0 && totalCents > 0 && (
           <div className="info" style={{ marginBottom: 8 }}>
             <Icon name="groups" />
             <span>Quota a testa: <strong>{toInputAmount(perHead)} €</strong> a persona</span>
           </div>
         )}
+        {splitType === 'EQUAL' && !countsShown && (
+          <button type="button" className="link-button" onClick={() => setShowCounts(true)}>Qualcuno conta per più di una persona?</button>
+        )}
+        {countsDiffer && totalCents > 0 && (
+          <div className="info counts-note" style={{ marginBottom: 8 }}>
+            <Icon name="groups" />
+            <span>
+              {shares.flatMap((s, i) => (s.included && parseCents(s.weight) !== 100 ? [
+                <span key={s.participantId} style={{ display: 'block' }}>
+                  {`${trip.participants[i].displayName} conta per ${formatCount((parseCents(s.weight) ?? 0) / 100)}: ${formatMoney((preview.get(s.participantId) ?? 0) / 100, trip.currency)} invece di ${formatMoney(perHead, trip.currency)}`}
+                </span>,
+              ] : []))}
+            </span>
+          </div>
+        )}
         {trip.participants.map((p, i) => (
-          <div key={p.id} className="row">
+          <div key={p.id} className={`row ${countsShown ? 'row-wrap' : ''}`}>
             <label className="check">
               <input type="checkbox" {...register(`shares.${i}.included`)} />
               <Avatar name={p.displayName} size="sm" />
               <span>{p.id === me.id ? 'Tu (io)' : p.displayName}</span>
             </label>
-            {isWeighted && shares[i]?.included && (
+            {countsShown && shares[i]?.included && (
+              <span className="row-side counts-side">
+                <CountsFor legend={`${p.displayName} conta per`} value={shares[i].weight ?? '1'} onChange={(v) => setCount(i, v)}
+                  error={errors.shares?.[i]?.weight?.message} />
+                <small className="muted">{formatMoney((preview.get(p.id) ?? 0) / 100, trip.currency)}</small>
+              </span>
+            )}
+            {isDays && shares[i]?.included && (
               <span className="row-side">
-                <input aria-label={`${weightLabel} di ${p.displayName}`} inputMode="decimal" className="share-input weight-input"
+                <input aria-label={`${daysLabel} di ${p.displayName}`} inputMode="decimal" className="share-input weight-input"
                   {...register(`shares.${i}.weight`, { onChange: () => markTouched(i) })} />
                 <small className="muted" style={{ display: 'block' }}>{formatMoney((preview.get(p.id) ?? 0) / 100, trip.currency)}</small>
               </span>

@@ -10,6 +10,8 @@ export function parseCents(raw: string | undefined): number | null {
   return Math.round(Number(normalized) * 100)
 }
 
+const hasCount = (w: string | undefined) => w !== undefined && w.trim() !== ''
+
 const shareSchema = z.object({
   participantId: z.string(),
   included: z.boolean(),
@@ -34,7 +36,9 @@ export const expenseSchema = z
       ctx.addIssue({ code: 'custom', path: ['shares'], message: 'Seleziona almeno un partecipante' })
       return
     }
-    if (v.splitType === 'WEIGHT' || v.splitType === 'DAYS') {
+    // «conta per» in parti uguali (D-44), pesi e notti/giorni: numeri validi, non tutti a zero
+    const counted = v.splitType === 'EQUAL' ? v.shares.some((s) => s.included && hasCount(s.weight)) : true
+    if (v.splitType === 'WEIGHT' || v.splitType === 'DAYS' || (v.splitType === 'EQUAL' && counted)) {
       let sum = 0
       for (const [i, s] of v.shares.entries()) {
         if (!s.included) continue
@@ -45,7 +49,7 @@ export const expenseSchema = z
         }
         sum += cents
       }
-      if (sum === 0) ctx.addIssue({ code: 'custom', path: ['shares'], message: 'Almeno uno deve avere un peso maggiore di zero' })
+      if (sum === 0) ctx.addIssue({ code: 'custom', path: ['shares'], message: 'Almeno uno deve contare per più di zero' })
       return
     }
     if (v.splitType === 'CUSTOM') {
@@ -71,17 +75,20 @@ export type ExpenseForm = z.infer<typeof expenseSchema>
 
 export function toExpenseInput(form: ExpenseForm): ExpenseInput {
   const included = form.shares.filter((s) => s.included)
+  // Parti uguali dove qualcuno conta per più o meno di 1 si salva come WEIGHT: backend invariato (D-44)
+  const counts = form.splitType === 'EQUAL' && included.some((s) => hasCount(s.weight) && parseCents(s.weight) !== 100)
+  const splitType = counts ? 'WEIGHT' : form.splitType
   return {
     description: form.description,
     amount: (parseCents(form.amount) ?? 0) / 100,
     date: form.date,
     category: form.category,
     payerId: form.payerId,
-    splitType: form.splitType,
+    splitType,
     ...(form.splitType === 'DAYS' ? { dayBasis: form.dayBasis } : {}),
     shares: included.map((s) => {
       if (form.splitType === 'CUSTOM') return { participantId: s.participantId, amount: (parseCents(s.amount) ?? 0) / 100 }
-      if (form.splitType === 'WEIGHT' || form.splitType === 'DAYS') return { participantId: s.participantId, weight: (parseCents(s.weight) ?? 0) / 100 }
+      if (splitType === 'WEIGHT' || splitType === 'DAYS') return { participantId: s.participantId, weight: (parseCents(s.weight) ?? 0) / 100 }
       return { participantId: s.participantId }
     }),
   }

@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import type { Participant } from '../../shared/api/types'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
+import { CountsFor } from '../expenses/CountsFor'
 import { parseCents } from '../expenses/expenseSchema'
 import { participantSchema, type ParticipantForm as Values } from './participantSchema'
 import type { ParticipantPatch } from './tripsApi'
@@ -11,10 +12,10 @@ import { useUpdateParticipant } from './useTrips'
 
 type Props = { tripId: string; participant: Participant; submitLabel: string; onSaved?: () => void }
 
-/** Nome nel viaggio, peso e date di presenza: il viaggio li propone, ogni spesa può correggerli (D-33). */
+/** Nome nel viaggio, «conta per» e date di presenza: il viaggio li propone, ogni spesa può correggerli (D-33, D-44). */
 export function ParticipantForm({ tripId, participant, submitLabel, onSaved }: Props) {
   const update = useUpdateParticipant(tripId, participant.id)
-  const { register, handleSubmit, formState: { errors } } = useForm<Values>({
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(participantSchema),
     defaultValues: {
       displayName: participant.displayName,
@@ -23,6 +24,8 @@ export function ParticipantForm({ tripId, participant, submitLabel, onSaved }: P
       departureDate: participant.departureDate ?? '',
     },
   })
+
+  const defaultWeight = useWatch({ control, name: 'defaultWeight' })
 
   const onSubmit = handleSubmit((v) => {
     const hadDates = participant.arrivalDate !== null || participant.departureDate !== null
@@ -40,8 +43,9 @@ export function ParticipantForm({ tripId, participant, submitLabel, onSaved }: P
   return (
     <form noValidate onSubmit={onSubmit}>
       <Field label="Nome nel viaggio" error={errors.displayName?.message} {...register('displayName')} />
-      <Field label="Peso" inputMode="decimal" error={errors.defaultWeight?.message} {...register('defaultWeight')} />
-      <p className="muted hint">1 = una persona, 2 = una coppia con un solo account, 0,5 = un bambino.</p>
+      <CountsFor legend="Conta per" showLegend value={defaultWeight} error={errors.defaultWeight?.message}
+        onChange={(v) => setValue('defaultWeight', v, { shouldDirty: true, shouldValidate: true })} />
+      <p className="muted hint">1 = una persona · 2 = una coppia con un solo account · ½ = un bambino. Vale per le spese in parti uguali; si può cambiare spesa per spesa.</p>
       <div className="grid-2">
         <Field label="Arrivo" type="date" error={errors.arrivalDate?.message} {...register('arrivalDate')} />
         <Field label="Partenza" type="date" error={errors.departureDate?.message} {...register('departureDate')} />

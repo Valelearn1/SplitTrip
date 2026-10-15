@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
@@ -34,8 +34,7 @@ describe('TripSettingsPage', () => {
     expect(await screen.findByRole('heading', { name: 'La mia partecipazione' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Partecipanti' })).not.toBeInTheDocument()
     await user.type(screen.getByLabelText('Arrivo'), '2026-11-03')
-    await user.clear(screen.getByLabelText('Peso'))
-    await user.type(screen.getByLabelText('Peso'), '2')
+    await user.click(within(screen.getByRole('group', { name: 'Conta per' })).getByRole('radio', { name: '2' }))
     await user.click(screen.getByRole('button', { name: 'Salva la mia partecipazione' }))
     await screen.findByText('Salvato')
     expect(sent).toMatchObject({ arrivalDate: '2026-11-03', defaultWeight: 2 })

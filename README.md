@@ -15,9 +15,9 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 
 - 🔐 **Registrazione e login** con JWT
 - ✈️ **Viaggi** con stato (in pianificazione → in corso → chiuso) e **codice invito** da condividere su WhatsApp
-- 💸 **Spese** divise in parti uguali, con importi personalizzati, **per peso** (la coppia con un solo telefono conta per due, il bambino per mezzo) o **per presenza** (notti o giorni: chi arriva dopo paga meno alloggio), con l'anteprima delle quote
+- 💸 **Spese** divise in parti uguali (dove qualcuno può **contare per 2**, la coppia con un solo telefono, **o per ½**, il bambino), con importi personalizzati o **per presenza** (notti o giorni: chi arriva dopo paga meno alloggio), con l'anteprima delle quote
 - 👵 **Partecipanti senza account**: l'organizzatore aggiunge chi non usa l'app, che ha comunque la sua quota; se poi si registra, entrando col codice **rivendica il suo posto** e ritrova le sue spese
-- 🧳 **La mia partecipazione**: ognuno imposta peso e date di arrivo e partenza, o lascia il viaggio senza perdere lo storico
+- 🧳 **La mia partecipazione**: ognuno imposta per quante persone conta e le date di arrivo e partenza, o lascia il viaggio senza perdere lo storico
 - ⚖️ **Saldi** sempre aggiornati e **trasferimenti suggeriti**: il minimo di rimborsi per azzerare i debiti del gruppo
 - 🔁 **Rimborsi** registrabili con un tap da «Salda»
 - 🗑️ **Cestino** delle spese con ripristino (organizzatore)
@@ -47,7 +47,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 | Versione | Contenuto | Stato |
 |---|---|---|
 | **v1 Core** | auth, viaggi, spese, rimborsi, saldi | ✅ |
-| **v1.5 Divisioni smart** | divisione per presenza e per peso, partecipanti senza account rivendicabili, modello dati pronto per multi-valuta | ✅ |
+| **v1.5 Divisioni smart** | divisione per presenza e «conta per» (ex peso), partecipanti senza account rivendicabili, modello dati pronto per multi-valuta | ✅ |
 | **v2 Social** | liste condivise con assegnatario, foto con mappa, scontrino sulla spesa, notifiche in-app, meteo, foto profilo | ✅ |
 | **v3 Live** | chat di gruppo e notifiche in tempo reale (WebSocket) | 📋 |
 
@@ -106,7 +106,7 @@ cd FE && npm test       # 53 test
 
 Cosa coprono:
 - ⚖️ **motore dei saldi** al 100 %: somma dei netti sempre zero, centesimi di resto deterministici, al massimo n−1 trasferimenti
-- 🧮 **divisione per peso e per presenza**: stessi esempi di riferimento nel backend e nel frontend (resto maggiore, Σ quote = totale)
+- 🧮 **divisione «conta per» e per presenza**: stessi esempi di riferimento nel backend e nel frontend (resto maggiore, Σ quote = totale)
 - 🗃️ **migrazione dei dati**: test che applica la V1, inserisce dati reali (anche un ex membro nel cestino) e verifica la V2
 - 🔄 **flussi API end-to-end** su Postgres reale (Testcontainers): registrazione → viaggio → invito → spese → rimborsi → saldi
 - 🔒 **sicurezza**: 401/403, SQL injection, XSS, id utente preso solo dal token, nessuno stack trace negli errori
