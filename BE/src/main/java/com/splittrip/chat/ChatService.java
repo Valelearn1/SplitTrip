@@ -2,6 +2,7 @@ package com.splittrip.chat;
 
 import com.splittrip.chat.dto.MessagePage;
 import com.splittrip.chat.dto.MessageResponse;
+import com.splittrip.chat.dto.ReactionSummary;
 import com.splittrip.common.AppException;
 import com.splittrip.common.FieldException;
 import com.splittrip.common.ForbiddenException;
@@ -42,10 +43,12 @@ public class ChatService {
     private final TripAccessService access;
     private final ChatRateLimiter limiter;
     private final LivePublisher live;
+    private final ReactionService reactions;
     private final Clock clock;
 
     public ChatService(ChatMessageRepository messages, TripRepository trips, ParticipantRepository participants,
-                       UserAvatarRepository avatars, TripAccessService access, ChatRateLimiter limiter, LivePublisher live, Clock clock) {
+                       UserAvatarRepository avatars, TripAccessService access, ChatRateLimiter limiter, LivePublisher live,
+                       ReactionService reactions, Clock clock) {
         this.messages = messages;
         this.trips = trips;
         this.participants = participants;
@@ -53,6 +56,7 @@ public class ChatService {
         this.access = access;
         this.limiter = limiter;
         this.live = live;
+        this.reactions = reactions;
         this.clock = clock;
     }
 
@@ -144,6 +148,7 @@ public class ChatService {
         List<UUID> authorIds = page.stream().map(ChatMessage::getAuthor).filter(Objects::nonNull)
                 .map(Participant::userId).filter(Objects::nonNull).distinct().toList();
         Set<UUID> withAvatar = authorIds.isEmpty() ? Set.of() : avatars.findUserIdsWithAvatar(authorIds);
-        return page.stream().map(m -> MessageResponse.from(m, withAvatar)).toList();
+        Map<UUID, List<ReactionSummary>> summaries = reactions.summaries(page.stream().map(ChatMessage::getId).toList());
+        return page.stream().map(m -> MessageResponse.from(m, withAvatar, summaries.getOrDefault(m.getId(), List.of()))).toList();
     }
 }

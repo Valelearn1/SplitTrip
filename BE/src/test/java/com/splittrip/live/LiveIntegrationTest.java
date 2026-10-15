@@ -135,4 +135,34 @@ class LiveIntegrationTest {
         assertThat(mq.poll(500, TimeUnit.MILLISECONDS)).isNull();
         v.disconnect(); m.disconnect();
     }
+
+    @Test
+    void dueReazioniInsiemeDannoLoStessoRiepilogoATutti() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        String marco = TestUsers.register(mvc, "Marco");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        TestTrips.join(mvc, marco, TestTrips.inviteCode(mvc, vale, tripId));
+        String body = mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/trips/" + tripId + "/messages")
+                .header("Authorization", "Bearer " + vale).contentType(org.springframework.http.MediaType.APPLICATION_JSON).content("{\"content\":\"Ciao\"}"))
+                .andReturn().getResponse().getContentAsString();
+        String id = TestUsers.extract(body, "\"id\":\"([^\"]+)\"");
+        LiveTestClient v = LiveTestClient.connect(port, vale);
+        BlockingQueue<String> q = v.subscribe("/topic/trips/" + tripId);
+        Thread.sleep(300);
+        Thread a = new Thread(() -> react(vale, tripId, id)), b = new Thread(() -> react(marco, tripId, id));
+        a.start(); b.start(); a.join(); b.join();
+        String last = null, frame;
+        while ((frame = q.poll(2, TimeUnit.SECONDS)) != null) last = frame;
+        assertThat(last).contains("\"type\":\"message.reacted\"").contains("\"emoji\":\"👍\"").contains("\"count\":2");
+        v.disconnect();
+    }
+
+    private void react(String token, UUID tripId, String messageId) {
+        try {
+            mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/trips/" + tripId + "/messages/" + messageId + "/reactions/👍")
+                    .header("Authorization", "Bearer " + token));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

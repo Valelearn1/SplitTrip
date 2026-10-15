@@ -33,7 +33,7 @@ class ChatServiceTypingTest {
         when(access.requireMember(tripId, userId)).thenReturn(me);
         Clock clock = Clock.fixed(Instant.parse("2026-11-01T10:00:00Z"), ZoneOffset.UTC);
         ChatService chat = new ChatService(mock(ChatMessageRepository.class), mock(TripRepository.class), mock(ParticipantRepository.class),
-                mock(UserAvatarRepository.class), access, new ChatRateLimiter(clock), live, clock);
+                mock(UserAvatarRepository.class), access, new ChatRateLimiter(clock), live, mock(ReactionService.class), clock);
 
         for (int i = 0; i < 50; i++) chat.typing(tripId, userId); // un client che manda «sta scrivendo» a raffica
 
