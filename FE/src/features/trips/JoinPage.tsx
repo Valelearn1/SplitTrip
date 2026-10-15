@@ -51,7 +51,7 @@ export function JoinPage() {
             </fieldset>
           )}
           <FormError error={join.error} />
-          <Button loading={join.isPending} onClick={() => join.mutate({ code: normalized, participantId: claim || undefined }, { onSuccess: (trip) => navigate(`/trips/${trip.id}`) })}>
+          <Button loading={join.isPending} onClick={() => join.mutate({ code: normalized, participantId: claim || undefined }, { onSuccess: (trip) => navigate(`/trips/${trip.id}/benvenuto`) })}>
             Entra
           </Button>
         </div>

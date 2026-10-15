@@ -9,6 +9,11 @@ export function formatDate(iso: string): string {
   return format(parseISO(iso), 'd MMM yyyy', { locale: it })
 }
 
+/** «3 nov»: per le date dentro il viaggio, dove l'anno si capisce già */
+export function formatDayMonth(iso: string): string {
+  return format(parseISO(iso), 'd MMM', { locale: it })
+}
+
 export function formatDateRange(startIso: string, endIso: string): string {
   const start = parseISO(startIso)
   const end = parseISO(endIso)

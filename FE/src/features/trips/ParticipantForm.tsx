@@ -10,10 +10,16 @@ import { participantSchema, type ParticipantForm as Values } from './participant
 import type { ParticipantPatch } from './tripsApi'
 import { useUpdateParticipant } from './useTrips'
 
-type Props = { tripId: string; participant: Participant; submitLabel: string; onSaved?: () => void }
+type Props = {
+  tripId: string; participant: Participant; submitLabel: string; onSaved?: () => void
+  /** Benvenuto (D-50): senza «Nome nel viaggio», con «Salta» */
+  compact?: boolean; skipLabel?: string; onSkip?: () => void
+  /** date del viaggio: se le date scelte coincidono non si inviano (vuote = presente per tutto il viaggio) */
+  tripStart?: string; tripEnd?: string
+}
 
 /** Nome nel viaggio, «conta per» e date di presenza: il viaggio li propone, ogni spesa può correggerli (D-33, D-44). */
-export function ParticipantForm({ tripId, participant, submitLabel, onSaved }: Props) {
+export function ParticipantForm({ tripId, participant, submitLabel, onSaved, compact = false, skipLabel, onSkip, tripStart, tripEnd }: Props) {
   const update = useUpdateParticipant(tripId, participant.id)
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(participantSchema),
@@ -29,11 +35,12 @@ export function ParticipantForm({ tripId, participant, submitLabel, onSaved }: P
 
   const onSubmit = handleSubmit((v) => {
     const hadDates = participant.arrivalDate !== null || participant.departureDate !== null
+    const wholeTrip = tripStart !== undefined && v.arrivalDate === tripStart && v.departureDate === tripEnd
     const body: ParticipantPatch = {
-      displayName: v.displayName.trim(),
+      ...(compact ? {} : { displayName: v.displayName.trim() }),
       defaultWeight: (parseCents(v.defaultWeight) ?? 100) / 100,
-      arrivalDate: v.arrivalDate || undefined,
-      departureDate: v.departureDate || undefined,
+      arrivalDate: wholeTrip ? undefined : v.arrivalDate || undefined,
+      departureDate: wholeTrip ? undefined : v.departureDate || undefined,
       // una data svuotata va azzerata esplicitamente: null nel PATCH significa «non toccare»
       ...(hadDates && (!v.arrivalDate || !v.departureDate) ? { clearDates: true } : {}),
     }
@@ -42,7 +49,7 @@ export function ParticipantForm({ tripId, participant, submitLabel, onSaved }: P
 
   return (
     <form noValidate onSubmit={onSubmit}>
-      <Field label="Nome nel viaggio" error={errors.displayName?.message} {...register('displayName')} />
+      {!compact && <Field label="Nome nel viaggio" error={errors.displayName?.message} {...register('displayName')} />}
       <CountsFor legend="Conta per" showLegend value={defaultWeight} error={errors.defaultWeight?.message}
         onChange={(v) => setValue('defaultWeight', v, { shouldDirty: true, shouldValidate: true })} />
       <p className="muted hint">1 = una persona · 2 = una coppia con un solo account · ½ = un bambino · con «altro» si sommano: 2,5 = una coppia con un bambino. Vale per le spese in parti uguali; si può cambiare spesa per spesa.</p>
@@ -50,10 +57,13 @@ export function ParticipantForm({ tripId, participant, submitLabel, onSaved }: P
         <Field label="Arrivo" type="date" error={errors.arrivalDate?.message} {...register('arrivalDate')} />
         <Field label="Partenza" type="date" error={errors.departureDate?.message} {...register('departureDate')} />
       </div>
-      <p className="muted hint">Date vuote = presente per tutto il viaggio. Servono alla divisione per presenza.</p>
+      <p className="muted hint">Servono quando una spesa si divide per presenza: chi arriva dopo paga meno. Vuote = presente per tutto il viaggio.</p>
       <FormError error={update.error} />
       {update.isSuccess && <p role="status" className="money-positive">Salvato</p>}
-      <Button type="submit" loading={update.isPending}>{submitLabel}</Button>
+      <div className="form-actions">
+        <Button type="submit" loading={update.isPending}>{submitLabel}</Button>
+        {onSkip && <Button type="button" variant="secondary" onClick={onSkip}>{skipLabel ?? 'Salta'}</Button>}
+      </div>
     </form>
   )
 }

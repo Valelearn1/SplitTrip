@@ -1,11 +1,21 @@
 import type { Participant } from '../../shared/api/types'
 import { Avatar } from '../../shared/ui/Avatar'
+import { formatCount, formatDayMonth } from '../../shared/utils/format'
 
 type Props = {
   participants: Participant[]
   onEdit?: (p: Participant) => void
   onUnlink?: (p: Participant) => void
   onRemove?: (p: Participant) => void
+}
+
+/** «conta per 2 · arriva il 3 nov»: solo quello che non è il valore di base */
+function details(m: Participant): string {
+  return [
+    m.defaultWeight !== 1 ? `conta per ${formatCount(m.defaultWeight)}` : null,
+    m.arrivalDate ? `arriva il ${formatDayMonth(m.arrivalDate)}` : null,
+    m.departureDate ? `parte il ${formatDayMonth(m.departureDate)}` : null,
+  ].filter(Boolean).join(' · ')
 }
 
 export function ParticipantsList({ participants, onEdit, onUnlink, onRemove }: Props) {
@@ -19,6 +29,7 @@ export function ParticipantsList({ participants, onEdit, onUnlink, onRemove }: P
               <strong>{m.displayName}</strong>
               {m.role === 'ORGANIZER' && <small>organizzatore</small>}
               {m.userId === null && <small>senza account</small>}
+              {details(m) && <small className="muted">{details(m)}</small>}
             </span>
           </span>
           <span className="row-actions">

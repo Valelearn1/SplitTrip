@@ -49,7 +49,7 @@ export function TripLayout() {
           <StatusBadge status={trip.status} />
           <span className="head-actions">
             <ChatButton tripId={trip.id} />
-            <NavLink to="settings" className="btn btn-secondary btn-sm icon-btn" aria-label="Impostazioni del viaggio"><Icon name="settings" /></NavLink>
+            <NavLink to={`settings?tab=${ctx.isOrganizer ? 'viaggio' : 'persone'}`} className="btn btn-secondary btn-sm icon-btn" aria-label="Impostazioni del viaggio"><Icon name="settings" /></NavLink>
           </span>
           {myNet !== undefined && (
             <>

@@ -17,7 +17,7 @@ it('propone i posti liberi e manda participantId se ne scelgo uno', async () => 
     })),
     http.post('http://localhost/api/trips/join', async ({ request }) => { sent = await request.json(); return HttpResponse.json({ id: 't1' }) }),
   )
-  renderWithProviders([{ path: '/join/:code', element: <JoinPage /> }, { path: '/trips/:tripId', element: <h1>Viaggio</h1> }], '/join/ROMA-7K2P')
+  renderWithProviders([{ path: '/join/:code', element: <JoinPage /> }, { path: '/trips/:tripId/benvenuto', element: <h1>Viaggio</h1> }], '/join/ROMA-7K2P')
   const user = userEvent.setup()
   expect(await screen.findByText('Qualcuno ti ha già aggiunto?')).toBeInTheDocument()
   expect(screen.getByRole('radio', { name: 'No, sono nuovo' })).toBeChecked()

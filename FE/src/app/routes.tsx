@@ -11,6 +11,7 @@ import { NewTripPage } from '../features/trips/NewTripPage'
 import { TripDashboardPage } from '../features/trips/TripDashboardPage'
 import { TripLayout } from '../features/trips/TripLayout'
 import { TripSettingsPage } from '../features/trips/TripSettingsPage'
+import { WelcomePage } from '../features/trips/WelcomePage'
 import { TripsPage } from '../features/trips/TripsPage'
 import { NotificationsPage } from '../features/notifications/NotificationsPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
@@ -46,6 +47,7 @@ export const routes: RouteObject[] = [
               { path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> },
               { path: 'balances', element: <BalancesPage /> },
               { path: 'settlements/new', element: <SettlementFormPage /> },
+              { path: 'benvenuto', element: <WelcomePage /> },
               { path: 'settings', element: <TripSettingsPage /> },
               { path: 'lists', element: <TodoListsPage /> },
               // Leaflet pesa: la pagina Foto si scarica solo quando la si apre

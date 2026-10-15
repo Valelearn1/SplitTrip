@@ -14,7 +14,7 @@ it('la valuta si sceglie da un menu, con EUR di default', async () => {
     sent = (await request.json()) as { currency?: string }
     return HttpResponse.json({ id: 't9' }, { status: 201 })
   }))
-  renderWithProviders([{ path: '/trips/new', element: <NewTripPage /> }, { path: '/trips/:tripId', element: <h1>Viaggio creato</h1> }], '/trips/new')
+  renderWithProviders([{ path: '/trips/new', element: <NewTripPage /> }, { path: '/trips/:tripId/benvenuto', element: <h1>Viaggio creato</h1> }], '/trips/new')
   const user = userEvent.setup()
   const currency = screen.getByRole('combobox', { name: 'Valuta' })
   expect(currency).toHaveValue('EUR')
