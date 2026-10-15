@@ -410,3 +410,6 @@ fieldset.field.card { padding: var(--space-4); }
 .counts-legend { margin-bottom: 6px; font-size: 0.875rem; font-weight: 600; color: var(--ink-2); }
 .counts-side { display: grid; justify-items: end; gap: 2px; }
 @media (max-width: 719px) { .row-wrap .counts-side { margin-left: auto; } }
+/* Liste di gruppo (v3, D-45): si dice che sono condivise; «Chi lo porta?» compare solo se la si chiede */
+.list-shared { margin: -4px 0 var(--space-2); font-size: 0.875rem; }
+.assign-ask { font-size: 0.9375rem; }

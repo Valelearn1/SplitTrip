@@ -36,7 +36,7 @@ export function PackingSuggestModal({ tripId, listId, open, onClose }: Props) {
   }
 
   return (
-    <Modal open={open} title="Suggerimenti per la valigia" onClose={onClose}>
+    <Modal open={open} title="Cosa portare: suggerimenti" onClose={onClose}>
       {suggest.isPending && <p role="status" className="muted">Sto pensando…</p>}
       <FormError error={suggest.error ?? error} />
       {suggest.data && (

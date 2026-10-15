@@ -22,7 +22,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 🔁 **Rimborsi** registrabili con un tap da «Salda»
 - 🗑️ **Cestino** delle spese con ripristino (organizzatore)
 - 🔒 Viaggio chiuso in **sola lettura**: i conti restano consultabili
-- ✅ **Liste condivise** (valigia e cose da fare) con voci **assegnabili** a una persona e il filtro «Solo le mie»
+- ✅ **Liste del gruppo** («Da portare (insieme)» e «Da fare»): per ogni voce si decide, se serve, **chi la porta** o chi se ne occupa, e il filtro «Solo quelle per me»
 - 📷 **Foto del viaggio** in griglia e **sulla mappa** (OpenStreetMap): la posizione GPS si mostra solo se chi carica lo sceglie
 - 🧾 **Scontrino** fotografato e allegato alla spesa
 - 🔔 **Notifiche** in-app: nuova spesa, rimborso ricevuto, nuovo partecipante, voce assegnata a te
@@ -106,7 +106,7 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 
 ```bash
 cd BE && sh mvnw test   # 162 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 82 test
+cd FE && npm test       # 83 test
 ```
 
 Cosa coprono:

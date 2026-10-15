@@ -23,8 +23,9 @@ export function TodoListsPage() {
     <div className="stack">
       <div className="page-head">
         <h2>Liste</h2>
-        <label className="check"><input type="checkbox" checked={onlyMine} onChange={(e) => setOnlyMine(e.target.checked)} />Solo le mie</label>
+        <label className="check"><input type="checkbox" checked={onlyMine} onChange={(e) => setOnlyMine(e.target.checked)} />Solo quelle per me</label>
       </div>
+      <p className="muted hint">Le liste sono del gruppo: le vedono e le usano tutti i partecipanti.</p>
       {lists.isPending && <Spinner />}
       <FormError error={lists.error} />
       {lists.data?.length === 0 && <EmptyState title="Nessuna lista" icon="luggage" />}
@@ -38,13 +39,13 @@ export function TodoListsPage() {
           <h3>Nuova lista</h3>
           <div className="field">
             <label htmlFor="new-list-title">Nome</label>
-            <input id="new-list-title" placeholder="Es. Valigia, Prenotazioni" value={title} maxLength={60} onChange={(e) => setTitle(e.target.value)} />
+            <input id="new-list-title" placeholder="Es. Da portare, Prenotazioni" value={title} maxLength={60} onChange={(e) => setTitle(e.target.value)} />
           </div>
           <fieldset className="field">
             <legend>Tipo</legend>
             <div className="chips">
-              <label className="chip"><input type="radio" name="list-type" checked={type === 'PACKING'} onChange={() => setType('PACKING')} /><Icon name="luggage" />Valigia</label>
-              <label className="chip"><input type="radio" name="list-type" checked={type === 'GENERAL'} onChange={() => setType('GENERAL')} /><Icon name="checklist" />Generale</label>
+              <label className="chip"><input type="radio" name="list-type" checked={type === 'PACKING'} onChange={() => setType('PACKING')} /><Icon name="luggage" />Da portare (insieme)</label>
+              <label className="chip"><input type="radio" name="list-type" checked={type === 'GENERAL'} onChange={() => setType('GENERAL')} /><Icon name="checklist" />Da fare</label>
             </div>
           </fieldset>
           <FormError error={create.error} />

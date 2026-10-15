@@ -50,12 +50,14 @@ export function TodoListCard({ tripId, list, participants, canWrite, onlyMineId 
           )}
         </span>
       </div>
+      <p className="muted list-shared">{list.type === 'PACKING' ? 'Lista condivisa: decidete chi porta cosa' : 'Lista condivisa: decidete chi se ne occupa'}</p>
       {items.length === 0 && <p className="muted">{onlyMineId ? 'Niente assegnato a te qui.' : 'Ancora nessuna voce.'}</p>}
       <ul className="list">
         {items.map((item) => (
           <TodoItemRow
             key={item.id}
             item={item}
+            listType={list.type}
             participants={participants}
             canEdit={canWrite}
             onToggle={() => patch.mutate({ listId: list.id, itemId: item.id, patch: { done: !item.done } })}

@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { expect, it } from 'vitest'
@@ -41,11 +41,17 @@ it('spunta una voce, la assegna a un partecipante e filtra le mie', async () => 
   expect(await screen.findByRole('heading', { name: 'Valigia' })).toBeInTheDocument()
   await user.click(screen.getByRole('checkbox', { name: 'Phon' }))
   expect(patches[0]).toEqual({ iid: 'i1', body: { done: true } })
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Assegna Costume' }), 'p2')
+  // la lista è del gruppo, e lo dice
+  expect(screen.getByText('Lista condivisa: decidete chi porta cosa')).toBeInTheDocument()
+  // chi porta il phon è già deciso: si vede subito; per il costume la scelta compare solo se la chiedo
+  expect(screen.getByRole('combobox', { name: 'Chi porta Phon?' })).toHaveValue('p1')
+  expect(screen.queryByRole('combobox', { name: 'Chi porta Costume?' })).not.toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Chi porta Costume?' }))
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Chi porta Costume?' }), 'p2')
   expect(patches[1]).toEqual({ iid: 'i2', body: { assigneeParticipantId: 'p2' } })
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Assegna Costume' }), '')
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Chi porta Costume?' }), '')
   expect(patches[2]).toEqual({ iid: 'i2', body: { clearAssignee: true } })
-  await user.click(screen.getByRole('checkbox', { name: 'Solo le mie' }))
+  await user.click(screen.getByRole('checkbox', { name: 'Solo quelle per me' }))
   expect(screen.queryByText('Phon')).not.toBeInTheDocument() // assegnato a Vale, non a me
 })
 
@@ -66,4 +72,27 @@ it('a lista Valigia completata la valigia si chiude, e lo dice anche il testo', 
   const heading = await screen.findByRole('heading', { name: 'Valigia' })
   expect(heading.querySelector('[data-state]')).toHaveAttribute('data-state', 'closed')
   expect(screen.getByText('2/2 fatte')).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /^Chi porta/ })).not.toBeInTheDocument() // voci già fatte: non serve più chiederlo
+})
+
+it('si crea una lista «Da portare (insieme)» o «Da fare»: sono del gruppo', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false } }))
+  let created: unknown
+  server.use(
+    http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+    http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+    http.get('http://localhost/api/notifications/unread-count', () => HttpResponse.json({ count: 0 })),
+    http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
+    http.get('http://localhost/api/trips/t1/ai/tips', () => HttpResponse.json({ available: false, remainingToday: 5, tips: [], generatedAt: null })),
+    http.get('http://localhost/api/trips/t1/todo-lists', () => HttpResponse.json([])),
+    http.post('http://localhost/api/trips/t1/todo-lists', async ({ request }) => { created = await request.json(); return HttpResponse.json({ id: 'l9', items: [] }, { status: 201 }) }),
+  )
+  renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'lists', element: <TodoListsPage /> }] }], '/trips/t1/lists')
+  const user = userEvent.setup()
+  expect(await screen.findByText('Le liste sono del gruppo: le vedono e le usano tutti i partecipanti.')).toBeInTheDocument()
+  await user.type(screen.getByLabelText('Nome'), 'Prenotazioni')
+  await user.click(screen.getByRole('radio', { name: 'Da fare' }))
+  await user.click(screen.getByRole('button', { name: 'Crea lista' }))
+  await waitFor(() => expect(created).toEqual({ title: 'Prenotazioni', type: 'GENERAL' }))
+  expect(screen.getByRole('radio', { name: 'Da portare (insieme)' })).toBeInTheDocument()
 })
