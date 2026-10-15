@@ -45,6 +45,12 @@ public class BalanceService {
     @Transactional(readOnly = true)
     public BalancesResponse balances(UUID tripId, UUID userId) {
         access.requireMember(tripId, userId);
+        return computeBalances(tripId);
+    }
+
+    /** Saldi senza controllo d'accesso: lo fa chi chiama (balances() o HomeService, che lavora solo sui viaggi dell'utente). */
+    @Transactional(readOnly = true)
+    public BalancesResponse computeBalances(UUID tripId) {
         Map<UUID, Participant> all = allParticipants(tripId);
         List<UUID> activeIds = all.values().stream().filter(p -> !p.hasLeft()).map(Participant::getId).toList();
         List<ExpenseInput> expenseInputs = expenses.findAllByTripIdWithShares(tripId).stream()

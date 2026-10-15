@@ -43,6 +43,9 @@ public interface PhotoRepository extends JpaRepository<Photo, UUID> {
 
     long countByUploaderIdAndKind(UUID uploaderId, PhotoKind kind);
 
+    @Query("select p.id from Photo p where p.trip.id = :tripId and p.kind = com.splittrip.photo.PhotoKind.PHOTO order by p.createdAt desc limit 1")
+    Optional<UUID> findLatestPhotoId(UUID tripId);
+
     boolean existsByExpenseIdAndKind(UUID expenseId, PhotoKind kind);
 
     @Query("select p.expenseId, p.id from Photo p where p.trip.id = :tripId and p.kind = com.splittrip.photo.PhotoKind.RECEIPT")
