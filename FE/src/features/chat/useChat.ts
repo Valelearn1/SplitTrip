@@ -2,7 +2,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import type { LiveStatus } from '../../shared/live/liveContext'
 import { useLiveStatus } from '../../shared/live/useLive'
 import { chatApi } from './chatApi'
-import { chatKeys, insertMessage, markDeleted, type ChatData } from './chatCache'
+import { chatKeys, insertMessage, markDeleted, toggleMyReaction, type ChatData } from './chatCache'
 
 /** Senza canale collegato (proxy, risveglio di Render) la chat si ricarica da sola ogni 15 s, con la scheda visibile. */
 export function chatFallbackInterval(status: LiveStatus): number | false {
@@ -46,5 +46,22 @@ export function useMarkChatRead(tripId: string) {
   return useMutation({
     mutationFn: () => chatApi.read(tripId),
     onSuccess: () => qc.setQueryData(chatKeys.unread(tripId), { count: 0 }),
+  })
+}
+
+/** Reazioni (D-47): a schermo subito; se il server rifiuta si torna a com'era; il canale porta poi il riepilogo vero. */
+export function useToggleReaction(tripId: string, myParticipantId: string) {
+  const qc = useQueryClient()
+  const key = chatKeys.messages(tripId)
+  return useMutation({
+    mutationFn: ({ id, emoji, mine }: { id: string; emoji: string; mine: boolean }) =>
+      mine ? chatApi.unreact(tripId, id, emoji) : chatApi.react(tripId, id, emoji),
+    onMutate: async ({ id, emoji }) => {
+      await qc.cancelQueries({ queryKey: key })
+      const before = qc.getQueryData<ChatData>(key)
+      qc.setQueryData<ChatData>(key, (d) => toggleMyReaction(d, id, emoji, myParticipantId))
+      return { before }
+    },
+    onError: (_e, _v, ctx) => { if (ctx?.before) qc.setQueryData(key, ctx.before) },
   })
 }

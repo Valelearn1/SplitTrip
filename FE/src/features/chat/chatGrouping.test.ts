@@ -4,7 +4,7 @@ import { buildTimeline } from './chatGrouping'
 
 const m = (id: string, author: string | null, at: string, kind: 'TEXT' | 'EVENT' = 'TEXT'): ChatMessage => ({
   id, kind, authorParticipantId: author, authorName: author, authorUserId: null, authorHasAvatar: false,
-  content: id, eventType: kind === 'EVENT' ? 'EXPENSE_CREATED' : null, refId: null, createdAt: at, deleted: false,
+  content: id, eventType: kind === 'EVENT' ? 'EXPENSE_CREATED' : null, refId: null, createdAt: at, deleted: false, reactions: [],
 })
 
 it('separatori «Ieri»/«Oggi» e autore solo sul primo di un blocco entro 5 minuti', () => {

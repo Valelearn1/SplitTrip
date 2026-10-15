@@ -22,7 +22,7 @@ const trip = {
 }
 const msg = (over: Partial<ChatMessage>): ChatMessage => ({
   id: 'x', kind: 'TEXT', authorParticipantId: 'p2', authorName: 'Marco', authorUserId: 'u2', authorHasAvatar: false,
-  content: 'Sono in ritardo', eventType: null, refId: null, createdAt: new Date().toISOString(), deleted: false, ...over,
+  content: 'Sono in ritardo', eventType: null, refId: null, createdAt: new Date().toISOString(), deleted: false, reactions: [], ...over,
 })
 const listeners = new Set<(b: unknown) => void>()
 const push = (b: unknown) => listeners.forEach((l) => l(b))

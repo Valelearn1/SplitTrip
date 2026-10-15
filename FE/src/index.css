@@ -507,3 +507,29 @@ fieldset.field.card { padding: var(--space-4); }
 .switch[aria-checked='true'] .switch-track { background: var(--teal); }
 .switch[aria-checked='true'] .switch-thumb { transform: translateX(18px); }
 .switch-text { min-width: 2ch; }
+
+/* Reazioni ed emoji in chat (v3.1, D-47) */
+.msg-body { position: relative; }
+.reaction-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.mine .reaction-pills { justify-content: flex-end; }
+.reaction-pill { display: inline-flex; align-items: center; gap: 2px; min-height: 28px; padding: 0 8px; border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); font: inherit; font-size: 0.875rem; font-weight: 600; color: var(--ink-2); cursor: pointer; }
+.reaction-pill.mine { border-color: var(--teal); color: var(--teal); background: var(--teal-tint); }
+.reaction-pill:disabled { cursor: default; }
+/* il bersaglio da 44 px per il dito c'è anche se la pillola è più bassa */
+@media (pointer: coarse) { .reaction-pill { position: relative; } .reaction-pill::after { content: ''; position: absolute; inset: -8px -2px; } }
+.reaction-bar { position: absolute; bottom: calc(100% + 4px); z-index: 15; display: flex; gap: 2px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-pill); box-shadow: var(--shadow-card); }
+.mine .reaction-bar { right: 0; }
+.reaction-bar button { width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; font-size: 1.375rem; cursor: pointer; }
+.reaction-bar button:hover, .reaction-bar button.mine { background: var(--teal-tint); }
+.msg-react { opacity: 0; }
+.msg:focus-within .msg-react { opacity: 1; }
+@media (pointer: fine) { .msg:hover .msg-react { opacity: 1; } }
+/* sul telefono si reagisce col tocco lungo: il bottone resta per gli screen reader, invisibile finché non ha il focus */
+@media (pointer: coarse) { .msg-react:not(:focus-visible) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
+.msg-bubble { -webkit-touch-callout: none; }
+.emoji-picker { position: relative; display: flex; }
+.emoji-picker .icon-btn { min-width: 44px; min-height: 44px; }
+.emoji-popover { position: absolute; bottom: calc(100% + 8px); left: 0; z-index: 30; display: grid; grid-template-columns: repeat(8, 44px); max-width: min(360px, calc(100vw - 32px)); max-height: 240px; overflow-y: auto; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-card); }
+@media (max-width: 400px) { .emoji-popover { grid-template-columns: repeat(6, 44px); } }
+.emoji-popover button { width: 44px; height: 44px; border: 0; border-radius: 10px; background: none; font-size: 1.375rem; cursor: pointer; }
+.emoji-popover button:hover, .emoji-popover button:focus-visible { background: var(--teal-tint); }

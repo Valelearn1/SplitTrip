@@ -88,12 +88,15 @@ export type ChatEventType = 'EXPENSE_CREATED' | 'SETTLEMENT_CREATED' | 'PARTICIP
 export type ChatMessage = {
   id: string; kind: 'TEXT' | 'EVENT'; authorParticipantId: string | null; authorName: string | null; authorUserId: string | null
   authorHasAvatar: boolean; content: string | null; eventType: ChatEventType | null; refId: string | null; createdAt: string; deleted: boolean
+  reactions: ReactionSummary[] // D-47: nell'ordine 👍 ❤️ 😂 😮 😢 🎉
 }
+export type ReactionSummary = { emoji: string; count: number; participantIds: string[] }
 export type MessagePage = { items: ChatMessage[]; hasMore: boolean }
 export type LiveEvent =
   | { type: 'message.created'; data: ChatMessage }
   | { type: 'message.deleted'; data: { id: string } }
   | { type: 'typing'; data: { participantId: string; name: string } }
+  | { type: 'message.reacted'; data: { id: string; reactions: ReactionSummary[] } }
 export type LiveNotification = { notification: AppNotification; unreadCount: number }
 export type AiTipCategory = 'SEE' | 'EAT' | 'PACK' | 'TIP'
 export type AiTip = { title: string; text: string; category: AiTipCategory }

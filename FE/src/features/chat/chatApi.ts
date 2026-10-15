@@ -7,4 +7,9 @@ export const chatApi = {
   remove: (tripId: string, id: string) => api<void>(`/trips/${tripId}/messages/${id}`, { method: 'DELETE' }),
   unread: (tripId: string) => api<{ count: number }>(`/trips/${tripId}/messages/unread-count`),
   read: (tripId: string) => api<void>(`/trips/${tripId}/messages/read`, { method: 'POST' }),
+  // l'emoji va nel percorso: codificata (❤️ ha anche il selettore di variante)
+  react: (tripId: string, id: string, emoji: string) =>
+    api<void>(`/trips/${tripId}/messages/${id}/reactions/${encodeURIComponent(emoji)}`, { method: 'POST' }),
+  unreact: (tripId: string, id: string, emoji: string) =>
+    api<void>(`/trips/${tripId}/messages/${id}/reactions/${encodeURIComponent(emoji)}`, { method: 'DELETE' }),
 }

@@ -12,7 +12,7 @@ import type { TripContext } from '../trips/TripLayout'
 import { buildTimeline } from './chatGrouping'
 import { ChatComposer } from './ChatComposer'
 import { ChatMessageItem } from './ChatMessageItem'
-import { useDeleteMessage, useMarkChatRead, useMessages, useSendMessage } from './useChat'
+import { useDeleteMessage, useMarkChatRead, useMessages, useSendMessage, useToggleReaction } from './useChat'
 
 /** Chat del viaggio (spec v3 §5): si scrive via REST, i messaggi degli altri arrivano dal canale. */
 export function ChatPage() {
@@ -20,6 +20,7 @@ export function ChatPage() {
   const messages = useMessages(trip.id)
   const send = useSendMessage(trip.id)
   const remove = useDeleteMessage(trip.id)
+  const reaction = useToggleReaction(trip.id, me.id)
   const markRead = useMarkChatRead(trip.id)
   const status = useLiveStatus()
   const publish = useLivePublish()
@@ -153,7 +154,9 @@ export function ChatPage() {
         {timeline.map((i) => i.kind === 'day'
           ? <p key={i.key} className="day-sep"><span>{i.label}</span></p>
           : <ChatMessageItem key={i.key} tripId={trip.id} message={i.message} mine={i.message.authorParticipantId === me.id}
-              showAuthor={i.showAuthor} canDelete={canWrite && i.message.authorParticipantId === me.id} onDelete={() => setConfirmId(i.message.id)} live={liveIds.has(i.message.id)} />)}
+              showAuthor={i.showAuthor} canDelete={canWrite && i.message.authorParticipantId === me.id} onDelete={() => setConfirmId(i.message.id)} live={liveIds.has(i.message.id)}
+              me={me.id} canReact={canWrite && i.message.kind === 'TEXT' && !i.message.deleted}
+              onReact={(emoji, mine) => reaction.mutate({ id: i.message.id, emoji, mine })} />)}
         <div ref={end} />
       </div>
       {newBelow && (
