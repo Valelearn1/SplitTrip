@@ -1,5 +1,7 @@
-import { Navigate, type RouteObject } from 'react-router'
+import { type RouteObject } from 'react-router'
 import { LoginPage } from '../features/auth/LoginPage'
+import { HomePage } from '../features/home/HomePage'
+import { LandingPage } from '../features/home/LandingPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
 import { BalancesPage } from '../features/balances/BalancesPage'
 import { SettlementFormPage } from '../features/balances/SettlementFormPage'
@@ -12,7 +14,6 @@ import { TripDashboardPage } from '../features/trips/TripDashboardPage'
 import { TripLayout } from '../features/trips/TripLayout'
 import { TripSettingsPage } from '../features/trips/TripSettingsPage'
 import { WelcomePage } from '../features/trips/WelcomePage'
-import { TripsPage } from '../features/trips/TripsPage'
 import { NotificationsPage } from '../features/notifications/NotificationsPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { TodoListsPage } from '../features/todo/TodoListsPage'
@@ -24,13 +25,13 @@ export const routes: RouteObject[] = [
   {
     element: <Layout />,
     children: [
-      { index: true, element: <Navigate to="/trips" replace /> },
+      { index: true, element: <LandingPage /> },
       { path: '/login', element: <LoginPage /> },
       { path: '/register', element: <RegisterPage /> },
       {
         element: <RequireAuth />,
         children: [
-          { path: '/trips', element: <TripsPage /> },
+          { path: '/trips', element: <HomePage /> },
           { path: '/trips/new', element: <NewTripPage /> },
           { path: '/join', element: <JoinPage /> },
           { path: '/join/:code', element: <JoinPage /> },

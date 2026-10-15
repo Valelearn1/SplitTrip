@@ -18,13 +18,13 @@ describe('RequireAuth', () => {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: '1', email: 'a@b.it', displayName: 'Vale' } }))
     const seen: (string | null)[] = []
     server.use(
-      http.get('http://localhost/api/trips', ({ request }) => {
+      http.get('http://localhost/api/me/home', ({ request }) => {
         seen.push(request.headers.get('Authorization'))
-        return HttpResponse.json([])
+        return HttpResponse.json({ featured: null, balances: [], totals: { toReceive: 0, toGive: 0, tripsToReceive: 0, tripsToGive: 0 }, latestNotifications: [], trips: { current: [], past: [] } })
       }),
     )
     const router = renderWithProviders(routes, '/trips')
-    expect(await screen.findByRole('heading', { name: 'I miei viaggi' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Ciao Vale' })).toBeInTheDocument()
     expect(await screen.findByText('Nessun viaggio ancora')).toBeInTheDocument()
     expect(seen).toEqual(['Bearer t'])
     expect(router.state.location.pathname).toBe('/trips')

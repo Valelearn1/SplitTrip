@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { Link, useLocation, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
@@ -14,7 +14,11 @@ export function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const from = (location.state as { from?: string } | null)?.from ?? '/trips'
+  const [params] = useSearchParams()
+  // ?next= arriva dalla pagina di presentazione: solo percorsi interni, mai un altro sito («//…»)
+  const next = params.get('next')
+  const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null
+  const from = (location.state as { from?: string } | null)?.from ?? safeNext ?? '/trips'
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({ resolver: zodResolver(loginSchema) })
   const mutation = useMutation({
     mutationFn: authApi.login,

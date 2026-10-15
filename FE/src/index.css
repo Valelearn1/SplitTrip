@@ -457,3 +457,31 @@ fieldset.field.card { padding: var(--space-4); }
 /* Benvenuto nel viaggio (D-50) */
 .welcome { text-align: center; max-width: 480px; margin: 0 auto; }
 .welcome form { text-align: left; }
+
+/* Pagina di presentazione (v3.1): un messaggio, tre momenti del viaggio, tre passi */
+.landing { display: grid; gap: var(--space-5); max-width: 960px; margin: 0 auto; }
+.landing-hero { display: grid; justify-items: center; gap: var(--space-3); max-width: 560px; margin: var(--space-5) auto 0; text-align: center; }
+.landing-hero .suitcase { color: var(--teal); }
+.landing-hero .actions { width: 100%; }
+.landing-pillars { display: grid; gap: var(--space-3); }
+.landing-pillars .card { display: grid; gap: var(--space-2); align-content: start; }
+.landing-pillars .msi { color: var(--teal); font-size: 28px; }
+.landing-steps ol { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
+.landing-steps li::marker { color: var(--teal); font-weight: 700; }
+.landing-footer { text-align: center; font-size: 0.875rem; padding-bottom: var(--space-4); }
+@media (min-width: 720px) { .landing-pillars { grid-template-columns: repeat(3, 1fr); } }
+
+/* Home (D-49): il viaggio in evidenza in testa, poi azioni, conti, novità, elenco */
+.featured { display: grid; gap: var(--space-4); overflow: hidden; }
+.featured-cover { display: grid; place-items: center; aspect-ratio: 16 / 9; margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) 0; background: var(--teal-tint); color: var(--teal); }
+.featured-cover img { width: 100%; height: 100%; object-fit: cover; }
+.featured-body { display: grid; gap: var(--space-2); justify-items: start; }
+.featured-body h2 { margin: 0; }
+.featured-body p { margin: 0; }
+.featured-status { font-weight: 700; color: var(--teal); }
+.section-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); }
+.home-total-label { display: inline-flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+@media (min-width: 720px) {
+  .featured { grid-template-columns: 1fr 1fr; align-items: center; }
+  .featured-cover { margin: calc(-1 * var(--space-4)) 0 calc(-1 * var(--space-4)) calc(-1 * var(--space-4)); aspect-ratio: auto; height: 100%; min-height: 220px; }
+}

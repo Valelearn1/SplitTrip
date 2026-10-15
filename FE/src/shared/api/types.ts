@@ -91,3 +91,15 @@ export type AiTipCategory = 'SEE' | 'EAT' | 'PACK' | 'TIP'
 export type AiTip = { title: string; text: string; category: AiTipCategory }
 export type AiTips = { available: boolean; remainingToday: number; tips: AiTip[]; generatedAt: string | null }
 export type PackingSuggestions = { items: string[]; remainingToday: number }
+
+// Home (D-49): specchio di HomeResponse
+export type HomeFeatured = {
+  trip: TripSummary; status: 'ONGOING' | 'UPCOMING' | 'PAST'; daysUntil: number | null; dayOfTotal: number | null; totalDays: number
+  coverPhotoId: string | null; weatherToday: WeatherDay | null; myNet: number
+}
+export type HomeTripBalance = { tripId: string; tripName: string; currency: string; myNet: number }
+export type HomeTotals = { toReceive: number; toGive: number; tripsToReceive: number; tripsToGive: number }
+export type Home = {
+  featured: HomeFeatured | null; balances: HomeTripBalance[]; totals: HomeTotals
+  latestNotifications: AppNotification[]; trips: { current: TripSummary[]; past: TripSummary[] }
+}

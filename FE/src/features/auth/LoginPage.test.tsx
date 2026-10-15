@@ -7,15 +7,23 @@ import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from './authContext'
 import { LoginPage } from './LoginPage'
 
+const loginRoutes = [
+  { path: '/login', element: <LoginPage /> },
+  { path: '/trips', element: <h1>Viaggi</h1> },
+  { path: '/trips/42', element: <h1>Viaggio 42</h1> },
+  { path: '/join', element: <h1>Inserisci il codice</h1> },
+]
+
 function renderLogin(from?: string) {
-  return renderWithProviders(
-    [
-      { path: '/login', element: <LoginPage /> },
-      { path: '/trips', element: <h1>Viaggi</h1> },
-      { path: '/trips/42', element: <h1>Viaggio 42</h1> },
-    ],
-    { pathname: '/login', state: from ? { from } : undefined },
-  )
+  return renderWithProviders(loginRoutes, { pathname: '/login', state: from ? { from } : undefined })
+}
+
+async function loginAs() {
+  server.use(http.post('http://localhost/api/auth/login', () => HttpResponse.json({ token: 'tok', user: { id: '1', email: 'vale@example.com', displayName: 'Vale' } })))
+  const user = userEvent.setup()
+  await user.type(screen.getByLabelText('Email'), 'vale@example.com')
+  await user.type(screen.getByLabelText('Password'), 'password1')
+  await user.click(screen.getByRole('button', { name: 'Entra' }))
 }
 
 describe('LoginPage', () => {
@@ -35,6 +43,18 @@ describe('LoginPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Viaggio 42' })).toBeInTheDocument()
     expect(JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)!).token).toBe('tok')
+  })
+
+  it('?next= dalla pagina di presentazione porta dove serve (es. «Ho un codice invito»)', async () => {
+    renderWithProviders(loginRoutes, '/login?next=/join')
+    await loginAs()
+    expect(await screen.findByRole('heading', { name: 'Inserisci il codice' })).toBeInTheDocument()
+  })
+
+  it('?next= verso un altro sito viene ignorato', async () => {
+    renderWithProviders(loginRoutes, '/login?next=//esempio.test/trappola')
+    await loginAs()
+    expect(await screen.findByRole('heading', { name: 'Viaggi' })).toBeInTheDocument()
   })
 
   it('mostra il messaggio del server su credenziali sbagliate', async () => {
