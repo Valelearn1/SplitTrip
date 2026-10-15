@@ -419,7 +419,8 @@ fieldset.field.card { padding: var(--space-4); }
 .list-shared { margin: -4px 0 var(--space-2); font-size: 0.875rem; }
 .assign-ask { font-size: 0.9375rem; }
 /* v3.1: la chat non è una tab, quindi ha un «Indietro» ben visibile */
-.chat-head { display: flex; align-items: center; gap: var(--space-3); }
+/* resta appiccicata sotto l'intestazione dell'app (65 px): «Indietro» sempre raggiungibile anche in una chat lunga */
+.chat-head { position: sticky; top: 65px; z-index: 10; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; background: var(--bg); }
 .chat-head h2 { margin: 0; }
 /* v3.1: righe di spese e rimborsi espandibili per leggere i dettagli per intero */
 .expense-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; border-bottom: 1px solid var(--line); }
