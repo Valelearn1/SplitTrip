@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -41,6 +42,7 @@ public class Photo {
     @Column(nullable = false) private int width;
     @Column(nullable = false) private int height;
     @Column(length = 200) private String caption;
+    @Setter @Column(name = "place_name", length = 120) private String placeName;
     @Column(name = "taken_at") private Instant takenAt;
     @Column(precision = 9, scale = 6) private BigDecimal latitude;
     @Column(precision = 9, scale = 6) private BigDecimal longitude;
