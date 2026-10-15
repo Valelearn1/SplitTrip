@@ -114,6 +114,19 @@ public class ChatService {
         participants.save(me);
     }
 
+    private final Map<String, Instant> lastTyping = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** «Sta scrivendo»: non si salva, al massimo uno ogni 2 s per persona e viaggio. */
+    public void typing(UUID tripId, UUID userId) {
+        Participant me = access.requireMember(tripId, userId);
+        Instant now = clock.instant();
+        String key = userId + ":" + tripId;
+        Instant last = lastTyping.get(key);
+        if (last != null && now.isBefore(last.plusSeconds(2))) return;
+        lastTyping.put(key, now);
+        live.toTrip(tripId, "typing", Map.of("participantId", me.getId(), "name", me.getDisplayName()));
+    }
+
     /** Usato anche dal listener degli eventi (Task 4): spinge il messaggio salvato dopo il commit. */
     MessageResponse publishCreated(ChatMessage saved) {
         MessageResponse response = toResponses(List.of(saved)).getFirst();

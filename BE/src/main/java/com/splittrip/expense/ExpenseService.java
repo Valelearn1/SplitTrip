@@ -97,7 +97,8 @@ public class ExpenseService {
         for (ExpenseShare s : expense.getShares()) {
             if (s.getParticipant().hasAccount()) shareByUserId.put(s.getParticipant().userId(), s.getAmount());
         }
-        events.publishEvent(new ExpenseCreated(tripId, expense.getId(), userId, me.getDisplayName(), expense.getDescription(), shareByUserId));
+        events.publishEvent(new ExpenseCreated(tripId, expense.getId(), userId, me.getDisplayName(), expense.getDescription(),
+                shareByUserId, expense.getAmount(), expense.getCurrency()));
         return get(tripId, userId, expense.getId());
     }
 

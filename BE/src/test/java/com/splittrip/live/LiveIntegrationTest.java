@@ -97,4 +97,20 @@ class LiveIntegrationTest {
         assertThat(frame).contains("\"type\":\"message.created\"").contains("\"content\":\"Ciao\"").contains("\"authorName\":\"Vale\"");
         v.disconnect();
     }
+
+    @Test
+    void staScrivendoArrivaUnaVoltaOgniDueSecondi() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        String marco = TestUsers.register(mvc, "Marco");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        TestTrips.join(mvc, marco, TestTrips.inviteCode(mvc, vale, tripId));
+        LiveTestClient v = LiveTestClient.connect(port, vale);
+        LiveTestClient m = LiveTestClient.connect(port, marco);
+        BlockingQueue<String> q = v.subscribe("/topic/trips/" + tripId);
+        Thread.sleep(300);
+        for (int i = 0; i < 3; i++) m.send("/app/trips/" + tripId + "/typing");
+        assertThat(q.poll(5, TimeUnit.SECONDS)).contains("\"type\":\"typing\"").contains("\"name\":\"Marco\"");
+        assertThat(q.poll(1, TimeUnit.SECONDS)).isNull();
+        v.disconnect(); m.disconnect();
+    }
 }
