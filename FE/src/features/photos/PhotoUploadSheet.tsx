@@ -71,6 +71,10 @@ export function PhotoUploadSheet({ tripId, open, onClose }: Props) {
         <Icon name="add_photo_alternate" />Scegli dal telefono
         <input type="file" accept="image/*" multiple aria-label="Scegli le foto" onChange={(e) => { void pick(e.target.files); e.target.value = '' }} />
       </label>
+      <label className="btn btn-secondary file-pick touch-only">
+        <Icon name="photo_camera" />Scatta foto
+        <input type="file" accept="image/*" capture="environment" aria-label="Scatta una foto" onChange={(e) => { void pick(e.target.files); e.target.value = '' }} />
+      </label>
       <ul className="list upload-list">
         {items.map((i) => (
           <li key={i.key} className="upload-item">

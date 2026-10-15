@@ -377,3 +377,13 @@ fieldset.field.card { padding: var(--space-4); }
 .chat-counter { align-self: center; font-variant-numeric: tabular-nums; }
 .chat-btn { position: relative; }
 @media (max-width: 719px) { .app.has-tabs .chat-composer { bottom: 76px; } }
+/* «Scatta foto» solo sui dispositivi touch: sul PC c'è solo «Scegli» */
+.touch-only { display: none; }
+@media (pointer: coarse) { .touch-only { display: inline-flex; } }
+/* Consigli AI (v3) */
+.ai-tips { list-style: none; margin: 0 0 var(--space-3); padding: 0; display: grid; gap: var(--space-3); }
+.ai-tips li { display: flex; gap: var(--space-3); align-items: flex-start; }
+.ai-tips li > .msi { color: var(--teal); font-size: 24px; }
+.ai-tips strong { display: block; }
+.ai-tips p { margin: 2px 0 0; color: var(--ink-2); }
+.skeleton-line { display: block; height: 14px; margin: 10px 0; border-radius: 7px; background: var(--surface-2); }

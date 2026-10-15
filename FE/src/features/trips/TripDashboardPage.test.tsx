@@ -23,6 +23,7 @@ describe('TripDashboardPage', () => {
       http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
       http.get('http://localhost/api/trips/t1/summary', () => HttpResponse.json({ total: 120, byCategory: { FOOD: 90, TRANSPORT: 30 }, byPayer: [] })),
       http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
+      http.get('http://localhost/api/trips/t1/ai/tips', () => HttpResponse.json({ available: false, remainingToday: 5, tips: [], generatedAt: null })),
       http.get('http://localhost/api/trips/t1/balances', () =>
         HttpResponse.json({
           balances: [

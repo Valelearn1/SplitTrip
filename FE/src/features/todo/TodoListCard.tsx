@@ -3,6 +3,8 @@ import type { Participant, TodoList } from '../../shared/api/types'
 import { Button } from '../../shared/ui/Button'
 import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
+import { PackingSuggestModal } from '../ai/PackingSuggestModal'
+import { useAiTips } from '../ai/useAi'
 import { TodoItemRow } from './TodoItemRow'
 import { useAddItem, useDeleteItem, useDeleteList, usePatchItem, useRenameList } from './useTodo'
 
@@ -12,6 +14,8 @@ export function TodoListCard({ tripId, list, participants, canWrite, onlyMineId 
   const [text, setText] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
+  const [suggesting, setSuggesting] = useState(false)
+  const aiAvailable = useAiTips(tripId).data?.available ?? false
   const add = useAddItem(tripId)
   const patch = usePatchItem(tripId)
   const removeItem = useDeleteItem(tripId)
@@ -34,6 +38,11 @@ export function TodoListCard({ tripId, list, participants, canWrite, onlyMineId 
           <span className="badge badge-plain">{doneCount}/{list.items.length} fatte</span>
           {canWrite && (
             <>
+              {list.type === 'PACKING' && aiAvailable && (
+              <button type="button" className="btn btn-soft btn-sm" onClick={() => setSuggesting(true)}>
+                <Icon name="auto_awesome" />Suggerisci voci
+              </button>
+              )}
               <button type="button" className="btn btn-secondary btn-sm icon-btn" aria-label={`Rinomina ${list.title}`}
                 onClick={() => setRenaming(list.title)}>
                 <Icon name="edit" />
@@ -86,6 +95,7 @@ export function TodoListCard({ tripId, list, participants, canWrite, onlyMineId 
           <Button variant="danger" loading={removeList.isPending} onClick={() => removeList.mutate(list.id, { onSuccess: () => setConfirmDelete(false) })}>Elimina</Button>
         </div>
       </Modal>
+      {suggesting && <PackingSuggestModal tripId={tripId} listId={list.id} open onClose={() => setSuggesting(false)} />}
     </section>
   )
 }

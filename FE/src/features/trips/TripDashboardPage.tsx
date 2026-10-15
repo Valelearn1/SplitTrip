@@ -8,6 +8,7 @@ import { formatDate } from '../../shared/utils/format'
 import { useBalances, useSummary } from '../balances/useBalances'
 import { useExpenses } from '../expenses/useExpenses'
 import { WeatherCard } from '../weather/WeatherCard'
+import { AiTipsCard } from '../ai/AiTipsCard'
 import { InviteCodeBox } from './InviteCodeBox'
 import type { TripContext } from './TripLayout'
 
@@ -38,6 +39,7 @@ export function TripDashboardPage() {
       </div>
 
       <WeatherCard tripId={trip.id} />
+      <AiTipsCard tripId={trip.id} destination={trip.destination} canWrite={canWrite} />
 
       <div className="card">
         <div className="page-head" style={{ marginBottom: 8 }}>

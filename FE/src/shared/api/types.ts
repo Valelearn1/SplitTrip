@@ -81,3 +81,7 @@ export type LiveEvent =
   | { type: 'message.deleted'; data: { id: string } }
   | { type: 'typing'; data: { participantId: string; name: string } }
 export type LiveNotification = { notification: AppNotification; unreadCount: number }
+export type AiTipCategory = 'SEE' | 'EAT' | 'PACK' | 'TIP'
+export type AiTip = { title: string; text: string; category: AiTipCategory }
+export type AiTips = { available: boolean; remainingToday: number; tips: AiTip[]; generatedAt: string | null }
+export type PackingSuggestions = { items: string[]; remainingToday: number }

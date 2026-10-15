@@ -37,3 +37,14 @@ it('la posizione parte solo se do il consenso, la data della foto sempre', async
   expect(sent[1].latitude).toBe(41.89)
   expect(sent[1].longitude).toBe(12.49)
 })
+
+it('«Scatta foto» apre la fotocamera posteriore e la foto segue lo stesso percorso', async () => {
+  vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:preview')
+  vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+  render(<QueryClientProvider client={new QueryClient()}><PhotoUploadSheet tripId="t1" open onClose={() => {}} /></QueryClientProvider>)
+  const camera = screen.getByLabelText('Scatta una foto')
+  expect(camera).toHaveAttribute('capture', 'environment')
+  expect(camera).toHaveAttribute('accept', 'image/*')
+  await userEvent.setup().upload(camera, new File(['x'], 'scatto.jpg', { type: 'image/jpeg' }))
+  expect(await screen.findByRole('button', { name: 'Carica 1 foto' })).toBeInTheDocument()
+})
