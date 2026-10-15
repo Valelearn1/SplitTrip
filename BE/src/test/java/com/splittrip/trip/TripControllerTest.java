@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.nullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 
 class TripControllerTest extends IntegrationTest {
 
@@ -68,5 +70,26 @@ class TripControllerTest extends IntegrationTest {
                 .andExpect(status().isForbidden());
         mvc.perform(get("/api/trips/" + UUID.randomUUID()).header("Authorization", "Bearer " + marco))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void coordinateDellaDestinazioneSiSalvanoInsiemeOMai() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        mvc.perform(post("/api/trips").header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON).content("""
+                {"name":"Lisbona","destination":"Lisbona","startDate":"2026-11-01","endDate":"2026-11-06","latitude":38.7169}
+                """)).andExpect(status().isBadRequest()).andExpect(jsonPath("$.errors[0].field").value("longitude"));
+        String body = mvc.perform(post("/api/trips").header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON).content("""
+                {"name":"Lisbona","destination":"Lisbona","startDate":"2026-11-01","endDate":"2026-11-06","latitude":38.7169,"longitude":-9.1399}
+                """)).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.latitude").value(38.7169)).andExpect(jsonPath("$.longitude").value(-9.1399))
+                .andReturn().getResponse().getContentAsString();
+        UUID tripId = UUID.fromString(TestUsers.extract(body, "\"id\":\"([^\"]+)\""));
+        // cambiare solo il testo della destinazione azzera le coordinate (il meteo le ricalcola); con coordinate nuove si tengono
+        mvc.perform(patch("/api/trips/" + tripId).header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON)
+                .content("{\"destination\":\"Porto\",\"latitude\":41.1579,\"longitude\":-8.6291}")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.latitude").value(41.1579));
+        mvc.perform(patch("/api/trips/" + tripId).header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON)
+                .content("{\"destination\":\"Braga\"}")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.latitude").value(nullValue()));
     }
 }

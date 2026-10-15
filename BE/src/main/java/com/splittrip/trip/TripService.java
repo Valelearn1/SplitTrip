@@ -2,6 +2,7 @@ package com.splittrip.trip;
 
 import com.splittrip.common.BadRequestException;
 import com.splittrip.common.ConflictException;
+import com.splittrip.common.FieldException;
 import com.splittrip.common.NotFoundException;
 import com.splittrip.common.events.ParticipantJoined;
 import com.splittrip.expense.ExpenseRepository;
@@ -18,6 +19,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -57,11 +59,16 @@ public class TripService {
     @Transactional
     public TripResponse create(UUID userId, TripRequest req) {
         validateDates(req.startDate(), req.endDate());
+        validateCoordinates(req.latitude(), req.longitude());
         User owner = users.require(userId);
         Instant now = clock.instant();
         String currency = req.currency() == null ? "EUR" : req.currency();
         Trip trip = trips.save(new Trip(req.name().strip(), req.destination().strip(), req.startDate(), req.endDate(),
                 currency, uniqueCode(), owner, now));
+        if (req.latitude() != null) { // da una proposta scelta (D-46): il meteo non deve cercarle
+            trip.setLatitude(req.latitude());
+            trip.setLongitude(req.longitude());
+        }
         participants.save(new Participant(trip, owner, owner.getDisplayName(), MemberRole.ORGANIZER, now));
         return get(trip.getId(), userId);
     }
@@ -89,10 +96,15 @@ public class TripService {
         access.requireOrganizer(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
         if (req.name() != null) trip.setName(req.name().strip());
+        validateCoordinates(req.latitude(), req.longitude());
         if (req.destination() != null && !req.destination().strip().equals(trip.getDestination())) {
             trip.setDestination(req.destination().strip());
-            trip.setLatitude(null);   // il meteo ricalcola le coordinate della nuova destinazione
+            trip.setLatitude(null);   // il meteo ricalcola le coordinate della nuova destinazione…
             trip.setLongitude(null);
+        }
+        if (req.latitude() != null) { // …a meno che non arrivino da una proposta scelta (D-46)
+            trip.setLatitude(req.latitude());
+            trip.setLongitude(req.longitude());
         }
         if (req.startDate() != null) trip.setStartDate(req.startDate());
         if (req.endDate() != null) trip.setEndDate(req.endDate());
@@ -178,6 +190,14 @@ public class TripService {
             code = codes.generate();
         } while (trips.existsByInviteCode(code));
         return code;
+    }
+
+    /** Come per le foto: o entrambe le coordinate o nessuna, nei limiti geografici. */
+    private static void validateCoordinates(BigDecimal lat, BigDecimal lon) {
+        if ((lat == null) != (lon == null)) throw new FieldException(lat == null ? "latitude" : "longitude", "Servono entrambe le coordinate");
+        if (lat == null) return;
+        if (lat.abs().compareTo(BigDecimal.valueOf(90)) > 0) throw new FieldException("latitude", "Latitudine non valida");
+        if (lon.abs().compareTo(BigDecimal.valueOf(180)) > 0) throw new FieldException("longitude", "Longitudine non valida");
     }
 
     static void validateDates(LocalDate start, LocalDate end) {
