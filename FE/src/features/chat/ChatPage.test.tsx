@@ -129,11 +129,17 @@ it('«Indietro» riporta al viaggio anche se la chat è stata aperta da un link'
   expect(await screen.findByText('Panoramica del viaggio')).toBeInTheDocument()
 })
 
-it('il suono dei messaggi si spegne dalla chat e la scelta resta', async () => {
+it('il suono dei messaggi si spegne dalla chat e resta sull’account (D-48)', async () => {
+  let sent: unknown
+  server.use(http.patch('http://localhost/api/me/preferences', async ({ request }) => {
+    sent = await request.json()
+    return HttpResponse.json({ id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false, preferredCurrency: 'EUR', chatSound: false, reduceMotion: false })
+  }))
   mount()
   const toggle = await screen.findByRole('button', { name: 'Suono dei messaggi' })
   expect(toggle).toHaveAttribute('aria-pressed', 'true')
   await userEvent.setup().click(toggle)
   expect(toggle).toHaveAttribute('aria-pressed', 'false')
-  expect(localStorage.getItem('splittrip.sound')).toBe('off')
+  await waitFor(() => expect(sent).toEqual({ chatSound: false }))
+  expect(JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)!).user.chatSound).toBe(false)
 })

@@ -6,9 +6,13 @@ import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { downscale } from '../../shared/utils/image'
 import { useAuth } from '../auth/useAuth'
+import { PasswordSection } from './PasswordSection'
+import { PreferencesSection } from './PreferencesSection'
+import { ProfileDataSection } from './ProfileDataSection'
 import { avatarPath, profileApi } from './profileApi'
+import { StatsSection } from './StatsSection'
 
-/** Profilo: foto visibile solo ai compagni di viaggio (D-37); senza foto restano le iniziali. */
+/** Profilo (v3.1): foto e dati, password, «i miei numeri», preferenze. La foto la vedono solo i compagni di viaggio (D-37). */
 export function ProfilePage() {
   const { auth, updateUser } = useAuth()
   const qc = useQueryClient()
@@ -24,8 +28,10 @@ export function ProfilePage() {
   })
 
   return (
-    <section className="card stack profile">
+    <div className="stack profile">
       <h1>Il tuo profilo</h1>
+      <section className="card stack">
+      <h2>Foto e dati</h2>
       <div className="row-main">
         <Avatar name={user.displayName} me size="xl" userId={user.id} hasAvatar={user.hasAvatar} />
         <span className="row-text"><strong>{user.displayName}</strong><small>{user.email}</small></span>
@@ -45,6 +51,11 @@ export function ProfilePage() {
       </div>
       {set.isPending && <p role="status" className="muted">Caricamento…</p>}
       <FormError error={set.error instanceof ApiError ? set.error : remove.error} />
-    </section>
+      <ProfileDataSection user={user} />
+      </section>
+      <section className="card"><h2>Password</h2><PasswordSection /></section>
+      <section className="card"><h2>I miei numeri</h2><StatsSection /></section>
+      <section className="card"><h2>Preferenze</h2><PreferencesSection user={user} /></section>
+    </div>
   )
 }

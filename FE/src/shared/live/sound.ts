@@ -1,12 +1,16 @@
-const KEY = 'splittrip.sound'
+import { AUTH_STORAGE_KEY } from '../../features/auth/authContext'
 
-/** Suono dei messaggi (v3.1): attivo di default, la scelta resta nel browser. */
+const OLD_KEY = 'splittrip.sound' // scelta nel browser prima della v3.1: vale solo se l'account non dice niente
+
+/** Suono dei messaggi: è una preferenza dell'account (D-48), letta dalla sessione salvata; attivo di default. */
 export function isSoundOn(): boolean {
-  try { return localStorage.getItem(KEY) !== 'off' } catch { return true }
-}
-
-export function setSoundOn(on: boolean) {
-  try { localStorage.setItem(KEY, on ? 'on' : 'off') } catch { /* storage non disponibile: resta per questa visita */ }
+  try {
+    const user = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) ?? 'null')?.user as { chatSound?: boolean } | undefined
+    if (typeof user?.chatSound === 'boolean') return user.chatSound
+    return localStorage.getItem(OLD_KEY) !== 'off'
+  } catch {
+    return true
+  }
 }
 
 let ctx: AudioContext | null = null

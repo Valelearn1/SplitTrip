@@ -1,4 +1,12 @@
-export type User = { id: string; email: string; displayName: string; hasAvatar: boolean }
+export type User = {
+  id: string; email: string; displayName: string; hasAvatar: boolean
+  // preferenze sull'account (D-48)
+  preferredCurrency: string; chatSound: boolean; reduceMotion: boolean
+}
+export type Stats = {
+  trips: number; destinations: { name: string; latitude: number | null; longitude: number | null }[]
+  groupTotal: number; myShare: number; photos: number
+}
 export type AuthResponse = { token: string; user: User }
 
 export type TripStatus = 'PLANNING' | 'ONGOING' | 'CLOSED'

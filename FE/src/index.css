@@ -485,3 +485,25 @@ fieldset.field.card { padding: var(--space-4); }
   .featured { grid-template-columns: 1fr 1fr; align-items: center; }
   .featured-cover { margin: calc(-1 * var(--space-4)) 0 calc(-1 * var(--space-4)) calc(-1 * var(--space-4)); aspect-ratio: auto; height: 100%; min-height: 220px; }
 }
+
+/* Profilo (v3.1): «i miei numeri», preferenze */
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+.stat-big { display: grid; gap: 2px; padding: var(--space-3) var(--space-4); background: var(--surface-1); border-radius: 12px; }
+.stat-big strong { font-size: 2rem; font-weight: 800; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.stat-big span { color: var(--ink-2); font-weight: 600; }
+.stat-money { grid-column: 1 / -1; }
+.stat-money strong { font-size: 1.75rem; }
+.chips .chip-static { cursor: default; }
+.chips .chip-static:hover { background: var(--surface); }
+.points-map { position: relative; isolation: isolate; height: 260px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); }
+.points-map .leaflet-container { height: 100%; width: 100%; font: inherit; }
+@media (min-width: 720px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } .stat-money { grid-column: auto / span 1; } }
+
+.pref-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 44px; }
+.switch { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; padding: 0 4px; border: 0; background: none; font: inherit; font-weight: 600; color: var(--ink-2); cursor: pointer; border-radius: 10px; }
+.switch:focus-visible { box-shadow: var(--focus); outline: none; }
+.switch-track { position: relative; width: 44px; height: 26px; border-radius: 13px; background: var(--surface-3); transition: background 150ms var(--ease); }
+.switch-thumb { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(20, 28, 38, 0.3); transition: transform 150ms var(--ease); }
+.switch[aria-checked='true'] .switch-track { background: var(--teal); }
+.switch[aria-checked='true'] .switch-thumb { transform: translateX(18px); }
+.switch-text { min-width: 2ch; }

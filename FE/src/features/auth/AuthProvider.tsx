@@ -3,10 +3,15 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import { configureClient } from '../../shared/api/client'
 import { AUTH_STORAGE_KEY, AuthContext, type AuthState } from './authContext'
 
+// sessioni salvate prima della v3.1 non hanno le preferenze (D-48): valori di base finché il server non le rimanda
+const DEFAULT_PREFERENCES = { preferredCurrency: 'EUR', chatSound: true, reduceMotion: false }
+
 function read(): AuthState | null {
   try {
     const raw = localStorage.getItem(AUTH_STORAGE_KEY)
-    return raw ? (JSON.parse(raw) as AuthState) : null
+    if (!raw) return null
+    const state = JSON.parse(raw) as AuthState
+    return { ...state, user: { ...DEFAULT_PREFERENCES, ...state.user } }
   } catch {
     return null
   }

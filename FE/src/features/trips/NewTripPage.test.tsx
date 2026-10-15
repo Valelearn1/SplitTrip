@@ -46,3 +46,9 @@ it('scegliendo una proposta si inviano anche le coordinate', async () => {
   await user.click(screen.getByRole('button', { name: 'Crea viaggio' }))
   await waitFor(() => expect(sent).toMatchObject({ destination: 'Lisbona', latitude: 38.7169, longitude: -9.1399 }))
 })
+
+it('la valuta parte da quella scelta nel Profilo (D-48)', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false, preferredCurrency: 'CHF', chatSound: true, reduceMotion: false } }))
+  renderWithProviders([{ path: '/trips/new', element: <NewTripPage /> }], '/trips/new')
+  expect(await screen.findByRole('combobox', { name: 'Valuta' })).toHaveValue('CHF')
+})

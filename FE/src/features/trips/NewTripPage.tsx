@@ -6,15 +6,17 @@ import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
 import { PlaceInput } from '../../shared/ui/PlaceInput'
 import { currencyLabel, TRAVEL_CURRENCIES } from '../../shared/utils/currencies'
+import { useAuth } from '../auth/useAuth'
 import { tripSchema, type TripForm } from './tripSchema'
 import { useCreateTrip } from './useTrips'
 
 export function NewTripPage() {
   const navigate = useNavigate()
   const create = useCreateTrip()
+  const { auth } = useAuth()
   const { register, control, handleSubmit, setValue, formState: { errors } } = useForm<TripForm>({
     resolver: zodResolver(tripSchema),
-    defaultValues: { currency: 'EUR' },
+    defaultValues: { currency: auth?.user.preferredCurrency ?? 'EUR' }, // valuta predefinita dal Profilo (D-48)
   })
   const [latitude, longitude] = useWatch({ control, name: ['latitude', 'longitude'] })
 

@@ -1,12 +1,13 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useOutletContext } from 'react-router'
-import { isSoundOn, setSoundOn } from '../../shared/live/sound'
 import { useLivePublish, useLiveStatus, useTripChannel } from '../../shared/live/useLive'
 import { Button } from '../../shared/ui/Button'
 import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
 import { Spinner } from '../../shared/ui/Spinner'
+import { useAuth } from '../auth/useAuth'
+import { profileApi } from '../profile/profileApi'
 import type { TripContext } from '../trips/TripLayout'
 import { buildTimeline } from './chatGrouping'
 import { ChatComposer } from './ChatComposer'
@@ -27,7 +28,13 @@ export function ChatPage() {
   const [typing, setTyping] = useState<{ name: string; until: number } | null>(null)
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const [newBelow, setNewBelow] = useState(false)
-  const [sound, setSound] = useState(isSoundOn)
+  const { auth, updateUser } = useAuth()
+  const sound = auth?.user.chatSound ?? true
+  // stessa preferenza del Profilo (D-48): subito a schermo, salvata sull'account; se non va, si torna indietro
+  function toggleSound() {
+    updateUser({ chatSound: !sound })
+    profileApi.updatePreferences({ chatSound: !sound }).catch(() => updateUser({ chatSound: sound }))
+  }
   const end = useRef<HTMLDivElement>(null)
   const atBottom = useRef(true)
   const logRef = useRef<HTMLDivElement>(null)
@@ -127,7 +134,7 @@ export function ChatPage() {
         </button>
         <h2>Chat</h2>
         <button type="button" className="btn btn-secondary btn-sm icon-btn chat-sound" aria-label="Suono dei messaggi" aria-pressed={sound}
-          title={sound ? 'Suono attivo' : 'Suono spento'} onClick={() => { setSoundOn(!sound); setSound(!sound) }}>
+          title={sound ? 'Suono attivo' : 'Suono spento'} onClick={toggleSound}>
           <Icon name={sound ? 'volume_up' : 'volume_off'} />
         </button>
       </div>
