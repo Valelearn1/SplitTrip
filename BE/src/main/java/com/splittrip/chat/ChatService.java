@@ -118,12 +118,17 @@ public class ChatService {
 
     /** «Sta scrivendo»: non si salva, al massimo uno ogni 2 s per persona e viaggio. */
     public void typing(UUID tripId, UUID userId) {
-        Participant me = access.requireMember(tripId, userId);
+        // prima il limite (in memoria), poi il database: un client a raffica non deve costare query
         Instant now = clock.instant();
-        String key = userId + ":" + tripId;
-        Instant last = lastTyping.get(key);
-        if (last != null && now.isBefore(last.plusSeconds(2))) return;
-        lastTyping.put(key, now);
+        boolean[] allowed = {false};
+        // compute è atomico: frame arrivati insieme su thread diversi non passano entrambi
+        lastTyping.compute(userId + ":" + tripId, (key, last) -> {
+            if (last != null && now.isBefore(last.plusSeconds(2))) return last;
+            allowed[0] = true;
+            return now;
+        });
+        if (!allowed[0]) return;
+        Participant me = access.requireMember(tripId, userId);
         live.toTrip(tripId, "typing", Map.of("participantId", me.getId(), "name", me.getDisplayName()));
     }
 

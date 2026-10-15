@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router'
 import { useLivePublish, useLiveStatus, useTripChannel } from '../../shared/live/useLive'
 import { Button } from '../../shared/ui/Button'
@@ -29,11 +29,36 @@ export function ChatPage() {
   const logRef = useRef<HTMLDivElement>(null)
   const [liveIds, setLiveIds] = useState<ReadonlySet<string>>(new Set())
 
+  const alive = useRef(true)
+  const restore = useRef<{ page: number; log: number } | null>(null)
+
+  /** In fondo? Su desktop scorre l'elenco, su mobile la pagina: si guardano entrambi. */
+  const nearBottom = () => {
+    const log = logRef.current
+    const logAtEnd = !log || log.scrollHeight <= log.clientHeight || log.scrollHeight - log.scrollTop - log.clientHeight < 40
+    const pageAtEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80
+    return logAtEnd && pageAtEnd
+  }
+
+  useEffect(() => {
+    alive.current = true
+    const onScroll = () => {
+      atBottom.current = nearBottom()
+      if (atBottom.current) setNewBelow(false)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      alive.current = false
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
   // si va in fondo al frame successivo, quando l'altezza è quella finale
   // (jsdom non ha scrollIntoView: nei test non si scorre)
   const scrollToEnd = () => {
     if (!end.current?.scrollIntoView) return
     const toBottom = () => {
+      if (!alive.current) return // uscita dalla chat: niente scorrimenti sulla pagina che c'è adesso
       const log = logRef.current
       if (log) log.scrollTop = log.scrollHeight // su desktop l'elenco ha un suo scorrimento…
       window.scrollTo({ top: document.documentElement.scrollHeight }) // …su mobile scorre la pagina
@@ -46,6 +71,7 @@ export function ChatPage() {
   const oldestFirst = useMemo(() => (messages.data?.pages.flatMap((p) => p.items) ?? []).slice().reverse(), [messages.data])
   const timeline = useMemo(() => buildTimeline(oldestFirst), [oldestFirst])
   const newestId = oldestFirst.at(-1)?.id
+  const newestMine = oldestFirst.at(-1)?.authorParticipantId === me.id
 
   useTripChannel(trip.id, (e) => {
     if (e.type === 'typing' && e.data.participantId !== me.id) setTyping({ name: e.data.name, until: Date.now() + 4000 })
@@ -67,9 +93,26 @@ export function ChatPage() {
 
   useEffect(() => {
     if (!newestId) return
-    if (atBottom.current) scrollToEnd()
+    // i propri messaggi portano sempre in fondo; quelli degli altri solo se ci si era già
+    if (atBottom.current || newestMine) scrollToEnd()
     else setNewBelow(true)
-  }, [newestId])
+  }, [newestId]) // eslint-disable-line react-hooks/exhaustive-deps -- reagisce solo all'arrivo di un messaggio nuovo
+
+  // Messaggi precedenti: compaiono sopra, quindi si sposta lo scorrimento di quanto è cresciuto il contenuto
+  function loadOlder() {
+    restore.current = { page: document.documentElement.scrollHeight, log: logRef.current?.scrollHeight ?? 0 }
+    void messages.fetchNextPage()
+  }
+  const pageCount = messages.data?.pages.length ?? 0
+  useLayoutEffect(() => {
+    const before = restore.current
+    if (!before) return
+    restore.current = null
+    const log = logRef.current
+    if (log) log.scrollTop += log.scrollHeight - before.log
+    const grown = document.documentElement.scrollHeight - before.page
+    if (grown > 0) window.scrollBy(0, grown)
+  }, [pageCount])
 
   return (
     <section className="chat">
@@ -77,12 +120,11 @@ export function ChatPage() {
       {messages.isPending && <Spinner />}
       <FormError error={messages.error} />
       {messages.hasNextPage && (
-        <Button variant="secondary" className="btn-sm" loading={messages.isFetchingNextPage} onClick={() => void messages.fetchNextPage()}>Messaggi precedenti</Button>
+        <Button variant="secondary" className="btn-sm" loading={messages.isFetchingNextPage} onClick={loadOlder}>Messaggi precedenti</Button>
       )}
       <div ref={logRef} className="chat-log" role="log" aria-label="Messaggi"
-        onScroll={(e) => {
-          const el = e.currentTarget
-          atBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40
+        onScroll={() => {
+          atBottom.current = nearBottom()
           if (atBottom.current) setNewBelow(false)
         }}>
         {messages.data && oldestFirst.length === 0 && <p className="muted">Ancora nessun messaggio: scrivi il primo.</p>}

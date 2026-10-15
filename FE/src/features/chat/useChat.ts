@@ -1,9 +1,18 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { LiveStatus } from '../../shared/live/liveContext'
+import { useLiveStatus } from '../../shared/live/useLive'
 import { chatApi } from './chatApi'
 import { chatKeys, insertMessage, markDeleted, type ChatData } from './chatCache'
 
+/** Senza canale collegato (proxy, risveglio di Render) la chat si ricarica da sola ogni 15 s, con la scheda visibile. */
+export function chatFallbackInterval(status: LiveStatus): number | false {
+  return status !== 'connected' && document.visibilityState === 'visible' ? 15_000 : false
+}
+
 export function useMessages(tripId: string) {
+  const status = useLiveStatus()
   return useInfiniteQuery({
+    refetchInterval: () => chatFallbackInterval(status),
     queryKey: chatKeys.messages(tripId),
     queryFn: ({ pageParam }) => chatApi.list(tripId, pageParam),
     initialPageParam: undefined as string | undefined,
@@ -12,7 +21,8 @@ export function useMessages(tripId: string) {
 }
 
 export function useChatUnread(tripId: string) {
-  return useQuery({ queryKey: chatKeys.unread(tripId), queryFn: () => chatApi.unread(tripId) })
+  const status = useLiveStatus()
+  return useQuery({ queryKey: chatKeys.unread(tripId), queryFn: () => chatApi.unread(tripId), refetchInterval: () => chatFallbackInterval(status) })
 }
 
 export function useSendMessage(tripId: string) {

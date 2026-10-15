@@ -1,7 +1,7 @@
 import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { beforeEach, expect, it } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import type { ChatMessage } from '../../shared/api/types'
 import { LiveContext } from '../../shared/live/liveContext'
 import { renderWithProviders } from '../../test/renderWithProviders'
@@ -29,14 +29,17 @@ const push = (b: unknown) => listeners.forEach((l) => l(b))
 const live = { status: 'connected' as const, publish: () => {}, subscribe: (_d: string, cb: (b: unknown) => void) => { listeners.add(cb); return () => { listeners.delete(cb) } } }
 const sent: unknown[] = []
 
-function mount(status = 'ONGOING', items: ChatMessage[] = []) {
+function mount(status = 'ONGOING', items: ChatMessage[] = [], older?: { items: ChatMessage[]; onLoad: () => void }) {
   server.use(
     http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip(status))),
     http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
     http.get('http://localhost/api/notifications/unread-count', () => HttpResponse.json({ count: 0 })),
     http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
     http.post('http://localhost/api/trips/t1/messages/read', () => new HttpResponse(null, { status: 204 })),
-    http.get('http://localhost/api/trips/t1/messages', () => HttpResponse.json({ items, hasMore: false })),
+    http.get('http://localhost/api/trips/t1/messages', ({ request }) => {
+      if (older && new URL(request.url).searchParams.get('before')) { older.onLoad(); return HttpResponse.json({ items: older.items, hasMore: false }) }
+      return HttpResponse.json({ items, hasMore: !!older })
+    }),
     http.post('http://localhost/api/trips/t1/messages', async ({ request }) => {
       const body = (await request.json()) as { content: string }
       sent.push(body)
@@ -88,4 +91,33 @@ it('a viaggio chiuso la chat è in sola lettura', async () => {
   mount('CLOSED')
   expect(await screen.findByText('Il viaggio è chiuso: la chat è in sola lettura')).toBeInTheDocument()
   expect(screen.queryByRole('textbox', { name: 'Scrivi un messaggio' })).not.toBeInTheDocument()
+})
+
+// jsdom non calcola altezze: si simula una pagina lunga, letta più in alto del fondo
+function pageHeight(get: () => number) {
+  Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, get })
+}
+afterEach(() => {
+  delete (document.documentElement as { scrollHeight?: number }).scrollHeight
+  vi.restoreAllMocks()
+})
+
+it('se sto leggendo più su, un messaggio altrui non mi sposta: compare «Nuovi messaggi»', async () => {
+  mount('ONGOING', [msg({ id: 'm1', content: 'Primo' })])
+  await screen.findByText('Primo')
+  pageHeight(() => 5000) // su mobile scorre la pagina, non l'elenco
+  act(() => { window.dispatchEvent(new Event('scroll')) })
+  act(() => push({ type: 'message.created', data: msg({ id: 'n1', content: 'Sono in ritardo' }) }))
+  expect(await screen.findByRole('button', { name: /Nuovi messaggi/ })).toBeInTheDocument()
+})
+
+it('caricando i messaggi precedenti la posizione di lettura resta ferma', async () => {
+  let height = 1000
+  const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => {})
+  mount('ONGOING', [msg({ id: 'm2', content: 'Recente' })], { items: [msg({ id: 'm1', content: 'Vecchio' })], onLoad: () => { height = 1600 } })
+  await screen.findByText('Recente')
+  pageHeight(() => height)
+  await userEvent.setup().click(screen.getByRole('button', { name: 'Messaggi precedenti' }))
+  expect(await screen.findByText('Vecchio')).toBeInTheDocument()
+  await waitFor(() => expect(scrollBy).toHaveBeenCalledWith(0, 600))
 })

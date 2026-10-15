@@ -28,10 +28,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> 
     @EntityGraph(attributePaths = {"author", "author.user"})
     Optional<ChatMessage> findByIdAndTripId(UUID id, UUID tripId);
 
-    /** Non letti: dopo «letto fino a», esclusi i propri e gli eliminati; le righe evento contano. */
+    /** Non letti: dopo «letto fino a», esclusi i propri, gli eliminati e le righe evento causate da me. */
     @Query("""
             select count(m) from ChatMessage m where m.trip.id = :tripId and m.deletedAt is null
               and m.createdAt > :since and (m.author is null or m.author.id <> :me)
+              and (m.actor is null or m.actor.id <> :me)
             """)
     long countUnread(UUID tripId, UUID me, Instant since);
 }

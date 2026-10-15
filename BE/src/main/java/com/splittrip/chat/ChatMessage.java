@@ -23,6 +23,8 @@ public class ChatMessage {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "trip_id") private Trip trip;
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "author_participant_id") private Participant author;
+    /** Solo per le righe evento: chi le ha causate, che non le deve vedere come «non lette». */
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "actor_participant_id") private Participant actor;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 10) private ChatMessageKind kind;
     @Column(length = 1000) private String content;
     @Enumerated(EnumType.STRING) @Column(name = "event_type", length = 30) private ChatEventType eventType;
@@ -40,9 +42,10 @@ public class ChatMessage {
         return m;
     }
 
-    public static ChatMessage event(Trip trip, ChatEventType type, String content, UUID refId, Instant now) {
+    public static ChatMessage event(Trip trip, Participant actor, ChatEventType type, String content, UUID refId, Instant now) {
         ChatMessage m = new ChatMessage();
         m.trip = trip;
+        m.actor = actor;
         m.kind = ChatMessageKind.EVENT;
         m.eventType = type;
         m.content = content;

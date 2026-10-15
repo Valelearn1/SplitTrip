@@ -10,7 +10,8 @@ import { wsUrl } from './wsUrl'
  * Le sottoscrizioni sono un registro: a ogni (ri)connessione si rifanno, tranne quelle rifiutate dal server.
  */
 export function LiveProvider({ children }: { children: ReactNode }) {
-  const token = useAuth().auth?.token ?? null
+  const { auth, logout } = useAuth()
+  const token = auth?.token ?? null
   const queryClient = useQueryClient()
   const [connState, setConnState] = useState<Exclude<LiveStatus, 'offline'>>('connecting')
   const client = useRef<Client | null>(null)
@@ -52,8 +53,14 @@ export function LiveProvider({ children }: { children: ReactNode }) {
         connectedBefore = true
       },
       onStompError: (frame) => {
-        const match = /Destinazione non permessa: (\S+)/.exec(frame.headers.message ?? '')
+        const message = frame.headers.message ?? ''
+        const match = /Destinazione non permessa: (\S+)/.exec(message)
         if (match) denied.current.add(match[1])
+        // token scaduto o non valido: riprovare non serve (e riempirebbe i log del server); si torna al login
+        if (message.startsWith('Token')) {
+          void c.deactivate()
+          logout()
+        }
       },
       onWebSocketClose: () => {
         subscriptions.clear()
@@ -68,7 +75,7 @@ export function LiveProvider({ children }: { children: ReactNode }) {
       void c.deactivate()
       setConnState('connecting')
     }
-  }, [token, queryClient, attach])
+  }, [token, queryClient, attach, logout])
 
   const subscribe = useCallback((destination: string, onMessage: (body: unknown) => void) => {
     let set = handlers.current.get(destination)

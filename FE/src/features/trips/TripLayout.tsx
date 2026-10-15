@@ -24,7 +24,7 @@ export function TripLayout() {
   const location = useLocation()
   // la cache della chat resta aggiornata in tutto il viaggio, non solo nella pagina Chat
   const myParticipantId = trip?.participants.find((p) => p.userId === auth?.user.id)?.id ?? ''
-  useTripLiveSync(tripId, myParticipantId)
+  useTripLiveSync(myParticipantId ? tripId : null, myParticipantId)
 
   if (isPending) return <Spinner />
   if (error || !trip) return <FormError error={error ?? new Error('Viaggio non disponibile')} />

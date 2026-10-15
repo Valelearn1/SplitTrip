@@ -3,6 +3,8 @@ package com.splittrip.chat;
 import com.splittrip.common.events.ExpenseCreated;
 import com.splittrip.common.events.ParticipantJoined;
 import com.splittrip.common.events.SettlementCreated;
+import com.splittrip.trip.Participant;
+import com.splittrip.trip.ParticipantRepository;
 import com.splittrip.trip.Trip;
 import com.splittrip.trip.TripRepository;
 import org.springframework.stereotype.Component;
@@ -20,12 +22,14 @@ public class ChatEventListener {
 
     private final ChatMessageRepository messages;
     private final TripRepository trips;
+    private final ParticipantRepository participants;
     private final ChatService chat;
     private final Clock clock;
 
-    public ChatEventListener(ChatMessageRepository messages, TripRepository trips, ChatService chat, Clock clock) {
+    public ChatEventListener(ChatMessageRepository messages, TripRepository trips, ParticipantRepository participants, ChatService chat, Clock clock) {
         this.messages = messages;
         this.trips = trips;
+        this.participants = participants;
         this.chat = chat;
         this.clock = clock;
     }
@@ -33,25 +37,26 @@ public class ChatEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void on(ExpenseCreated e) {
-        save(e.tripId(), ChatEventType.EXPENSE_CREATED, ChatMessages.expense(e.actorName(), e.description(), e.amount(), e.currency()), e.expenseId());
+        save(e.tripId(), e.actorUserId(), ChatEventType.EXPENSE_CREATED, ChatMessages.expense(e.actorName(), e.description(), e.amount(), e.currency()), e.expenseId());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void on(SettlementCreated e) {
         Trip trip = trips.findById(e.tripId()).orElseThrow();
-        save(e.tripId(), ChatEventType.SETTLEMENT_CREATED,
+        save(e.tripId(), e.actorUserId(), ChatEventType.SETTLEMENT_CREATED,
                 ChatMessages.settlement(e.actorName(), e.fromName(), e.toName(), e.amount(), trip.getCurrency()), null);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void on(ParticipantJoined e) {
-        save(e.tripId(), ChatEventType.PARTICIPANT_JOINED, ChatMessages.joined(e.joinedName()), null);
+        save(e.tripId(), e.joinedUserId(), ChatEventType.PARTICIPANT_JOINED, ChatMessages.joined(e.joinedName()), null);
     }
 
-    private void save(UUID tripId, ChatEventType type, String content, UUID refId) {
-        ChatMessage saved = messages.save(ChatMessage.event(trips.getReferenceById(tripId), type, content, refId, clock.instant()));
+    private void save(UUID tripId, UUID actorUserId, ChatEventType type, String content, UUID refId) {
+        Participant actor = actorUserId == null ? null : participants.findByTripIdAndUserIdAndLeftAtIsNull(tripId, actorUserId).orElse(null);
+        ChatMessage saved = messages.save(ChatMessage.event(trips.getReferenceById(tripId), actor, type, content, refId, clock.instant()));
         chat.publishCreated(saved);
     }
 }

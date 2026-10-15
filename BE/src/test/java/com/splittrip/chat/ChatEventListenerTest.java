@@ -55,4 +55,20 @@ class ChatEventListenerTest extends IntegrationTest {
         });
         assertThat(jdbc.sql("select count(*) from chat_messages where trip_id = ?").param(tripId).query(Long.class).single()).isZero();
     }
+
+    @Test
+    void leRigheEventoNonSonoNonLettePerChiLeHaCausate() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        String marco = TestUsers.register(mvc, "Marco");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        TestTrips.join(mvc, marco, TestTrips.inviteCode(mvc, vale, tripId));       // evento causato da Marco
+        UUID valeP = TestTrips.participantOf(mvc, vale, tripId);
+        UUID marcoP = TestTrips.participantOf(mvc, marco, tripId);
+        TestExpenses.createEqual(mvc, marco, tripId, "Cena", "45.00", marcoP, valeP, marcoP); // anche questo
+
+        mvc.perform(get("/api/trips/" + tripId + "/messages/unread-count").header("Authorization", "Bearer " + marco))
+                .andExpect(jsonPath("$.count").value(0));
+        mvc.perform(get("/api/trips/" + tripId + "/messages/unread-count").header("Authorization", "Bearer " + vale))
+                .andExpect(jsonPath("$.count").value(2));
+    }
 }

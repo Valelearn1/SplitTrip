@@ -87,3 +87,11 @@ it('al logout il client si disattiva (Review Focus 3)', async () => {
   expect(client().deactivate).toHaveBeenCalled()
   expect(screen.getByText('stato: offline')).toBeInTheDocument()
 })
+
+it('un token rifiutato non si ritenta: il client si spegne e si torna al login', () => {
+  const { client } = setup()
+  act(() => client().config.onStompError?.({ headers: { message: 'Token non valido' } }))
+  expect(client().deactivate).toHaveBeenCalled()
+  expect(screen.getByText('stato: offline')).toBeInTheDocument()
+  expect(localStorage.getItem(AUTH_STORAGE_KEY)).toBeNull()
+})
