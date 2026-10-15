@@ -41,6 +41,8 @@ public interface PhotoRepository extends JpaRepository<Photo, UUID> {
 
     long countByTripIdAndKind(UUID tripId, PhotoKind kind);
 
+    long countByUploaderIdAndKind(UUID uploaderId, PhotoKind kind);
+
     boolean existsByExpenseIdAndKind(UUID expenseId, PhotoKind kind);
 
     @Query("select p.expenseId, p.id from Photo p where p.trip.id = :tripId and p.kind = com.splittrip.photo.PhotoKind.RECEIPT")

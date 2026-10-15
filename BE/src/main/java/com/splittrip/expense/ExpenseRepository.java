@@ -3,6 +3,8 @@ package com.splittrip.expense;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,4 +37,12 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
 
     boolean existsByTripId(UUID tripId);
     boolean existsByTripIdAndPayerId(UUID tripId, UUID payerId);
+
+    /** Quanto ha speso il gruppo nei miei viaggi (le spese nel cestino sono escluse da @SoftDelete). */
+    @Query("select coalesce(sum(e.amountBase), 0) from Expense e where e.trip.id in :tripIds")
+    BigDecimal groupTotal(Collection<UUID> tripIds);
+
+    /** La mia parte. Si parte da Expense: @SoftDelete filtra la radice della query, non un join da ExpenseShare. */
+    @Query("select coalesce(sum(s.amount), 0) from Expense e join e.shares s where s.participant.user.id = :userId")
+    BigDecimal myShare(UUID userId);
 }

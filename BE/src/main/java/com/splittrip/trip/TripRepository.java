@@ -13,4 +13,8 @@ public interface TripRepository extends JpaRepository<Trip, UUID> {
 
     @Query("select p.trip from Participant p where p.user.id = :userId and p.leftAt is null order by p.trip.startDate desc")
     List<Trip> findAllByMemberUserId(UUID userId);
+
+    /** Anche i viaggi lasciati contano nei «miei numeri». */
+    @Query("select distinct p.trip from Participant p where p.user.id = :userId")
+    List<Trip> findAllEverJoinedByUserId(UUID userId);
 }
