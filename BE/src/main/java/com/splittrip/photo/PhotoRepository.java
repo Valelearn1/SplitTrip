@@ -14,7 +14,7 @@ public interface PhotoRepository extends JpaRepository<Photo, UUID> {
 
     @Query("""
             select new com.splittrip.photo.dto.PhotoResponse(p.id, p.kind, p.expenseId, u.id, u.displayName, p.caption,
-                p.takenAt, p.latitude, p.longitude, p.width, p.height, p.createdAt)
+                p.takenAt, p.latitude, p.longitude, p.placeName, p.width, p.height, p.createdAt)
             from Photo p join p.uploader u
             where p.trip.id = :tripId and p.kind = :kind and (:onlyLocated = false or p.latitude is not null)
             order by p.createdAt desc
@@ -23,7 +23,7 @@ public interface PhotoRepository extends JpaRepository<Photo, UUID> {
 
     @Query("""
             select new com.splittrip.photo.dto.PhotoResponse(p.id, p.kind, p.expenseId, u.id, u.displayName, p.caption,
-                p.takenAt, p.latitude, p.longitude, p.width, p.height, p.createdAt)
+                p.takenAt, p.latitude, p.longitude, p.placeName, p.width, p.height, p.createdAt)
             from Photo p join p.uploader u where p.id = :id
             """)
     PhotoResponse findMetaById(UUID id);
@@ -36,6 +36,8 @@ public interface PhotoRepository extends JpaRepository<Photo, UUID> {
 
     @Query("select p.uploader.id from Photo p where p.id = :id and p.trip.id = :tripId")
     Optional<UUID> findUploaderId(UUID id, UUID tripId);
+
+    Optional<Photo> findByIdAndTripId(UUID id, UUID tripId);
 
     long countByTripIdAndKind(UUID tripId, PhotoKind kind);
 

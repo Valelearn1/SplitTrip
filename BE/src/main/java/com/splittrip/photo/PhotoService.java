@@ -7,6 +7,7 @@ import com.splittrip.common.ForbiddenException;
 import com.splittrip.common.NotFoundException;
 import com.splittrip.common.PayloadTooLargeException;
 import com.splittrip.expense.ExpenseRepository;
+import com.splittrip.photo.dto.PhotoPlaceRequest;
 import com.splittrip.photo.dto.PhotoResponse;
 import com.splittrip.trip.Participant;
 import com.splittrip.trip.Trip;
@@ -52,13 +53,16 @@ public class PhotoService {
     }
 
     public PhotoResponse upload(UUID tripId, UUID userId, MultipartFile file, String caption, Instant takenAt,
-                                BigDecimal latitude, BigDecimal longitude, UUID expenseId) {
+                                BigDecimal latitude, BigDecimal longitude, String placeName, UUID expenseId) {
         Participant me = access.requireMember(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
         access.requireWritable(trip);
         if (file == null || file.isEmpty()) throw new FieldException("file", "Scegli una foto");
         if (file.getSize() > MAX_BYTES) throw new PayloadTooLargeException();
         validateLocation(latitude, longitude);
+        String place = placeName == null || placeName.isBlank() ? null : placeName.strip();
+        if (place != null && latitude == null) throw new FieldException("placeName", "Il luogo serve insieme alle coordinate");
+        if (place != null && place.length() > 120) throw new FieldException("placeName", "Al massimo 120 caratteri");
 
         PhotoKind kind = expenseId == null ? PhotoKind.PHOTO : PhotoKind.RECEIPT;
         if (kind == PhotoKind.RECEIPT) {
@@ -72,7 +76,7 @@ public class PhotoService {
         String cleanCaption = caption == null || caption.isBlank() ? null : caption.strip();
         if (cleanCaption != null && cleanCaption.length() > 200) throw new FieldException("caption", "Al massimo 200 caratteri");
         Photo saved = photos.save(new Photo(trip, me.getUser(), kind, expenseId, img, cleanCaption, takenAt,
-                latitude, longitude, clock.instant()));
+                latitude, longitude, place, clock.instant()));
         return photos.findMetaById(saved.getId());
     }
 
@@ -102,6 +106,31 @@ public class PhotoService {
             throw new ForbiddenException("Solo chi l'ha caricata o l'organizzatore può eliminarla");
         }
         photos.deleteById(photoId);
+    }
+
+    /** Luogo scelto a mano (D-46): chi ha caricato o l'organizzatore; scegliere un luogo vale come consenso (D-35). */
+    @Transactional
+    public PhotoResponse setPlace(UUID tripId, UUID userId, UUID photoId, PhotoPlaceRequest req) {
+        Participant me = access.requireMember(tripId, userId);
+        access.requireWritable(trips.findById(tripId).orElseThrow());
+        Photo photo = photos.findByIdAndTripId(photoId, tripId).orElseThrow(() -> new NotFoundException("Foto non trovata"));
+        if (!photo.getUploader().getId().equals(userId) && !me.isOrganizer()) {
+            throw new ForbiddenException("Solo chi l'ha caricata o l'organizzatore può cambiare il luogo");
+        }
+        if (Boolean.TRUE.equals(req.clear())) {
+            photo.setPlaceName(null);
+            photo.setLatitude(null);
+            photo.setLongitude(null);
+        } else {
+            if (req.placeName() == null || req.placeName().isBlank()) throw new FieldException("placeName", "Scegli un luogo");
+            validateLocation(req.latitude(), req.longitude());
+            if (req.latitude() == null) throw new FieldException("latitude", "Il luogo serve insieme alle coordinate");
+            photo.setPlaceName(req.placeName().strip());
+            photo.setLatitude(req.latitude());
+            photo.setLongitude(req.longitude());
+        }
+        photos.flush(); // la query della risposta deve vedere i cambiamenti
+        return photos.findMetaById(photoId);
     }
 
     /** Posizione solo con consenso: o entrambe le coordinate o nessuna, nei limiti geografici (D-35). */

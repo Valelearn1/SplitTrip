@@ -21,6 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.nullValue;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 
 public class PhotoControllerTest extends IntegrationTest {
 
@@ -114,5 +117,37 @@ public class PhotoControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.receiptPhotoId").value(rid.toString()));
         mvc.perform(get("/api/trips/" + tripId + "/photos").header("Authorization", "Bearer " + vale))
                 .andExpect(jsonPath("$", hasSize(0))); // gli scontrini non stanno in galleria
+    }
+
+    @Test
+    void luogoAManoConLeCoordinateEModificabileDopo() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        String marco = TestUsers.register(mvc, "Marco");
+        UUID tripId = TestTrips.create(mvc, vale, "Lisbona");
+        TestTrips.join(mvc, marco, TestTrips.inviteCode(mvc, vale, tripId));
+        String url = "/api/trips/" + tripId + "/photos";
+
+        mvc.perform(multipart(url).file(file(jpeg(400, 300)))
+                        .param("placeName", "Senza coordinate").header("Authorization", "Bearer " + marco))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.errors[0].field").value("placeName"));
+        String body = mvc.perform(multipart(url).file(file(jpeg(400, 300)))
+                        .param("placeName", "Belvedere di Santa Luzia").param("latitude", "38.7128").param("longitude", "-9.1297")
+                        .header("Authorization", "Bearer " + marco))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.placeName").value("Belvedere di Santa Luzia"))
+                .andReturn().getResponse().getContentAsString();
+        UUID photoId = UUID.fromString(TestUsers.extract(body, "\"id\":\"([^\"]+)\""));
+
+        // cambia luogo: solo chi ha caricato o l'organizzatore
+        String estraneo = TestUsers.register(mvc, "Estraneo");
+        mvc.perform(patch(url + "/" + photoId + "/place").header("Authorization", "Bearer " + estraneo).contentType(APPLICATION_JSON)
+                .content("{\"placeName\":\"Altrove\",\"latitude\":1,\"longitude\":1}")).andExpect(status().isForbidden());
+        mvc.perform(patch(url + "/" + photoId + "/place").header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON)
+                        .content("{\"placeName\":\"Castello di São Jorge\",\"latitude\":38.7139,\"longitude\":-9.1335}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.placeName").value("Castello di São Jorge")).andExpect(jsonPath("$.latitude").value(38.7139));
+        mvc.perform(patch(url + "/" + photoId + "/place").header("Authorization", "Bearer " + marco).contentType(APPLICATION_JSON)
+                        .content("{\"clear\":true}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.placeName").value(nullValue())).andExpect(jsonPath("$.latitude").value(nullValue()));
+        mvc.perform(get(url).param("withLocation", "true").header("Authorization", "Bearer " + vale)).andExpect(jsonPath("$", hasSize(0)));
     }
 }

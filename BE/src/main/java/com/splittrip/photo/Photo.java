@@ -44,12 +44,12 @@ public class Photo {
     @Column(length = 200) private String caption;
     @Setter @Column(name = "place_name", length = 120) private String placeName;
     @Column(name = "taken_at") private Instant takenAt;
-    @Column(precision = 9, scale = 6) private BigDecimal latitude;
-    @Column(precision = 9, scale = 6) private BigDecimal longitude;
+    @Setter @Column(precision = 9, scale = 6) private BigDecimal latitude;
+    @Setter @Column(precision = 9, scale = 6) private BigDecimal longitude;
     @Column(name = "created_at", nullable = false) private Instant createdAt;
 
     public Photo(Trip trip, User uploader, PhotoKind kind, UUID expenseId, ImageProcessor.Processed img,
-                 String caption, Instant takenAt, BigDecimal latitude, BigDecimal longitude, Instant now) {
+                 String caption, Instant takenAt, BigDecimal latitude, BigDecimal longitude, String placeName, Instant now) {
         this.trip = trip;
         this.uploader = uploader;
         this.kind = kind;
@@ -62,6 +62,7 @@ public class Photo {
         this.takenAt = takenAt;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.placeName = placeName;
         this.createdAt = now;
     }
 }
