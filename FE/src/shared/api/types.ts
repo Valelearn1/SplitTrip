@@ -70,3 +70,14 @@ export type AppNotification = {
 
 export type WeatherDay = { date: string; code: number; tMin: number; tMax: number }
 export type Weather = { days: WeatherDay[] }
+export type ChatEventType = 'EXPENSE_CREATED' | 'SETTLEMENT_CREATED' | 'PARTICIPANT_JOINED'
+export type ChatMessage = {
+  id: string; kind: 'TEXT' | 'EVENT'; authorParticipantId: string | null; authorName: string | null; authorUserId: string | null
+  authorHasAvatar: boolean; content: string | null; eventType: ChatEventType | null; refId: string | null; createdAt: string; deleted: boolean
+}
+export type MessagePage = { items: ChatMessage[]; hasMore: boolean }
+export type LiveEvent =
+  | { type: 'message.created'; data: ChatMessage }
+  | { type: 'message.deleted'; data: { id: string } }
+  | { type: 'typing'; data: { participantId: string; name: string } }
+export type LiveNotification = { notification: AppNotification; unreadCount: number }
