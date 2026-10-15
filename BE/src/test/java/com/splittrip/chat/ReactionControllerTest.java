@@ -75,4 +75,18 @@ class ReactionControllerTest extends IntegrationTest {
         mvc.perform(patch("/api/trips/" + tripId).header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON).content("{\"status\":\"CLOSED\"}"));
         mvc.perform(post("/api/trips/" + tripId + "/messages/" + id2 + "/reactions/👍").header("Authorization", "Bearer " + vale)).andExpect(status().isConflict());
     }
+
+    @Test
+    void unMessaggioEliminatoNonMostraPiuLeReazioni() throws Exception {      // revisione v3.1, D-47
+        String vale = TestUsers.register(mvc, "Vale");
+        String marco = TestUsers.register(mvc, "Marco");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        TestTrips.join(mvc, marco, TestTrips.inviteCode(mvc, vale, tripId));
+        String id = send(vale, tripId, "Messaggio sbagliato");
+        mvc.perform(post("/api/trips/" + tripId + "/messages/" + id + "/reactions/👍").header("Authorization", "Bearer " + marco)).andExpect(status().isNoContent());
+        mvc.perform(delete("/api/trips/" + tripId + "/messages/" + id).header("Authorization", "Bearer " + vale));
+        mvc.perform(get("/api/trips/" + tripId + "/messages").header("Authorization", "Bearer " + vale))
+                .andExpect(jsonPath("$.items[0].deleted").value(true))
+                .andExpect(jsonPath("$.items[0].reactions", hasSize(0)));
+    }
 }

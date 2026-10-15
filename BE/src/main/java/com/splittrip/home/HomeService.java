@@ -70,23 +70,36 @@ public class HomeService {
         return new HomeResponse(featured, myBalances, new Totals(toReceive.setScale(2), toGive.setScale(2), tripsToReceive, tripsToGive), latest, new Trips(current, past));
     }
 
-    /** In corso con la fine più vicina; altrimenti il prossimo in pianificazione; altrimenti l'ultimo chiuso. */
+    /**
+     * Stato da mostrare: «chiuso» lo decide l'organizzatore, il resto lo dicono le date.
+     * Un viaggio rimasto «in pianificazione» ma già iniziato è in corso; finito ma non chiuso è ENDED (revisione v3.1).
+     */
+    static String displayStatus(TripSummaryResponse t, LocalDate today) {
+        if (t.status() == TripStatus.CLOSED) return "PAST";
+        if (today.isAfter(t.endDate())) return "ENDED";
+        if (t.status() == TripStatus.ONGOING || !today.isBefore(t.startDate())) return "ONGOING";
+        return "UPCOMING";
+    }
+
+    /** In corso con la fine più vicina; altrimenti il prossimo a partire; altrimenti l'ultimo finito da chiudere; altrimenti l'ultimo chiuso. */
     static Optional<TripSummaryResponse> pick(List<TripSummaryResponse> current, List<TripSummaryResponse> past, LocalDate today) {
-        Optional<TripSummaryResponse> ongoing = current.stream().filter(t -> t.status() == TripStatus.ONGOING).min(Comparator.comparing(TripSummaryResponse::endDate));
+        Optional<TripSummaryResponse> ongoing = current.stream().filter(t -> displayStatus(t, today).equals("ONGOING")).min(Comparator.comparing(TripSummaryResponse::endDate));
         if (ongoing.isPresent()) return ongoing;
-        Optional<TripSummaryResponse> upcoming = current.stream().filter(t -> !t.endDate().isBefore(today)).min(Comparator.comparing(TripSummaryResponse::startDate));
+        Optional<TripSummaryResponse> upcoming = current.stream().filter(t -> displayStatus(t, today).equals("UPCOMING")).min(Comparator.comparing(TripSummaryResponse::startDate));
         if (upcoming.isPresent()) return upcoming;
-        Optional<TripSummaryResponse> anyPlanning = current.stream().min(Comparator.comparing(TripSummaryResponse::startDate));
-        if (anyPlanning.isPresent()) return anyPlanning;
+        Optional<TripSummaryResponse> ended = current.stream().max(Comparator.comparing(TripSummaryResponse::endDate));
+        if (ended.isPresent()) return ended;
         return past.stream().max(Comparator.comparing(TripSummaryResponse::endDate));
     }
 
     private Featured featured(TripSummaryResponse t, UUID userId, LocalDate today) {
         int totalDays = (int) ChronoUnit.DAYS.between(t.startDate(), t.endDate()) + 1;
-        String status = t.status() == TripStatus.CLOSED ? "PAST" : t.status() == TripStatus.ONGOING ? "ONGOING" : "UPCOMING";
-        Integer daysUntil = status.equals("UPCOMING") ? (int) Math.max(0, ChronoUnit.DAYS.between(today, t.startDate())) : null;
+        String status = displayStatus(t, today);
+        Integer daysUntil = status.equals("UPCOMING") ? (int) ChronoUnit.DAYS.between(today, t.startDate()) : null;
         Integer dayOfTotal = status.equals("ONGOING") ? (int) Math.clamp(ChronoUnit.DAYS.between(t.startDate(), today) + 1, 1, totalDays) : null;
-        DayForecast todayForecast = status.equals("PAST") ? null
+        // il meteo di oggi serve solo durante il viaggio: niente chiamate esterne per viaggi lontani o finiti
+        boolean todayInTrip = !today.isBefore(t.startDate()) && !today.isAfter(t.endDate());
+        DayForecast todayForecast = !todayInTrip ? null
                 : weather.forecast(t.id(), userId).stream().filter(d -> d.date().equals(today)).findFirst().orElse(null);
         return new Featured(t, status, daysUntil, dayOfTotal, totalDays, photos.findLatestPhotoId(t.id()).orElse(null), todayForecast, myNet(t.id(), userId));
     }

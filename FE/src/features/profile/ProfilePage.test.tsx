@@ -14,7 +14,7 @@ beforeEach(() => {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: me }))
   server.use(
     http.get('http://localhost/api/notifications/unread-count', () => HttpResponse.json({ count: 0 })),
-    http.get('http://localhost/api/me/stats', () => HttpResponse.json({ trips: 3, destinations: [{ name: 'Lisbona', latitude: 38.7, longitude: -9.1 }, { name: 'Roma', latitude: null, longitude: null }], groupTotal: 1234.5, myShare: 410.25, photos: 12 })),
+    http.get('http://localhost/api/me/stats', () => HttpResponse.json({ trips: 3, destinations: [{ name: 'Lisbona', latitude: 38.7, longitude: -9.1 }, { name: 'Roma', latitude: null, longitude: null }], spending: [{ currency: 'EUR', groupTotal: 1234.5, myShare: 410.25 }, { currency: 'JPY', groupTotal: 30000, myShare: 10000 }], photos: 12 })),
   )
 })
 
@@ -50,6 +50,7 @@ it('dati, password e preferenze si salvano; i numeri si vedono', async () => {
   expect(screen.getByText('3')).toBeInTheDocument()                 // viaggi
   expect(screen.getByText(/1234,50\s€/)).toBeInTheDocument()       // it-IT separa le migliaia da 5 cifre (format.test.ts)
   expect(screen.getByText(/410,25\s€/)).toBeInTheDocument()
+  expect(screen.getByText(/30\.000\sJPY|¥\s?30\.000|30\.000\s¥/)).toBeInTheDocument()   // ogni valuta per conto suo, mai sommate
   expect(screen.getByText('12')).toBeInTheDocument()                // foto
   expect(screen.getByText('Lisbona')).toBeInTheDocument()
   expect(await screen.findByText('mappa con 1 punti')).toBeInTheDocument()  // solo le destinazioni con coordinate; la mappa arriva in differita

@@ -2,7 +2,10 @@ import { expect, test } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+import { server } from '../../test/server'
 import { AuthProvider } from './AuthProvider'
+import { AUTH_STORAGE_KEY } from './authContext'
 import { useAuth } from './useAuth'
 
 function LogoutButton() {
@@ -24,4 +27,17 @@ test('il logout svuota la cache: chi entra dopo sullo stesso telefono non vede i
   await userEvent.click(screen.getByRole('button', { name: 'Esci' }))
 
   expect(queryClient.getQueryData(['trips'])).toBeUndefined()
+})
+
+function SoundState() {
+  const { auth } = useAuth()
+  return <p>suono: {String(auth?.user.chatSound)}</p>
+}
+
+test('all’avvio l’account si rilegge dal server: una preferenza cambiata su un altro dispositivo vale anche qui (D-48)', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false, preferredCurrency: 'EUR', chatSound: true, reduceMotion: false } }))
+  server.use(http.get('http://localhost/api/me', () => HttpResponse.json({ id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false, preferredCurrency: 'EUR', chatSound: false, reduceMotion: false })))
+  render(<QueryClientProvider client={new QueryClient()}><AuthProvider><SoundState /></AuthProvider></QueryClientProvider>)
+  expect(await screen.findByText('suono: false')).toBeInTheDocument()
+  expect(JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)!).user.chatSound).toBe(false)
 })

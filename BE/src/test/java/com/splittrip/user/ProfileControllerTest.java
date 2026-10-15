@@ -75,15 +75,38 @@ class ProfileControllerTest extends IntegrationTest {
         mvc.perform(get("/api/me/stats").header("Authorization", "Bearer " + vale))
                 .andExpect(jsonPath("$.trips").value(2))
                 .andExpect(jsonPath("$.destinations", hasSize(1)))                          // entrambi «Roma» (TestTrips mette sempre Roma): nomi distinti
-                .andExpect(jsonPath("$.groupTotal").value(50.00))
-                .andExpect(jsonPath("$.myShare").value(30.00))
+                .andExpect(jsonPath("$.spending", hasSize(1)))                               // tutto in euro: una riga sola
+                .andExpect(jsonPath("$.spending[0].currency").value("EUR"))
+                .andExpect(jsonPath("$.spending[0].groupTotal").value(50.00))
+                .andExpect(jsonPath("$.spending[0].myShare").value(30.00))
                 .andExpect(jsonPath("$.photos").value(0));
         mvc.perform(get("/api/me/stats").header("Authorization", "Bearer " + marco))
-                .andExpect(jsonPath("$.trips").value(1)).andExpect(jsonPath("$.groupTotal").value(40.00)).andExpect(jsonPath("$.myShare").value(20.00));
+                .andExpect(jsonPath("$.trips").value(1)).andExpect(jsonPath("$.spending[0].groupTotal").value(40.00)).andExpect(jsonPath("$.spending[0].myShare").value(20.00));
         // una spesa nel cestino non conta, né nel totale né nella mia parte
         mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/trips/" + t2 + "/expenses/" + taxi)
                 .header("Authorization", "Bearer " + vale)).andExpect(status().isNoContent());
         mvc.perform(get("/api/me/stats").header("Authorization", "Bearer " + vale))
-                .andExpect(jsonPath("$.groupTotal").value(40.00)).andExpect(jsonPath("$.myShare").value(20.00));
+                .andExpect(jsonPath("$.spending[0].groupTotal").value(40.00)).andExpect(jsonPath("$.spending[0].myShare").value(20.00));
+    }
+
+    @Test
+    void conValuteDiverseUnTotalePerValutaMaiSommati() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        UUID roma = TestTrips.create(mvc, vale, "Roma");
+        String body = mvc.perform(post("/api/trips").header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON).content("""
+                {"name":"Tokyo","destination":"Tokyo","startDate":"2026-11-01","endDate":"2026-11-05","currency":"JPY"}
+                """)).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        UUID tokyo = UUID.fromString(TestUsers.extract(body, "\"id\":\"([^\"]+)\""));
+        UUID pRoma = TestTrips.participantOf(mvc, vale, roma);
+        UUID pTokyo = TestTrips.participantOf(mvc, vale, tokyo);
+        TestExpenses.createEqual(mvc, vale, roma, "Cena", "80.00", pRoma, pRoma);
+        TestExpenses.createEqual(mvc, vale, tokyo, "Ryokan", "30000.00", pTokyo, pTokyo);
+        mvc.perform(get("/api/me/stats").header("Authorization", "Bearer " + vale))
+                .andExpect(jsonPath("$.spending", hasSize(2)))
+                .andExpect(jsonPath("$.spending[0].currency").value("EUR"))
+                .andExpect(jsonPath("$.spending[0].groupTotal").value(80.00))
+                .andExpect(jsonPath("$.spending[1].currency").value("JPY"))
+                .andExpect(jsonPath("$.spending[1].groupTotal").value(30000.00))
+                .andExpect(jsonPath("$.spending[1].myShare").value(30000.00));
     }
 }

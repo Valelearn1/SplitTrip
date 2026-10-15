@@ -11,6 +11,7 @@ import { weatherLabel } from '../weather/weatherApi'
 function statusLine(f: HomeFeatured): string {
   if (f.status === 'ONGOING') return `In corso · giorno ${f.dayOfTotal} di ${f.totalDays}`
   if (f.status === 'UPCOMING') return f.daysUntil === 0 ? 'Si parte oggi' : f.daysUntil === 1 ? 'Si parte domani' : `Tra ${f.daysUntil} giorni`
+  if (f.status === 'ENDED') return `Finito il ${formatDate(f.trip.endDate)} · da chiudere`
   return `Chiuso · finito il ${formatDate(f.trip.endDate)}`
 }
 

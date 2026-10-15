@@ -21,7 +21,8 @@ export function HomePage() {
   const home = useHome()
   const d = home.data
   const noTrips = d !== undefined && d.trips.current.length === 0 && d.trips.past.length === 0
-  const ongoing = d?.trips.current.find((t) => t.status === 'ONGOING')
+  // «in corso» secondo le date (anche se l'organizzatore non ha cambiato lo stato), come il viaggio in evidenza
+  const ongoing = d?.featured?.status === 'ONGOING' ? d.featured.trip : undefined
   // i totali hanno senso solo se tutti i saldi sono nella stessa valuta; altrimenti restano le righe per viaggio
   const currencies = new Set(d?.balances.map((b) => b.currency))
   const totalsCurrency = currencies.size === 1 ? [...currencies][0] : null

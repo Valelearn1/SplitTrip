@@ -149,6 +149,7 @@ public class ChatService {
                 .map(Participant::userId).filter(Objects::nonNull).distinct().toList();
         Set<UUID> withAvatar = authorIds.isEmpty() ? Set.of() : avatars.findUserIdsWithAvatar(authorIds);
         Map<UUID, List<ReactionSummary>> summaries = reactions.summaries(page.stream().map(ChatMessage::getId).toList());
-        return page.stream().map(m -> MessageResponse.from(m, withAvatar, summaries.getOrDefault(m.getId(), List.of()))).toList();
+        // un messaggio eliminato non porta più reazioni (D-47)
+        return page.stream().map(m -> MessageResponse.from(m, withAvatar, m.isDeleted() ? List.of() : summaries.getOrDefault(m.getId(), List.of()))).toList();
     }
 }

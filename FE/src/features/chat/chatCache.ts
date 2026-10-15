@@ -19,7 +19,7 @@ export function insertMessage(data: ChatData | undefined, msg: ChatMessage): Cha
 
 export function markDeleted(data: ChatData | undefined, id: string): ChatData | undefined {
   if (!data) return data
-  return { ...data, pages: data.pages.map((p) => ({ ...p, items: p.items.map((m) => (m.id === id ? { ...m, content: null, deleted: true } : m)) })) }
+  return { ...data, pages: data.pages.map((p) => ({ ...p, items: p.items.map((m) => (m.id === id ? { ...m, content: null, deleted: true, reactions: [] } : m)) })) }
 }
 
 function mapMessage(data: ChatData | undefined, id: string, fn: (m: ChatMessage) => ChatMessage): ChatData | undefined {

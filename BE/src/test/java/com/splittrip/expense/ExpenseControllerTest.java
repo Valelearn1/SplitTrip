@@ -286,4 +286,19 @@ class ExpenseControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].description").value("Cena"));
     }
+
+    @Test
+    void unaSpesaNelCestinoNonImpedisceDiLasciareIlViaggio() throws Exception {   // revisione v3.1
+        String vale = TestUsers.register(mvc, "Vale");
+        String marco = TestUsers.register(mvc, "Marco");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        TestTrips.join(mvc, marco, TestTrips.inviteCode(mvc, vale, tripId));
+        UUID valeP = TestTrips.participantOf(mvc, vale, tripId);
+        UUID marcoP = TestTrips.participantOf(mvc, marco, tripId);
+        UUID cena = TestExpenses.createEqual(mvc, vale, tripId, "Cena", "40.00", valeP, valeP, marcoP); // Marco ha una quota
+        mvc.perform(delete("/api/trips/" + tripId + "/expenses/" + cena).header("Authorization", "Bearer " + vale)).andExpect(status().isNoContent());
+        // la sua unica quota è nel cestino: per i conti non c'è più, quindi può uscire
+        mvc.perform(delete("/api/trips/" + tripId + "/participants/" + marcoP).header("Authorization", "Bearer " + marco))
+                .andExpect(status().isNoContent());
+    }
 }

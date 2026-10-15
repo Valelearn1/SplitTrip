@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 /** Profilo (spec v3.1 §4): dati, password, preferenze (D-48) e «i miei numeri». */
@@ -68,15 +69,22 @@ public class ProfileService {
         return UserResponse.from(u, avatars.existsById(userId));
     }
 
+    private static BigDecimal money(BigDecimal v) { return v.setScale(2, RoundingMode.HALF_UP); }
+
     @Transactional(readOnly = true)
     public StatsResponse stats(UUID userId) {
         List<Trip> mine = trips.findAllEverJoinedByUserId(userId);
         Map<String, StatsResponse.Destination> destinations = new LinkedHashMap<>();
         for (Trip t : mine) destinations.putIfAbsent(t.getDestination(), new StatsResponse.Destination(t.getDestination(), t.getLatitude(), t.getLongitude()));
         List<UUID> ids = mine.stream().map(Trip::getId).toList();
-        return new StatsResponse(mine.size(), List.copyOf(destinations.values()),
-                ids.isEmpty() ? BigDecimal.ZERO.setScale(2) : expenses.groupTotal(ids).setScale(2, RoundingMode.HALF_UP),
-                expenses.myShare(userId).setScale(2, RoundingMode.HALF_UP),
+        // una riga per valuta (in ordine alfabetico): yen ed euro non si sommano
+        Map<String, BigDecimal> group = new TreeMap<>(), share = new TreeMap<>();
+        if (!ids.isEmpty()) for (Object[] r : expenses.groupTotalsByCurrency(ids)) group.put((String) r[0], (BigDecimal) r[1]);
+        for (Object[] r : expenses.mySharesByCurrency(userId)) share.put((String) r[0], (BigDecimal) r[1]);
+        List<StatsResponse.Spending> spending = group.keySet().stream()
+                .map(c -> new StatsResponse.Spending(c, money(group.get(c)), money(share.getOrDefault(c, BigDecimal.ZERO))))
+                .toList();
+        return new StatsResponse(mine.size(), List.copyOf(destinations.values()), spending,
                 photos.countByUploaderIdAndKind(userId, PhotoKind.PHOTO));
     }
 }

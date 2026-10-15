@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { configureClient } from '../../shared/api/client'
+import { authApi } from './authApi'
 import { AUTH_STORAGE_KEY, AuthContext, type AuthState } from './authContext'
 
 // sessioni salvate prima della v3.1 non hanno le preferenze (D-48): valori di base finché il server non le rimanda
@@ -51,6 +52,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return next
     })
   }, [])
+
+  // all'avvio (e a ogni nuovo accesso) l'account si rilegge dal server: nome e preferenze cambiati su un altro
+  // dispositivo valgono anche qui (D-48); se il server non risponde resta la copia salvata
+  const token = auth?.token
+  useEffect(() => {
+    if (!token) return
+    let current = true
+    authApi.me().then((user) => { if (current) updateUser(user) }).catch(() => {})
+    return () => { current = false }
+  }, [token, updateUser])
 
   const value = useMemo(() => ({ auth, login, logout, updateUser }), [auth, login, logout, updateUser])
   return <AuthContext value={value}>{children}</AuthContext>

@@ -29,3 +29,8 @@ it('reazione ottimistica: mi aggiungo, mi tolgo, una nuova va al suo posto nella
   const removed = toggleMyReaction(joined, 'a', '👍', 'p1')!
   expect(removed.pages[0].items[0].reactions.map((r) => r.emoji)).toEqual(['😂'])    // a zero sparisce
 })
+
+it('un messaggio eliminato dal vivo perde anche le reazioni (D-47)', () => {
+  const start = { pages: [{ items: [{ ...msg('a'), reactions: [{ emoji: '👍', count: 2, participantIds: ['p1', 'p2'] }] }], hasMore: false }], pageParams: [undefined] }
+  expect(markDeleted(start, 'a')!.pages[0].items[0].reactions).toEqual([])
+})

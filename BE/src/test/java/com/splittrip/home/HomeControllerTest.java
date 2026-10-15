@@ -16,6 +16,8 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -115,5 +117,37 @@ class HomeControllerTest extends IntegrationTest {
         for (int i = 1; i <= 12; i++) createTrip(vale, "Viaggio " + i, today.plusDays(30L * i), today.plusDays(30L * i + 2));
         mvc.perform(get("/api/me/home").header("Authorization", "Bearer " + vale))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.trips.current", hasSize(12)));
+    }
+
+    @Test
+    void unViaggioRimastoInPianificazioneSiLeggeDalleDate() throws Exception {   // revisione finale: niente «Si parte oggi» a viaggio iniziato
+        when(openMeteo.geocode(any())).thenReturn(Optional.empty());
+        String vale = TestUsers.register(mvc, "Vale");
+        createTrip(vale, "Dimenticato", today.minusDays(2), today.plusDays(3));        // l'organizzatrice non l'ha segnato «in corso»
+        mvc.perform(get("/api/me/home").header("Authorization", "Bearer " + vale))
+                .andExpect(jsonPath("$.featured.trip.name").value("Dimenticato"))
+                .andExpect(jsonPath("$.featured.status").value("ONGOING"))
+                .andExpect(jsonPath("$.featured.dayOfTotal").value(3))
+                .andExpect(jsonPath("$.featured.daysUntil").value(nullValue()));
+    }
+
+    @Test
+    void unViaggioFinitoMaNonChiusoNonDiceSiParteOggi() throws Exception {
+        when(openMeteo.geocode(any())).thenReturn(Optional.empty());
+        String vale = TestUsers.register(mvc, "Vale");
+        createTrip(vale, "Da chiudere", today.minusDays(10), today.minusDays(5));
+        mvc.perform(get("/api/me/home").header("Authorization", "Bearer " + vale))
+                .andExpect(jsonPath("$.featured.trip.name").value("Da chiudere"))
+                .andExpect(jsonPath("$.featured.status").value("ENDED"))
+                .andExpect(jsonPath("$.featured.daysUntil").value(nullValue()));
+    }
+
+    @Test
+    void perUnViaggioLontanoLaHomeNonChiamaIlMeteo() throws Exception {      // il meteo di oggi serve solo durante il viaggio
+        String vale = TestUsers.register(mvc, "Vale");
+        createTrip(vale, "Lontano", today.plusDays(90), today.plusDays(95));
+        mvc.perform(get("/api/me/home").header("Authorization", "Bearer " + vale)).andExpect(jsonPath("$.featured.status").value("UPCOMING"));
+        verify(openMeteo, never()).geocode(any());
+        verify(openMeteo, never()).forecast(any(), any());
     }
 }

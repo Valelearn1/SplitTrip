@@ -14,7 +14,7 @@ type Props = {
   tripId: string; participant: Participant; submitLabel: string; onSaved?: () => void
   /** Benvenuto (D-50): senza «Nome nel viaggio», con «Salta» */
   compact?: boolean; skipLabel?: string; onSkip?: () => void
-  /** date del viaggio: se le date scelte coincidono non si inviano (vuote = presente per tutto il viaggio) */
+  /** date del viaggio: proposte se il partecipante non ne ha; se quelle scelte coincidono vale «tutto il viaggio» (date vuote) */
   tripStart?: string; tripEnd?: string
 }
 
@@ -26,8 +26,8 @@ export function ParticipantForm({ tripId, participant, submitLabel, onSaved, com
     defaultValues: {
       displayName: participant.displayName,
       defaultWeight: String(participant.defaultWeight).replace('.', ','),
-      arrivalDate: participant.arrivalDate ?? '',
-      departureDate: participant.departureDate ?? '',
+      arrivalDate: participant.arrivalDate ?? tripStart ?? '',
+      departureDate: participant.departureDate ?? tripEnd ?? '',
     },
   })
 
@@ -41,8 +41,8 @@ export function ParticipantForm({ tripId, participant, submitLabel, onSaved, com
       defaultWeight: (parseCents(v.defaultWeight) ?? 100) / 100,
       arrivalDate: wholeTrip ? undefined : v.arrivalDate || undefined,
       departureDate: wholeTrip ? undefined : v.departureDate || undefined,
-      // una data svuotata va azzerata esplicitamente: null nel PATCH significa «non toccare»
-      ...(hadDates && (!v.arrivalDate || !v.departureDate) ? { clearDates: true } : {}),
+      // una data svuotata (o tornata a «tutto il viaggio») va azzerata esplicitamente: null nel PATCH significa «non toccare»
+      ...(hadDates && (wholeTrip || !v.arrivalDate || !v.departureDate) ? { clearDates: true } : {}),
     }
     update.mutate(body, { onSuccess: () => onSaved?.() })
   })

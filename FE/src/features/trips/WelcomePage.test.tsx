@@ -60,3 +60,16 @@ it('chi non è membro non vede il benvenuto (Review Focus 5)', async () => {
   expect(await screen.findByText('Non fai parte di questo viaggio.')).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Va bene così' })).not.toBeInTheDocument()
 })
+
+it('chi aveva già date diverse può tornare a «tutto il viaggio»: le date si azzerano davvero (revisione v3.1)', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco', hasAvatar: false, preferredCurrency: 'EUR', chatSound: true, reduceMotion: false } }))
+  const withDates = { ...trip, participants: [trip.participants[0], { ...trip.participants[1], arrivalDate: '2026-11-03' }] }
+  let sent: unknown
+  server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json(withDates)), ...handlers((b) => { sent = b }))
+  renderWithProviders(routes, '/trips/t1/benvenuto')
+  expect(await screen.findByLabelText('Arrivo')).toHaveValue('2026-11-03')       // l'organizzatore l'aveva messo così
+  const user = userEvent.setup()
+  await user.clear(screen.getByLabelText('Arrivo')); await user.type(screen.getByLabelText('Arrivo'), '2026-11-01')
+  await user.click(screen.getByRole('button', { name: 'Va bene così' }))
+  await waitFor(() => expect(sent).toEqual({ defaultWeight: 1, clearDates: true }))
+})

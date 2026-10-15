@@ -13,8 +13,8 @@ export function WelcomePage() {
       <Suitcase size={48} />
       <h2>Ti diamo il benvenuto in {trip.name}</h2>
       <p className="muted">Due cose veloci, poi si parte. Puoi cambiarle quando vuoi da Impostazioni › Io.</p>
-      <ParticipantForm tripId={trip.id}
-        participant={{ ...me, arrivalDate: me.arrivalDate ?? trip.startDate, departureDate: me.departureDate ?? trip.endDate }}
+      {/* il partecipante vero (con le date salvate): il form propone quelle del viaggio se mancano */}
+      <ParticipantForm tripId={trip.id} participant={me}
         tripStart={trip.startDate} tripEnd={trip.endDate} compact submitLabel="Va bene così" skipLabel="Salta" onSkip={done} onSaved={done} />
     </section>
   )

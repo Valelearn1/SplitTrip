@@ -46,3 +46,24 @@ it('senza viaggi: stato vuoto con i due bottoni e niente «Nuova spesa»', async
   expect(screen.queryByRole('link', { name: 'Nuova spesa' })).not.toBeInTheDocument()
   expect(screen.getByText('Sei in pari con tutti')).toBeInTheDocument()
 })
+
+it('viaggio finito ma non chiuso: «da chiudere», e «Nuova spesa» segue lo stato calcolato dalle date', async () => {
+  server.use(http.get('http://localhost/api/me/home', () => HttpResponse.json({
+    featured: { trip: summary('t1', 'Lisbona 2026', 'PLANNING'), status: 'ENDED', daysUntil: null, dayOfTotal: null, totalDays: 6, coverPhotoId: null, weatherToday: null, myNet: 0 },
+    balances: [], totals: { toReceive: 0, toGive: 0, tripsToReceive: 0, tripsToGive: 0 }, latestNotifications: [],
+    trips: { current: [summary('t1', 'Lisbona 2026', 'PLANNING')], past: [] },
+  })))
+  renderWithProviders([{ path: '/trips', element: <HomePage /> }], '/trips')
+  expect(await screen.findByText('Finito il 6 nov 2026 · da chiudere')).toBeInTheDocument()
+  expect(screen.queryByRole('link', { name: 'Nuova spesa' })).not.toBeInTheDocument()
+})
+
+it('viaggio in corso rimasto «in pianificazione»: «Nuova spesa» c’è lo stesso', async () => {
+  server.use(http.get('http://localhost/api/me/home', () => HttpResponse.json({
+    featured: { trip: summary('t1', 'Lisbona 2026', 'PLANNING'), status: 'ONGOING', daysUntil: null, dayOfTotal: 2, totalDays: 6, coverPhotoId: null, weatherToday: null, myNet: 0 },
+    balances: [], totals: { toReceive: 0, toGive: 0, tripsToReceive: 0, tripsToGive: 0 }, latestNotifications: [],
+    trips: { current: [summary('t1', 'Lisbona 2026', 'PLANNING')], past: [] },
+  })))
+  renderWithProviders([{ path: '/trips', element: <HomePage /> }], '/trips')
+  expect(await screen.findByRole('link', { name: 'Nuova spesa' })).toHaveAttribute('href', '/trips/t1/expenses/new')
+})

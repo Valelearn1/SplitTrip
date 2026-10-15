@@ -5,7 +5,8 @@ export type User = {
 }
 export type Stats = {
   trips: number; destinations: { name: string; latitude: number | null; longitude: number | null }[]
-  groupTotal: number; myShare: number; photos: number
+  spending: { currency: string; groupTotal: number; myShare: number }[] // una riga per valuta, mai sommate
+  photos: number
 }
 export type AuthResponse = { token: string; user: User }
 
@@ -104,8 +105,9 @@ export type AiTips = { available: boolean; remainingToday: number; tips: AiTip[]
 export type PackingSuggestions = { items: string[]; remainingToday: number }
 
 // Home (D-49): specchio di HomeResponse
+// status dalle date (Home): ENDED = finito ma non ancora chiuso dall'organizzatore
 export type HomeFeatured = {
-  trip: TripSummary; status: 'ONGOING' | 'UPCOMING' | 'PAST'; daysUntil: number | null; dayOfTotal: number | null; totalDays: number
+  trip: TripSummary; status: 'ONGOING' | 'UPCOMING' | 'ENDED' | 'PAST'; daysUntil: number | null; dayOfTotal: number | null; totalDays: number
   coverPhotoId: string | null; weatherToday: WeatherDay | null; myNet: number
 }
 export type HomeTripBalance = { tripId: string; tripName: string; currency: string; myNet: number }

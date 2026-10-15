@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from 'react-leaflet'
+import { reduceMotion } from '../../shared/utils/motion'
 import type { Photo } from '../../shared/api/types'
 import { AuthImage } from '../../shared/ui/AuthImage'
 import { formatDate } from '../../shared/utils/format'
 import { photoPath } from './photosApi'
 
-const reducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 /** Inquadra tutti i marcatori; niente animazioni con prefers-reduced-motion (D-24). */
 function FitBounds({ photos }: { photos: Photo[] }) {
@@ -13,7 +13,7 @@ function FitBounds({ photos }: { photos: Photo[] }) {
   useEffect(() => {
     if (photos.length === 0) return
     const points = photos.map((p) => [p.latitude!, p.longitude!] as [number, number])
-    map.fitBounds(points, { padding: [32, 32], maxZoom: 15, animate: !reducedMotion })
+    map.fitBounds(points, { padding: [32, 32], maxZoom: 15, animate: !reduceMotion() })
   }, [map, photos])
   return null
 }
@@ -29,7 +29,7 @@ export function PhotoMap({ tripId, photos, onOpen }: Props) {
   return (
     <div className="stack">
       <div className="photo-map" aria-label="Mappa delle foto">
-        <MapContainer center={[located[0].latitude!, located[0].longitude!]} zoom={13} scrollWheelZoom={false} zoomAnimation={!reducedMotion}>
+        <MapContainer center={[located[0].latitude!, located[0].longitude!]} zoom={13} scrollWheelZoom={false} zoomAnimation={!reduceMotion()} fadeAnimation={!reduceMotion()} markerZoomAnimation={!reduceMotion()}>
           <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
           <FitBounds photos={located} />
           {located.map((p) => (
