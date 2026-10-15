@@ -35,6 +35,11 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 🔊 **Messaggi che si notano**: suono breve (disattivabile) e avviso «Marco: …» con «Apri la chat» quando sei in un'altra pagina
 - 🔎 **Dettagli a portata di tocco**: ogni spesa e rimborso si espande per leggere quote e note per intero
 - 📩 Piccole animazioni con uno scopo: la busta che si apre leggendo una notifica, la valigia che si chiude a lista completata (spente con «riduci movimento»)
+- 🏠 **Home con il viaggio in evidenza**: a che punto è («giorno 3 di 6»), il meteo di oggi, quanto ti devono o devi in tutti i viaggi e le ultime novità; prima del login, una **pagina di presentazione**
+- 📍 **Proposte di luoghi** mentre scrivi la destinazione (e il luogo delle foto senza GPS), in italiano, con il testo libero sempre valido
+- 👋 **Benvenuto nel viaggio**: chi entra con il codice sceglie subito per quante persone conta e quando arriva
+- ⚙️ **Impostazioni in tre schede** (Viaggio · Persone · Io) e **profilo completo**: nome, email, password, «i miei numeri» con la mappa delle destinazioni e preferenze che valgono su ogni dispositivo (suono, animazioni, valuta predefinita)
+- 👍 **Reazioni ai messaggi** (👍 ❤️ 😂 😮 😢 🎉) in tempo reale e **griglia emoji** nel campo della chat
 - ♿ Interfaccia **mobile-first e accessibile**: ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore
 
 ## 📸 Screenshot
@@ -47,6 +52,10 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 |---|---|---|
 | ![Liste con voci assegnate](docs/screenshots/mobile-lists.png) | ![Mappa delle foto](docs/screenshots/mobile-photos-map.png) | ![Chat in tempo reale](docs/screenshots/mobile-chat.png) |
 
+| Home | Impostazioni del viaggio |
+|---|---|
+| ![Home con il viaggio in evidenza](docs/screenshots/mobile-home.png) | ![Impostazioni, scheda Persone](docs/screenshots/mobile-settings.png) |
+
 ![Dashboard desktop](docs/screenshots/desktop-dashboard.png)
 
 ## 🗺️ Roadmap
@@ -57,6 +66,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 | **v1.5 Divisioni smart** | divisione per presenza e «conta per» (ex peso), partecipanti senza account rivendicabili, modello dati pronto per multi-valuta | ✅ |
 | **v2 Social** | liste condivise con assegnatario, foto con mappa, scontrino sulla spesa, notifiche in-app, meteo, foto profilo | ✅ |
 | **v3 Live** | chat di gruppo e notifiche in tempo reale (WebSocket STOMP), consigli AI, «conta per», movimento | ✅ |
+| **v3.1 Rifinitura** | dai test con gli amici: proposte di luoghi, benvenuto, Impostazioni a schede, Home e presentazione, profilo con preferenze, reazioni ed emoji in chat | ✅ |
 
 La visione di prodotto oltre il capstone (ospiti senza registrazione, multi-valuta, scontrino diviso per voce, riepilogo condivisibile): [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
@@ -107,8 +117,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 162 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 89 test
+cd BE && sh mvnw test   # 186 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 108 test
 ```
 
 Cosa coprono:
@@ -122,6 +132,9 @@ Cosa coprono:
 - 🌤️ **meteo**: servizio giù o lento → card vuota, mai un errore
 - ⚡ **tempo reale** con un client STOMP vero: CONNECT senza token rifiutato, canale di un viaggio solo ai membri, notifica solo al destinatario, «sta scrivendo» limitato; nel frontend riconnessione, logout e nessun messaggio doppio
 - ✨ **AI**: nel testo per il modello niente nomi né email, risposta rotta → 503 senza consumare il limite, 5 generazioni al giorno
+- 📍 **luoghi**: testo con caratteri speciali codificato bene, servizio giù → nessuna proposta ma testo libero valido, 30 ricerche al minuto, cache
+- 👍 **reazioni**: idempotenti, due persone insieme → il canale mostra entrambe, emoji fuori lista rifiutata
+- 👤 **account**: email unica, password attuale obbligatoria, la sessione aperta resta valida dopo il cambio
 - 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda», liste, caricamento foto col consenso alla posizione, campanella, chat, consigli AI, «conta per», busta e valigia
 
 Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il codice.
@@ -139,6 +152,8 @@ Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il cod
 | **Autorizzazione** | ogni operazione verifica l'appartenenza al viaggio; l'id utente viene sempre dal token, mai dal body |
 | **Immagini** | il server decodifica e riscrive ogni foto in JPEG (via EXIF e metadati, file finti rifiutati dal contenuto, non dal nome); la posizione si salva solo con il consenso esplicito di chi carica; le immagini si scaricano con il token (`Authorization: Bearer`), mai da URL pubblici; limiti di 3 MB a file e 200 foto a viaggio |
 | **Tempo reale** | il JWT viaggia nel frame CONNECT del WebSocket, mai nell'URL; ogni sottoscrizione verifica che tu sia membro del viaggio; si scrive solo via REST (stessi controlli delle API), il socket spinge dati già salvati; limite di 20 messaggi al minuto e frame da 8 KB |
+| **Luoghi** | le proposte passano dal backend (Open-Meteo, D-51): al servizio arriva solo il testo cercato, mai chi sei; solo per chi ha fatto il login, 30 ricerche al minuto, risultati in cache |
+| **Account** | cambio password solo con quella attuale, stesse regole della registrazione; email unica (senza distinzione di maiuscole); preferenze sull'account, nessun dato in più |
 | **AI** | al modello vanno solo destinazione, date, numero di persone, meteo e voci della valigia: mai nomi, email o importi; la chiave sta solo nelle variabili d'ambiente di Render; la risposta è JSON validato e mostrato come testo, le voci si aggiungono solo se le spunti; 5 generazioni al giorno per viaggio |
 
 ## 📐 Progettazione
@@ -147,7 +162,7 @@ Il progetto è sviluppato con un metodo **spec-driven**: prima la specifica, poi
 
 | Documento | Contenuto |
 |---|---|
-| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifiche di design: v1 (modello dati, motore dei saldi, API, sicurezza, frontend), v1.5 (partecipanti, peso e presenza) v2 (liste, foto, notifiche, meteo) e v3 (chat in tempo reale, AI, movimento) |
+| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifiche di design: v1 (modello dati, motore dei saldi, API, sicurezza, frontend), v1.5 (partecipanti, peso e presenza) v2 (liste, foto, notifiche, meteo), v3 (chat in tempo reale, AI, movimento) e v3.1 (rifinitura dai test con gli amici) |
 | [`docs/superpowers/plans/`](docs/superpowers/plans/) | piani di implementazione task per task |
 | [`docs/decisioni.md`](docs/decisioni.md) | registro delle decisioni, con alternative scartate e motivazioni |
 | [`PRODUCT.md`](PRODUCT.md) · [`DESIGN.md`](DESIGN.md) | prodotto e sistema visivo |
@@ -161,7 +176,7 @@ SplitTrip/
 ├── BE/                         backend Spring Boot
 │   ├── src/main/java/com/splittrip/
 │   │   ├── auth/               JWT, sicurezza, registrazione e login
-│   │   ├── user/               utenti, foto profilo
+│   │   ├── user/               utenti, foto profilo, profilo, preferenze, «i miei numeri»
 │   │   ├── trip/               viaggi, membri, codice invito, controllo accessi
 │   │   ├── expense/            spese, quote, rimborsi, motore dei saldi
 │   │   ├── todo/               liste condivise e voci
@@ -169,15 +184,17 @@ SplitTrip/
 │   │   ├── notification/       notifiche (ascoltano gli eventi)
 │   │   ├── weather/            meteo da Open-Meteo
 │   │   ├── live/               WebSocket STOMP, JWT nel CONNECT, permessi per canale
-│   │   ├── chat/               chat del viaggio, righe evento, «sta scrivendo»
+│   │   ├── chat/               chat del viaggio, righe evento, «sta scrivendo», reazioni
 │   │   ├── ai/                 consigli AI e valigia suggerita
+│   │   ├── places/             proposte di luoghi (Open-Meteo), con limiti e cache
+│   │   ├── home/               la Home in una chiamata
 │   │   └── common/             errori, configurazione, eventi
 │   ├── src/main/resources/db/migration/   migrazioni Flyway
 │   └── Dockerfile
 ├── FE/                         frontend React
 │   └── src/
 │       ├── app/                router, layout
-│       ├── features/           auth · trips · expenses · balances · todo · photos · notifications · weather · profile · chat · ai
+│       ├── features/           auth · home · trips · expenses · balances · todo · photos · notifications · weather · profile · chat · ai
 │       └── shared/             client API, componenti UI, formattazione
 ├── docs/                       spec, piani, decisioni, roadmap, screenshot
 ├── docker-compose.yml          Postgres locale

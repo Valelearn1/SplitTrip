@@ -51,6 +51,7 @@ Ogni versione è un progetto completo e presentabile da solo. Ogni versione = un
 | **v1.5** | Divisioni smart (D-28) | schema: i soldi puntano ai partecipanti (S1), valuta/tasso sulla spesa (S2), metodo di divisione estendibile (S4); divisione per giorni di presenza e quote con peso. Spec `2026-10-14-v1.5-divisioni-smart-design.md` | ✅ 2026-10-14 |
 | **v2** | Social | to-do list (valigia / generali), foto con posizione e mappa, notifiche in-app; extra dalle schermate Stitch (D-25): foto profilo, foto scontrino allegata alla spesa, meteo della destinazione via Open-Meteo. Spec `2026-10-14-v2-social-design.md` | ✅ 2026-10-14 |
 | **v3** | Live | chat di gruppo WebSocket, notifiche in tempo reale; extra (D-25): «consiglio di viaggio» generato con AI. Spec `2026-10-15-v3-live-design.md` | ✅ 2026-10-15 |
+| **v3.1** | Rifinitura | dai test con gli amici: proposte di luoghi (D-46, D-51), benvenuto e Impostazioni a schede (D-50), Home e presentazione (D-49), profilo con preferenze sull'account (D-48), reazioni ed emoji in chat (D-47). Spec `2026-10-15-v3.1-rifinitura-design.md` | ✅ 2026-10-15 |
 | — | Rifinitura | README finale, prova presentazione | 13–14 |
 
 **Regola di taglio:** se a fine giorno 7 v1 non è chiusa, v3 esce dal piano. Meglio v1 e v2 impeccabili.

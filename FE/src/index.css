@@ -533,3 +533,15 @@ fieldset.field.card { padding: var(--space-4); }
 @media (max-width: 400px) { .emoji-popover { grid-template-columns: repeat(6, 44px); } }
 .emoji-popover button { width: 44px; height: 44px; border: 0; border-radius: 10px; background: none; font-size: 1.375rem; cursor: pointer; }
 .emoji-popover button:hover, .emoji-popover button:focus-visible { background: var(--teal-tint); }
+
+/* Verifica visiva v3.1: correzioni */
+/* la colonna del profilo non supera mai lo schermo: i contenuti lunghi vanno a capo dentro le card */
+.profile { grid-template-columns: minmax(0, 1fr); }
+.pref-row .row-text { flex: 1; }
+.pref-row .row-text small { white-space: normal; }
+.profile .row-text small { white-space: normal; overflow-wrap: anywhere; }
+/* le etichette delle destinazioni sono una lista: niente rientro da elenco */
+ul.chips { list-style: none; margin: 0; padding: 0; }
+/* copertina della Home: l'immagine riempie il riquadro 16:9 senza allungarlo */
+.featured-cover { position: relative; overflow: hidden; }
+.featured-cover img, .featured-cover .img-placeholder { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }

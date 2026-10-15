@@ -410,6 +410,27 @@ Nelle liste Valigia, in fondo alla card sotto l'aggiunta voci, «Suggerisci voci
 - **Righe espandibili:** spese e rimborsi hanno a destra un bottone 44 px `expand_more`/`expand_less` (`aria-expanded`, «Dettagli di …»); il dettaglio è un riquadro `surface-1` a raggio 12 px con il testo intero (divisione, nota) e, per le spese, la quota di ognuno con «conta per» o notti/giorni.
 - **Campi data:** larghezza bloccata al contenitore anche in Safari su iPhone.
 
+### Proposte di luoghi (v3.1, D-46/D-51)
+Campo con `role="combobox"`: dalla 3ª lettera, dopo 300 ms, una lista sotto il campo (card bianca, bordo `line`, raggio 12 px, ombra card, al massimo 280 px con scorrimento). Ogni proposta è una riga da 44 px: nome 600 e sotto, in `muted`, regione e paese; la riga attiva su `teal-tint`. Frecce, Invio ed Esc; il numero di proposte è annunciato ai lettori di schermo. Il testo libero resta sempre valido: scegliere una proposta aggiunge solo le coordinate.
+
+### Benvenuto nel viaggio (v3.1, D-50)
+Card centrata (max 480 px) con la valigia 48 px teal, «Ti diamo il benvenuto in {viaggio}» e una frase `muted`; sotto il form a sinistra: «Conta per», arrivo e partenza già compilate con le date del viaggio, «Va bene così» primario e «Salta» secondario sulla stessa riga.
+
+### Impostazioni a schede (v3.1, D-50)
+Tre schede Viaggio · Persone · Io con lo stesso aspetto delle sezioni del viaggio su desktop (fondo `surface-2`, scheda attiva bianca con ombra card e testo teal), ma sempre in alto, anche su mobile. `role="tablist"`, frecce/Home/Fine, scheda nell'URL. Chi non organizza vede la scheda Viaggio come elenco `kv` in sola lettura. Nella lista Persone, sotto il nome, i valori diversi dal solito: «conta per 2 · arriva il 3 nov».
+
+### Pagina di presentazione (v3.1)
+Una colonna centrata (max 560 px): valigia 72 px, titolo «Vacanze tra amici, conti chiari», frase `muted`, «Crea un account» primario e «Accedi» secondario affiancati, «Ho un codice invito» come link. Poi tre card «Prima / Durante / Dopo» con icona teal 28 px (una colonna su mobile, tre da 720 px), «Come funziona» con l'elenco numerato a numeri teal, e il piè di pagina piccolo e `muted`.
+
+### Home e viaggio in evidenza (v3.1, D-49)
+«Ciao {nome}», poi la card del viaggio in evidenza: copertina 16:9 (l'ultima foto, `object-fit: cover`; senza foto la valigia su `teal-tint`), sotto lo stato in teal 700 («In corso · giorno 3 di 6», «Tra 12 giorni»), nome, destinazione, meteo di oggi a parole con icona e il saldo detto a parole («Ti devono 400,00 €»); su desktop copertina a sinistra e testo a destra. Azioni rapide in riga (Nuovo viaggio primario, Ho un codice `soft`, Nuova spesa secondario solo con un viaggio in corso). «I tuoi conti»: un riquadro `kv` con le pillole di saldo e «in N viaggi», solo se tutti i saldi sono nella stessa valuta, poi una riga per viaggio con importo col segno. «Ultime novità» con «Vedi tutte»; infine i viaggi divisi in «In corso e in arrivo» e «Passati».
+
+### Profilo (v3.1)
+Quattro card: Foto e dati, Password, I miei numeri, Preferenze. I numeri sono riquadri `surface-1` raggio 12 px con la cifra a 2rem/800 (cifre tabellari) e l'etichetta sotto in `ink-2` 600; la spesa del gruppo occupa una riga intera con «la tua parte» in piccolo. Le destinazioni sono chip statiche e sotto una mappa di 260 px con un cerchio teal per destinazione. Le preferenze sono righe con titolo e spiegazione `muted` a sinistra e un interruttore a destra (binario 44×26 `surface-3`, teal se acceso, pallino bianco), sempre con «Sì/No» scritto accanto.
+
+### Reazioni ed emoji (v3.1, D-47)
+Sotto la bolla, pillole alte 28 px (area da 44 px al tocco) con emoji e numero: bordo `line` e testo `ink-2`, le proprie con bordo e testo teal su `teal-tint`; a destra per i propri messaggi. La striscia delle sei reazioni è una pillola bianca galleggiante sopra la bolla con bottoni da 44 px; si apre col tocco lungo (500 ms), con «Reagisci» (`add_reaction`, compare al passaggio del mouse o al focus) e si chiude con Esc o toccando fuori. Nel campo, a sinistra, il bottone 44 px `mood` apre una griglia di 40 emoji (8 colonne da 44 px, 6 sotto i 400 px) in una card sopra il campo; la scelta va dove c'è il cursore. Le emoji stanno solo qui: mai nell'interfaccia (unica eccezione voluta: il ☕ della firma nel piè di pagina della presentazione).
+
 ### Illustrazioni in movimento (v3, D-43)
 SVG nostri con colori dai token: **busta** (32×26, `ink-2`, teal se non letta) davanti a ogni notifica, il lembo si ribalta in 250 ms quando la si legge; **valigia** (24 px teal, coperchio su cerniera) nel titolo delle liste Valigia, si chiude e disegna una spunta quando l'ultima voce è fatta, e saltella nel banner di risveglio del server. I messaggi arrivati dal vivo entrano con dissolvenza e 8 px di scivolata in 200 ms. Animazioni con Motion (`m.*` con funzioni caricate a parte), sempre azzerate da `prefers-reduced-motion`.
 
