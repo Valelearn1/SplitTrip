@@ -113,4 +113,26 @@ class LiveIntegrationTest {
         assertThat(q.poll(1, TimeUnit.SECONDS)).isNull();
         v.disconnect(); m.disconnect();
     }
+
+    @Test
+    void laNotificaArrivaSubitoAlDestinatarioNonAChiAgisce() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        String marco = TestUsers.register(mvc, "Marco");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        TestTrips.join(mvc, marco, TestTrips.inviteCode(mvc, vale, tripId));
+        UUID valeP = TestTrips.participantOf(mvc, vale, tripId);
+        UUID marcoP = TestTrips.participantOf(mvc, marco, tripId);
+        LiveTestClient v = LiveTestClient.connect(port, vale);
+        LiveTestClient m = LiveTestClient.connect(port, marco);
+        BlockingQueue<String> vq = v.subscribe("/user/queue/notifications");
+        BlockingQueue<String> mq = m.subscribe("/user/queue/notifications");
+        Thread.sleep(300);
+
+        com.splittrip.TestExpenses.createEqual(mvc, marco, tripId, "Cena", "45.00", marcoP, valeP, marcoP);
+
+        String frame = vq.poll(5, TimeUnit.SECONDS);
+        assertThat(frame).contains("\"type\":\"EXPENSE_ADDED\"").contains("Cena").contains("\"unreadCount\":");
+        assertThat(mq.poll(500, TimeUnit.MILLISECONDS)).isNull();
+        v.disconnect(); m.disconnect();
+    }
 }

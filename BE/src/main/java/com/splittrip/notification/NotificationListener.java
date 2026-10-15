@@ -4,6 +4,10 @@ import com.splittrip.common.events.ExpenseCreated;
 import com.splittrip.common.events.ParticipantJoined;
 import com.splittrip.common.events.SettlementCreated;
 import com.splittrip.common.events.TodoAssigned;
+import com.splittrip.live.AfterCommit;
+import com.splittrip.live.LivePublisher;
+import com.splittrip.notification.dto.LiveNotification;
+import com.splittrip.notification.dto.NotificationResponse;
 import com.splittrip.trip.TripRepository;
 import com.splittrip.user.UserRepository;
 import org.springframework.stereotype.Component;
@@ -19,6 +23,7 @@ import java.util.UUID;
 /**
  * Trasforma gli eventi interni in notifiche, dopo il commit e in una transazione propria:
  * se la notifica fallisce, l'operazione originale resta valida (D-36). Chi agisce non riceve mai la propria.
+ * In v3 la stessa notifica viene spinta sulla coda personale, dopo il commit (D-39).
  */
 @Component
 public class NotificationListener {
@@ -26,12 +31,14 @@ public class NotificationListener {
     private final NotificationRepository notifications;
     private final UserRepository users;
     private final TripRepository trips;
+    private final LivePublisher live;
     private final Clock clock;
 
-    public NotificationListener(NotificationRepository notifications, UserRepository users, TripRepository trips, Clock clock) {
+    public NotificationListener(NotificationRepository notifications, UserRepository users, TripRepository trips, LivePublisher live, Clock clock) {
         this.notifications = notifications;
         this.users = users;
         this.trips = trips;
+        this.live = live;
         this.clock = clock;
     }
 
@@ -80,6 +87,9 @@ public class NotificationListener {
     }
 
     private void save(UUID userId, UUID tripId, NotificationType type, String message, String link) {
-        notifications.save(new Notification(users.getReferenceById(userId), trips.getReferenceById(tripId), type, message, link, clock.instant()));
+        Notification saved = notifications.save(new Notification(users.getReferenceById(userId), trips.getReferenceById(tripId), type, message, link, clock.instant()));
+        NotificationResponse response = NotificationResponse.from(saved);
+        // v3 (D-39): oltre al polling, la campanella si aggiorna subito, dopo il commit di questa transazione
+        AfterCommit.run(() -> live.toUser(userId, new LiveNotification(response, notifications.countByUserIdAndReadAtIsNull(userId))));
     }
 }
