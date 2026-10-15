@@ -6,6 +6,8 @@ import { Spinner } from '../../shared/ui/Spinner'
 import { StatusBadge } from '../../shared/ui/StatusBadge'
 import { formatDateRange } from '../../shared/utils/format'
 import { useAuth } from '../auth/useAuth'
+import { ChatButton } from '../chat/ChatButton'
+import { useTripLiveSync } from '../chat/useTripLiveSync'
 import { useBalances } from '../balances/useBalances'
 import { BalancePill } from '../../shared/ui/BalancePill'
 import { MoneyText } from '../../shared/ui/MoneyText'
@@ -20,6 +22,9 @@ export function TripLayout() {
   const { data: trip, isPending, error } = useTrip(tripId)
   const balances = useBalances(tripId)
   const location = useLocation()
+  // la cache della chat resta aggiornata in tutto il viaggio, non solo nella pagina Chat
+  const myParticipantId = trip?.participants.find((p) => p.userId === auth?.user.id)?.id ?? ''
+  useTripLiveSync(tripId, myParticipantId)
 
   if (isPending) return <Spinner />
   if (error || !trip) return <FormError error={error ?? new Error('Viaggio non disponibile')} />
@@ -41,6 +46,7 @@ export function TripLayout() {
         </div>
         <div className="head-balance">
           <StatusBadge status={trip.status} />
+          <ChatButton tripId={trip.id} />
           <NavLink to="settings" className="btn btn-secondary btn-sm icon-btn" aria-label="Impostazioni del viaggio"><Icon name="settings" /></NavLink>
           {myNet !== undefined && (
             <>

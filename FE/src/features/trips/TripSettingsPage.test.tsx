@@ -26,6 +26,7 @@ describe('TripSettingsPage', () => {
     server.use(
       http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
       http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+      http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
       http.patch('http://localhost/api/trips/t1/participants/p2', async ({ request }) => { sent = await request.json(); return HttpResponse.json(trip.participants[1]) }),
     )
     renderWithProviders(routes, '/trips/t1/settings')
@@ -47,6 +48,7 @@ describe('TripSettingsPage', () => {
     server.use(
       http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
       http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+      http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
       http.post('http://localhost/api/trips/t1/participants', async ({ request }) => { added = await request.json(); return HttpResponse.json({}, { status: 201 }) }),
       http.post('http://localhost/api/trips/t1/participants/p2/unlink', () => { unlinked = true; return HttpResponse.json(trip.participants[1]) }),
     )

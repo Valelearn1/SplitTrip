@@ -49,6 +49,7 @@ export const routes: RouteObject[] = [
               { path: 'settings', element: <TripSettingsPage /> },
               { path: 'lists', element: <TodoListsPage /> },
               // Leaflet pesa: la pagina Foto si scarica solo quando la si apre
+              { path: 'chat', lazy: () => import('../features/chat/ChatPage').then((m) => ({ Component: m.ChatPage })) },
               { path: 'photos', lazy: () => import('../features/photos/PhotosPage').then((m) => ({ Component: m.PhotosPage })) },
             ],
           },

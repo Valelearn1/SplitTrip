@@ -27,6 +27,7 @@ it('spunta una voce, la assegna a un partecipante e filtra le mie', async () => 
   server.use(
     http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
     http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+    http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
     http.get('http://localhost/api/notifications/unread-count', () => HttpResponse.json({ count: 0 })),
     http.get('http://localhost/api/trips/t1/todo-lists', () => HttpResponse.json(lists)),
     http.patch('http://localhost/api/trips/t1/todo-lists/l1/items/:iid', async ({ request, params }) => {

@@ -21,6 +21,7 @@ describe('BalancesPage', () => {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'g@e.it', displayName: 'Giulia' } }))
     server.use(
       http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
       http.get('http://localhost/api/trips/t1/balances', () =>
         HttpResponse.json({
           balances: [

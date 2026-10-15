@@ -25,6 +25,7 @@ it('apre il link della notifica e la segna come letta; una spesa cancellata non 
     http.patch('http://localhost/api/notifications/:id/read', ({ params }) => { read = String(params.id); return new HttpResponse(null, { status: 204 }) }),
     http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
     http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+    http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
     http.get('http://localhost/api/trips/t1/expenses/e9', () => HttpResponse.json({ status: 404, title: 'Non trovato', detail: 'Spesa non trovata' }, { status: 404 })),
   )
   renderWithProviders([
