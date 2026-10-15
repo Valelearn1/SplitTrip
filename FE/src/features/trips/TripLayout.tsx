@@ -46,8 +46,10 @@ export function TripLayout() {
         </div>
         <div className="head-balance">
           <StatusBadge status={trip.status} />
-          <ChatButton tripId={trip.id} />
-          <NavLink to="settings" className="btn btn-secondary btn-sm icon-btn" aria-label="Impostazioni del viaggio"><Icon name="settings" /></NavLink>
+          <span className="head-actions">
+            <ChatButton tripId={trip.id} />
+            <NavLink to="settings" className="btn btn-secondary btn-sm icon-btn" aria-label="Impostazioni del viaggio"><Icon name="settings" /></NavLink>
+          </span>
           {myNet !== undefined && (
             <>
               <MoneyText amount={myNet} currency={trip.currency} signed className="amount-lg" />

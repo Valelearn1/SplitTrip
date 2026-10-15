@@ -26,7 +26,22 @@ export function ChatPage() {
   const [newBelow, setNewBelow] = useState(false)
   const end = useRef<HTMLDivElement>(null)
   const atBottom = useRef(true)
+  const logRef = useRef<HTMLDivElement>(null)
   const [liveIds, setLiveIds] = useState<ReadonlySet<string>>(new Set())
+
+  // si va in fondo al frame successivo, quando l'altezza è quella finale
+  // (jsdom non ha scrollIntoView: nei test non si scorre)
+  const scrollToEnd = () => {
+    if (!end.current?.scrollIntoView) return
+    const toBottom = () => {
+      const log = logRef.current
+      if (log) log.scrollTop = log.scrollHeight // su desktop l'elenco ha un suo scorrimento…
+      window.scrollTo({ top: document.documentElement.scrollHeight }) // …su mobile scorre la pagina
+    }
+    requestAnimationFrame(toBottom)
+    // i font arrivano dopo e allungano i messaggi: si scorre di nuovo quando sono pronti
+    void document.fonts?.ready.then(() => requestAnimationFrame(toBottom))
+  }
 
   const oldestFirst = useMemo(() => (messages.data?.pages.flatMap((p) => p.items) ?? []).slice().reverse(), [messages.data])
   const timeline = useMemo(() => buildTimeline(oldestFirst), [oldestFirst])
@@ -52,7 +67,7 @@ export function ChatPage() {
 
   useEffect(() => {
     if (!newestId) return
-    if (atBottom.current) end.current?.scrollIntoView?.({ block: 'end' })
+    if (atBottom.current) scrollToEnd()
     else setNewBelow(true)
   }, [newestId])
 
@@ -64,7 +79,7 @@ export function ChatPage() {
       {messages.hasNextPage && (
         <Button variant="secondary" className="btn-sm" loading={messages.isFetchingNextPage} onClick={() => void messages.fetchNextPage()}>Messaggi precedenti</Button>
       )}
-      <div className="chat-log" role="log" aria-label="Messaggi"
+      <div ref={logRef} className="chat-log" role="log" aria-label="Messaggi"
         onScroll={(e) => {
           const el = e.currentTarget
           atBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40
@@ -78,15 +93,17 @@ export function ChatPage() {
         <div ref={end} />
       </div>
       {newBelow && (
-        <button type="button" className="new-pill" onClick={() => { end.current?.scrollIntoView?.({ block: 'end' }); setNewBelow(false) }}>
+        <button type="button" className="new-pill" onClick={() => { scrollToEnd(); setNewBelow(false) }}>
           Nuovi messaggi <Icon name="arrow_downward" />
         </button>
       )}
-      <p className="typing muted">{typing ? `${typing.name} sta scrivendo…` : ''}</p>
-      {canWrite
-        ? <ChatComposer sending={send.isPending} onSend={(c) => send.mutateAsync(c)} onTyping={() => publish(`/app/trips/${trip.id}/typing`)} />
-        : <p className="info"><Icon name="lock" />Il viaggio è chiuso: la chat è in sola lettura</p>}
-      <FormError error={send.error ?? remove.error} />
+      <div className="chat-footer">
+        <p className="typing muted">{typing ? `${typing.name} sta scrivendo…` : ''}</p>
+        <FormError error={send.error ?? remove.error} />
+        {canWrite
+          ? <ChatComposer sending={send.isPending} onSend={(c) => send.mutateAsync(c)} onTyping={() => publish(`/app/trips/${trip.id}/typing`)} />
+          : <p className="info"><Icon name="lock" />Il viaggio è chiuso: la chat è in sola lettura</p>}
+      </div>
       <Modal open={confirmId !== null} title="Eliminare il messaggio?" onClose={() => setConfirmId(null)}>
         <p>Il testo sparirà per tutti; resterà «Messaggio eliminato».</p>
         <div className="modal-actions">

@@ -352,7 +352,7 @@ Pieni, alti e decisi: si premono con il pollice.
 ### Navigation
 - **Header:** bianco, sticky, marchio teal con icona valigia piena a sinistra; a destra campanella, avatar «tu» (link al profilo), nome (nascosto su mobile) ed «Esci» secondario piccolo.
 - **Campanella (v2):** bottone rotondo 44 px con icona 24 px `ink-2`, hover `surface-1`; il contatore dei non letti è una pillola `coral` 18 px con numero bianco 0.6875rem/700 in alto a destra, e il nome accessibile dice il numero a parole («Notifiche, 2 non lette»).
-- **Tab del viaggio:** desktop, barra segmentata `surface-2` con tab alti 44 px, 0.9375rem/600 `ink-2`, attivo bianco con testo teal e ombra card. Mobile, tab bar fissa in basso, icona 24 px sopra etichetta 0.6875rem, tab alti 52 px, attivo su `teal-tint`. Cinque tab (v2): Panoramica, Spese, Saldi, Liste, Foto; le impostazioni del viaggio stanno in un bottone ingranaggio 44 px nell'intestazione (`aria-label` «Impostazioni del viaggio»), non in una sesta tab.
+- **Tab del viaggio:** desktop, barra segmentata `surface-2` con tab alti 44 px, 0.9375rem/600 `ink-2`, attivo bianco con testo teal e ombra card. Mobile, tab bar fissa in basso, icona 24 px sopra etichetta 0.6875rem, tab alti 52 px, attivo su `teal-tint`. Cinque tab (v2): Panoramica, Spese, Saldi, Liste, Foto; le impostazioni del viaggio stanno in un bottone ingranaggio 44 px nell'intestazione (`aria-label` «Impostazioni del viaggio»), non in una sesta tab. Accanto, a sinistra, il **bottone Chat** (v3, D-42): stesso bottone 44 px con icona `chat_bubble` e il numero dei non letti nella pillola `coral` della campanella; `aria-label` «Chat, 3 messaggi non letti». I due bottoni stanno affiancati (`head-actions`), anche su mobile.
 - **FAB:** cerchio teal da 60 px con «+» da 30 px e ombra galleggiante; hover `teal-2` e scala 1.04. Vive nelle liste (viaggi, spese, foto), non nella dashboard. Nella pagina Foto l'icona è la fotocamera con «+».
 
 ### Pillola di saldo (signature)
@@ -395,6 +395,17 @@ Nella panoramica, una fila orizzontale di giorni (scorre su mobile, senza barra 
 ### Foto profilo (v2)
 Dove c'è una foto profilo il cerchio delle iniziali diventa l'immagine ritagliata a cerchio, stessa misura e stesso anello per «tu»; senza foto restano le iniziali. Nel profilo l'avatar è grande, 88 px.
 
+### Chat (v3)
+Elenco con `role="log"`: messaggi propri a destra su `teal-tint` senza bordo, altrui a sinistra in bolla bianca con bordo `line`, raggio 16 px, testo che va a capo da solo (`pre-wrap`). Nome (0.8125rem/600 `ink-2`) e avatar 32 px solo sul primo messaggio di un blocco della stessa persona entro 5 minuti; chi scrive è sempre detto anche ai lettori di schermo, «Tu» per i propri. Orario `HH:mm` `muted` sotto la bolla. Separatori di giorno «Oggi», «Ieri», «lun 3 nov» come pillole `surface-2` centrate. Righe evento centrate, 0.875rem `ink-2` con icona: per le spese sono link alla spesa. «Messaggio eliminato» in corsivo `ink-3` nella bolla. Elimina: icona cestino 44 px solo sui propri, con conferma in modale.
+Il piede (`chat-footer`) tiene insieme «Marco sta scrivendo…» (0.875rem `muted`, riga sempre presente per non far saltare il layout) e il campo: `textarea` stile campo (48 px, cresce fino a 4 righe) e «Invia» primario; è appiccicato in basso, su mobile appoggiato sulla tab bar. Su mobile scorre solo la pagina; su desktop l'elenco ha un suo scorrimento. Pillola teal «Nuovi messaggi ↓» quando arriva qualcosa e non sei in fondo; banner ambra «Riconnessione…» se il canale è giù; a viaggio chiuso un riquadro `info` con lucchetto al posto del campo.
+
+### Consigli AI (v3)
+Card «Consigli per {destinazione}» con icona `auto_awesome` nel titolo: 3–5 righe con icona teal 24 px per categoria, categoria in testo piccolo `muted`, titolo 700 e testo `ink-2`. Bottone `soft` piccolo «Genera consigli» / «Rigenera (4 rimaste oggi)»; sotto, su riga propria, «Generato con AI · può contenere errori» in `muted`. Mentre genera, righe-segnaposto `surface-2` e «Sto pensando…» (`role="status"`). Senza chiave sul server la card non c'è.
+Nelle liste Valigia, in fondo alla card sotto l'aggiunta voci, «Suggerisci voci» `soft` piccolo: apre una modale con le proposte già spuntate (checkbox 22 px), la stessa nota AI e «Aggiungi N voci» primario.
+
+### Illustrazioni in movimento (v3, D-43)
+SVG nostri con colori dai token: **busta** (32×26, `ink-2`, teal se non letta) davanti a ogni notifica, il lembo si ribalta in 250 ms quando la si legge; **valigia** (24 px teal, coperchio su cerniera) nel titolo delle liste Valigia, si chiude e disegna una spunta quando l'ultima voce è fatta, e saltella nel banner di risveglio del server. I messaggi arrivati dal vivo entrano con dissolvenza e 8 px di scivolata in 200 ms. Animazioni con Motion (`m.*` con funzioni caricate a parte), sempre azzerate da `prefers-reduced-motion`.
+
 ### Modale
 `<dialog>` bianco, raggio 16 px, padding 24 px, larghezza massima 420 px, ombra modale e backdrop d'inchiostro al 45%; azioni allineate a destra.
 
@@ -405,7 +416,7 @@ Dove c'è una foto profilo il cerchio delle iniziali diventa l'immagine ritaglia
 - **Do** usare `teal` (#00685c) e `coral` (#aa361e) per il testo dei soldi; `coral-2` solo nelle barre.
 - **Do** mantenere target touch di almeno 44 px (bottoni 48, chip 40 dentro righe da 44, tab 44/52, FAB 60) e campi a 16 px.
 - **Do** lasciare visibile l'anello di focus doppio (`--focus`) su ogni elemento interattivo, anche sui controlli nascosti dentro chip e avatar.
-- **Do** limitare il movimento a transizioni da 150 ms (300 ms per le barre) con `--ease`, senza animazioni d'ingresso, e azzerarle con `prefers-reduced-motion`.
+- **Do** limitare il movimento a transizioni da 150 ms (300 ms per le barre) con `--ease` e, dalla v3 (D-43), a poche animazioni con uno scopo da 200–600 ms (busta, valigia, messaggi in arrivo); tutto si azzera con `prefers-reduced-motion` e nessuna informazione sta solo nel movimento.
 - **Do** usare i cerchi con le iniziali ovunque compaia una persona, con l'anello teal per «tu».
 - **Do** usare Material Symbols Outlined (peso 500, `aria-hidden` se decorative, `aria-label` se sole) per ogni icona.
 - **Do** dare a ogni categoria nuova una famiglia di colore fuori dal corallo, con testo scuro su tinta chiara che passi AA.

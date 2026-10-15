@@ -371,12 +371,24 @@ fieldset.field.card { padding: var(--space-4); }
 .msg-event a, .msg-event span { display: inline-flex; align-items: center; gap: 6px; }
 .typing { min-height: 1.25rem; margin: 0; font-size: 0.875rem; }
 .new-pill { align-self: center; display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--teal); color: #fff; font: inherit; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-float); }
-.chat-composer { position: sticky; bottom: 0; display: flex; align-items: flex-end; gap: var(--space-2); padding: var(--space-2) 0; background: var(--bg); }
+.chat-composer { display: flex; align-items: flex-end; gap: var(--space-2); padding: var(--space-2) 0; background: var(--bg); }
 .chat-composer textarea { flex: 1; min-height: 48px; max-height: calc(4 * 1.5em + 24px); resize: none; padding: 12px; border: 1px solid var(--surface-3); border-radius: 12px; background: var(--surface-1); font: inherit; field-sizing: content; }
 .chat-composer textarea:focus { background: var(--surface); border-color: var(--teal); }
 .chat-counter { align-self: center; font-variant-numeric: tabular-nums; }
 .chat-btn { position: relative; }
-@media (max-width: 719px) { .app.has-tabs .chat-composer { bottom: 76px; } }
+/* «sta scrivendo» e campo restano insieme, appoggiati sopra la tab bar (65 px su mobile) */
+.chat-footer { position: sticky; bottom: 0; z-index: 5; background: var(--bg); padding-top: 2px; }
+@media (max-width: 719px) { .app.has-tabs .chat-footer { bottom: calc(65px + env(safe-area-inset-bottom)); } }
+/* in Chat non c'è il FAB: si toglie quasi tutto lo spazio riservato in fondo, così il piede poggia sulla tab bar */
+@media (max-width: 719px) {
+  .app.has-tabs .chat { margin-bottom: -96px; }
+  /* su mobile scorre solo la pagina: con un secondo scorrimento interno il piede non arriverebbe alla tab bar */
+  .chat-log { max-height: none; overflow: visible; }
+}
+.head-actions { display: inline-flex; gap: var(--space-2); }
+.ai-card > small { display: block; margin-top: var(--space-2); }
+.ai-card > .btn { margin-top: var(--space-2); }
+.suggest-btn { margin-top: var(--space-3); }
 /* «Scatta foto» solo sui dispositivi touch: sul PC c'è solo «Scegli» */
 .touch-only { display: none; }
 @media (pointer: coarse) { .touch-only { display: inline-flex; } }

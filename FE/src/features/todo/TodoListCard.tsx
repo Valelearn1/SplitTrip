@@ -39,11 +39,6 @@ export function TodoListCard({ tripId, list, participants, canWrite, onlyMineId 
           <span className="badge badge-plain">{doneCount}/{list.items.length} fatte</span>
           {canWrite && (
             <>
-              {list.type === 'PACKING' && aiAvailable && (
-              <button type="button" className="btn btn-soft btn-sm" onClick={() => setSuggesting(true)}>
-                <Icon name="auto_awesome" />Suggerisci voci
-              </button>
-              )}
               <button type="button" className="btn btn-secondary btn-sm icon-btn" aria-label={`Rinomina ${list.title}`}
                 onClick={() => setRenaming(list.title)}>
                 <Icon name="edit" />
@@ -74,6 +69,11 @@ export function TodoListCard({ tripId, list, participants, canWrite, onlyMineId 
           <input aria-label={`Aggiungi una voce a ${list.title}`} placeholder="Aggiungi voce…" value={text} maxLength={120} onChange={(e) => setText(e.target.value)} />
           <Button type="submit" variant="secondary" className="btn-sm" loading={add.isPending} disabled={!text.trim()}><Icon name="add" />Aggiungi</Button>
         </form>
+      )}
+      {canWrite && list.type === 'PACKING' && aiAvailable && (
+        <button type="button" className="btn btn-soft btn-sm suggest-btn" onClick={() => setSuggesting(true)}>
+          <Icon name="auto_awesome" />Suggerisci voci
+        </button>
       )}
       {renaming !== null && (
         <Modal open title="Rinomina la lista" onClose={() => setRenaming(null)}>

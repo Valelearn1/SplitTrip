@@ -28,6 +28,9 @@ services:
       # Davanti a Render c'è Cloudflare: l'IP vero del client arriva in questo header (non falsificabile dal client)
       - key: RATE_LIMIT_IP_HEADER
         value: CF-Connecting-IP
+      # Consigli AI (D-41): il valore lo inserisce l'autrice nella dashboard di Render, mai nel repository
+      - key: ANTHROPIC_API_KEY
+        sync: false
 
   - type: web
     name: splittrip
@@ -46,7 +49,7 @@ services:
     headers:
       - path: /*
         name: Content-Security-Policy
-        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://splittrip-api.onrender.com; img-src 'self' data: blob: https://tile.openstreetmap.org; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://splittrip-api.onrender.com wss://splittrip-api.onrender.com; img-src 'self' data: blob: https://tile.openstreetmap.org; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
       - path: /*
         name: X-Content-Type-Options
         value: nosniff
