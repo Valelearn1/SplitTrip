@@ -26,6 +26,7 @@ export function ChatPage() {
   const [newBelow, setNewBelow] = useState(false)
   const end = useRef<HTMLDivElement>(null)
   const atBottom = useRef(true)
+  const [liveIds, setLiveIds] = useState<ReadonlySet<string>>(new Set())
 
   const oldestFirst = useMemo(() => (messages.data?.pages.flatMap((p) => p.items) ?? []).slice().reverse(), [messages.data])
   const timeline = useMemo(() => buildTimeline(oldestFirst), [oldestFirst])
@@ -33,6 +34,7 @@ export function ChatPage() {
 
   useTripChannel(trip.id, (e) => {
     if (e.type === 'typing' && e.data.participantId !== me.id) setTyping({ name: e.data.name, until: Date.now() + 4000 })
+    if (e.type === 'message.created') setLiveIds((prev) => new Set(prev).add(e.data.id))
     if (e.type === 'message.created' && e.data.authorParticipantId !== me.id) setTyping(null)
   })
 
@@ -72,7 +74,7 @@ export function ChatPage() {
         {timeline.map((i) => i.kind === 'day'
           ? <p key={i.key} className="day-sep"><span>{i.label}</span></p>
           : <ChatMessageItem key={i.key} tripId={trip.id} message={i.message} mine={i.message.authorParticipantId === me.id}
-              showAuthor={i.showAuthor} canDelete={canWrite && i.message.authorParticipantId === me.id} onDelete={() => setConfirmId(i.message.id)} />)}
+              showAuthor={i.showAuthor} canDelete={canWrite && i.message.authorParticipantId === me.id} onDelete={() => setConfirmId(i.message.id)} live={liveIds.has(i.message.id)} />)}
         <div ref={end} />
       </div>
       {newBelow && (

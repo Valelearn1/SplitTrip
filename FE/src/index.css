@@ -387,3 +387,6 @@ fieldset.field.card { padding: var(--space-4); }
 .ai-tips strong { display: block; }
 .ai-tips p { margin: 2px 0 0; color: var(--ink-2); }
 .skeleton-line { display: block; height: 14px; margin: 10px 0; border-radius: 7px; background: var(--surface-2); }
+.envelope { flex: none; color: var(--ink-2); }
+.notification.unread .envelope { color: var(--teal); }
+.suitcase { flex: none; color: var(--teal); overflow: visible; }

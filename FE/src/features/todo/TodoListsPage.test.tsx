@@ -48,3 +48,22 @@ it('spunta una voce, la assegna a un partecipante e filtra le mie', async () => 
   await user.click(screen.getByRole('checkbox', { name: 'Solo le mie' }))
   expect(screen.queryByText('Phon')).not.toBeInTheDocument() // assegnato a Vale, non a me
 })
+
+it('a lista Valigia completata la valigia si chiude, e lo dice anche il testo', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false } }))
+  const done = (id: string, text: string) => ({ id, text, done: true, assigneeParticipantId: null, assigneeName: null, assigneeLeft: false, createdBy: 'u1', createdAt: '2026-10-14T10:00:00Z' })
+  server.use(
+    http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+    http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+    http.get('http://localhost/api/notifications/unread-count', () => HttpResponse.json({ count: 0 })),
+    http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
+    http.get('http://localhost/api/trips/t1/ai/tips', () => HttpResponse.json({ available: false, remainingToday: 5, tips: [], generatedAt: null })),
+    http.get('http://localhost/api/trips/t1/todo-lists', () => HttpResponse.json([
+      { id: 'l1', title: 'Valigia', type: 'PACKING', createdAt: '2026-10-14T10:00:00Z', items: [done('i1', 'Phon'), done('i2', 'Costume')] },
+    ])),
+  )
+  renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'lists', element: <TodoListsPage /> }] }], '/trips/t1/lists')
+  const heading = await screen.findByRole('heading', { name: 'Valigia' })
+  expect(heading.querySelector('[data-state]')).toHaveAttribute('data-state', 'closed')
+  expect(screen.getByText('2/2 fatte')).toBeInTheDocument()
+})

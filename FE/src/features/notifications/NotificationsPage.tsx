@@ -1,6 +1,10 @@
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import { it as itLocale } from 'date-fns/locale'
-import { Link } from 'react-router'
+import { useReducedMotion } from 'motion/react'
+import { useState, type MouseEvent } from 'react'
+import { Link, useNavigate } from 'react-router'
+import type { AppNotification } from '../../shared/api/types'
+import { Envelope } from '../../shared/ui/illustrations/Envelope'
 import { Button } from '../../shared/ui/Button'
 import { EmptyState } from '../../shared/ui/EmptyState'
 import { FormError } from '../../shared/ui/FormError'
@@ -14,6 +18,19 @@ export function NotificationsPage() {
   const markRead = useMarkRead()
   const markAll = useMarkAllRead()
   const unread = list.data?.filter((n) => n.readAt === null).length ?? 0
+  const navigate = useNavigate()
+  const reduced = useReducedMotion()
+  const [openingId, setOpeningId] = useState<string | null>(null)
+
+  function open(e: MouseEvent<HTMLAnchorElement>, n: AppNotification) {
+    if (n.readAt !== null) return
+    e.preventDefault()
+    markRead.mutate(n.id)
+    setOpeningId(n.id)
+    // la busta si apre (250 ms) e poi si va; con movimento ridotto si va subito (D-43)
+    if (reduced) navigate(n.link)
+    else setTimeout(() => navigate(n.link), 250)
+  }
 
   return (
     <section className="stack">
@@ -25,10 +42,11 @@ export function NotificationsPage() {
       <FormError error={list.error} />
       {list.data?.length === 0 && <EmptyState title="Nessuna notifica" icon="notifications" />}
       <ul className="list card">
-        {list.data?.map((n) => (
+        {list.data?.map((n, index) => (
           <li key={n.id}>
-            <Link to={n.link} className={`row notification ${n.readAt === null ? 'unread' : ''}`} onClick={() => { if (n.readAt === null) markRead.mutate(n.id) }}>
+            <Link to={n.link} className={`row notification ${n.readAt === null ? 'unread' : ''}`} onClick={(e) => open(e, n)}>
               <span className="row-main">
+                <Envelope open={n.readAt !== null || openingId === n.id} delay={markAll.isPending ? index * 0.04 : 0} />
                 {n.readAt === null && <span className="unread-dot" aria-hidden="true" />}
                 <span className="row-text">
                   <span>{n.message}</span>

@@ -11,6 +11,14 @@ if (!HTMLDialogElement.prototype.showModal) {
   }
 }
 
+// jsdom non ha matchMedia, che Motion usa per il movimento ridotto
+if (!window.matchMedia) {
+  window.matchMedia = (query: string) => ({
+    matches: false, media: query, onchange: null,
+    addListener: () => {}, removeListener: () => {}, addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => false,
+  }) as MediaQueryList
+}
+
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => {
   server.resetHandlers()

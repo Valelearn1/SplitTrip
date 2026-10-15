@@ -5,6 +5,7 @@ import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
 import { PackingSuggestModal } from '../ai/PackingSuggestModal'
 import { useAiTips } from '../ai/useAi'
+import { Suitcase } from '../../shared/ui/illustrations/Suitcase'
 import { TodoItemRow } from './TodoItemRow'
 import { useAddItem, useDeleteItem, useDeleteList, usePatchItem, useRenameList } from './useTodo'
 
@@ -33,7 +34,7 @@ export function TodoListCard({ tripId, list, participants, canWrite, onlyMineId 
   return (
     <section className="card todo-card">
       <div className="page-head" style={{ marginBottom: 8 }}>
-        <h3 className="todo-title"><Icon name={list.type === 'PACKING' ? 'luggage' : 'checklist'} />{list.title}</h3>
+        <h3 className="todo-title">{list.type === 'PACKING' ? <Suitcase closed={list.items.length > 0 && doneCount === list.items.length} /> : <Icon name="checklist" />}{list.title}</h3>
         <span className="row-actions">
           <span className="badge badge-plain">{doneCount}/{list.items.length} fatte</span>
           {canWrite && (

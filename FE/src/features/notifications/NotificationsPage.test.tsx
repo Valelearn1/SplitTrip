@@ -37,3 +37,19 @@ it('apre il link della notifica e la segna come letta; una spesa cancellata non 
   expect(read).toBe('n1')
   expect(await screen.findByText('Spesa non trovata')).toBeInTheDocument()
 })
+
+it('toccando una notifica non letta la busta si apre e poi si va alla destinazione', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false } }))
+  server.use(
+    http.get('http://localhost/api/notifications', () => HttpResponse.json([
+      { id: 'n1', tripId: 't1', type: 'EXPENSE_ADDED', message: 'Marco ha aggiunto «Cena»', link: '/dest', readAt: null, createdAt: new Date().toISOString() },
+    ])),
+    http.patch('http://localhost/api/notifications/n1/read', () => new HttpResponse(null, { status: 204 })),
+  )
+  renderWithProviders([{ path: '/notifications', element: <NotificationsPage /> }, { path: '/dest', element: <p>Destinazione</p> }], '/notifications')
+  const link = await screen.findByRole('link', { name: /Marco ha aggiunto/ })
+  expect(link.querySelector('[data-state]')).toHaveAttribute('data-state', 'closed')
+  await userEvent.setup().click(link)
+  expect(link.querySelector('[data-state]')).toHaveAttribute('data-state', 'open')
+  expect(await screen.findByText('Destinazione')).toBeInTheDocument()
+})
