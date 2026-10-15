@@ -42,6 +42,7 @@ public class Participant {
     @Setter @Column(name = "departure_date") private LocalDate departureDate;
     @Column(name = "joined_at", nullable = false) private Instant joinedAt;
     @Setter @Column(name = "left_at") private Instant leftAt;
+    @Setter @Column(name = "chat_read_at") private Instant chatReadAt;
 
     public Participant(Trip trip, User user, String displayName, MemberRole role, Instant joinedAt) {
         this.trip = trip;

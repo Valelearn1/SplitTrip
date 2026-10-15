@@ -82,4 +82,19 @@ class LiveIntegrationTest {
         v.subscribe("/topic/altro");
         await().atMost(5, TimeUnit.SECONDS).until(() -> !v.isConnected());
     }
+
+    @Test
+    void unMessaggioInviatoViaRestArrivaSulCanaleDopoIlCommit() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        LiveTestClient v = LiveTestClient.connect(port, vale);
+        BlockingQueue<String> q = v.subscribe("/topic/trips/" + tripId);
+        Thread.sleep(300);
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/trips/" + tripId + "/messages")
+                .header("Authorization", "Bearer " + vale).contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .content("{\"content\":\"Ciao\"}"));
+        String frame = q.poll(5, TimeUnit.SECONDS);
+        assertThat(frame).contains("\"type\":\"message.created\"").contains("\"content\":\"Ciao\"").contains("\"authorName\":\"Vale\"");
+        v.disconnect();
+    }
 }
