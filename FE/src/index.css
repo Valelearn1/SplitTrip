@@ -635,6 +635,7 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
 .wheel-pointer { position: absolute; top: -6px; left: 50%; width: 0; height: 0; transform: translateX(-50%); border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 18px solid var(--ink); z-index: 2; }
 .wheel-verdict { min-height: 2rem; text-align: center; font-size: 1.5rem; font-weight: 800; color: var(--accent); margin: 0; }
 .wheel-verdict:focus { outline: none; }
+.wheel-note { text-align: center; margin: 4px 0 0; }
 .wheel-spin { min-width: 160px; }
 .confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .confetti span { position: absolute; top: 0; width: 8px; height: 12px; border-radius: 2px; }

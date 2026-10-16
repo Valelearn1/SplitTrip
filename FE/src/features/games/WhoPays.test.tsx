@@ -31,9 +31,11 @@ it('chi non ha account non è spuntato; con una sola persona non si gira; il vin
   await user.click(screen.getByRole('checkbox', { name: 'Marco' }))
   await user.click(screen.getByRole('button', { name: 'Gira!' }))
   expect(await screen.findByRole('status')).toHaveTextContent('Offre Marco!')         // random 0.5 su [Vale, Marco] → indice 1
+  expect(screen.getByText('La spesa è solo sua: nessuno deve restituire niente.')).toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Registra la spesa' }))
+  // offerta vera (D-52): la spesa è solo di chi offre, nessuno gli deve niente
   expect(navigate).toHaveBeenCalledWith('/trips/t1/expenses/new', { state: { prefill: expect.objectContaining({
-    payerId: 'p2', participantIds: ['p1', 'p2'], category: 'FOOD', date: localToday() }) } })
+    payerId: 'p2', participantIds: ['p2'], category: 'FOOD', date: localToday() }) } })
 })
 
 it('compaiono tutti i partecipanti del viaggio (gli usciti il server non li manda)', () => {

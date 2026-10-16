@@ -55,7 +55,8 @@ export function WhoPays({ trip, me, open, onClose, random = cryptoRandom }: Prop
 
   function register() {
     if (!winner) return
-    const prefill: ExpensePrefill = { payerId: winner.id, participantIds: players.map((p) => p.id), category: 'FOOD', date: localToday(), description: '' }
+    // offerta vera (D-52): la spesa è solo di chi offre, nessuno deve restituire niente
+    const prefill: ExpensePrefill = { payerId: winner.id, participantIds: [winner.id], category: 'FOOD', date: localToday(), description: '' }
     onClose()
     navigate(`/trips/${trip.id}/expenses/new`, { state: { prefill } })
   }
@@ -98,6 +99,7 @@ export function WhoPays({ trip, me, open, onClose, random = cryptoRandom }: Prop
       </div>
       <Confetti active={winner !== null} colors={colors} />
       <p ref={verdict} role="status" className="wheel-verdict" tabIndex={-1}>{winner ? `Offre ${winner.displayName}!` : spinning ? 'La ruota gira…' : ''}</p>
+      {winner && <p className="muted wheel-note">La spesa è solo sua: nessuno deve restituire niente.</p>}
       <div className="modal-actions">
         {winner ? (
           <>
