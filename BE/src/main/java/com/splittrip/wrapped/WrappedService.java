@@ -121,7 +121,7 @@ public class WrappedService {
                 new WrappedResponse.Trip(trip.getId(), trip.getName(), trip.getDestination(), trip.getStartDate(), trip.getEndDate(), nights, all.size(), trip.getCurrency(), cover),
                 new Totals(money(groupTotal), active.isEmpty() ? money(BigDecimal.ZERO) : groupTotal.divide(BigDecimal.valueOf(sharers), 2, RoundingMode.HALF_UP),
                         active.size(), photoRows.size(), msgCount.values().stream().mapToInt(Integer::intValue).sum(), reactCount.values().stream().mapToInt(Integer::intValue).sum()),
-                categories, record, priciest, moments, people, BadgeCalculator.compute(people, firstSettlement),
+                categories, record, priciest, moments, people, BadgeCalculator.compute(people, firstSettlement, trip.getCurrency()),
                 new Settlement(settled, bal.suggestedTransfers().size()), guess(tripId, me.getId(), byId, groupTotal));
     }
 

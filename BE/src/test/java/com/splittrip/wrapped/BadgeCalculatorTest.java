@@ -32,11 +32,11 @@ class BadgeCalculatorTest {
                 person(VALE, "Vale", true, T0, "620.00", 14, 3, 9, "0.00", 3),
                 person(MARCO, "Marco", true, T0.plusSeconds(60), "96.00", 0, 31, 2, "96.00", 0),
                 person(PINA, "Nonna Pina", false, T0.plusSeconds(120), "0.00", 0, 0, 0, "0.00", 0));
-        List<Badge> badges = BadgeCalculator.compute(people, Map.of(MARCO, T0.plusSeconds(3600)));
+        List<Badge> badges = BadgeCalculator.compute(people, Map.of(MARCO, T0.plusSeconds(3600)), "EUR");
         assertThat(codesOf(badges, VALE)).containsExactly(BadgeCode.BANKER, BadgeCode.PHOTOGRAPHER, BadgeCode.LOVED, BadgeCode.EXPLORER);
         assertThat(codesOf(badges, MARCO)).containsExactly(BadgeCode.VOICE, BadgeCode.FOODIE, BadgeCode.PUNCTUAL);
         assertThat(codesOf(badges, PINA)).containsExactly(BadgeCode.COMPANION);           // niente vinto: compagno di viaggio
-        assertThat(badges).extracting(Badge::detail).contains("ha anticipato 620,00", "14 foto", "31 messaggi", "ha offerto cibo per 96,00", "primo a saldare", "9 reazioni ricevute", "foto in 3 luoghi", "c'era, e tanto basta");
+        assertThat(badges).extracting(Badge::detail).contains("ha anticipato 620,00 €", "14 foto", "31 messaggi", "ha offerto cibo per 96,00 €", "primo a saldare", "9 reazioni ricevute", "foto in 3 luoghi", "c'era, e tanto basta");
     }
 
     @Test
@@ -44,16 +44,26 @@ class BadgeCalculatorTest {
         List<Person> people = List.of(
                 person(MARCO, "Marco", true, T0.plusSeconds(60), "100.00", 5, 0, 0, "0.00", 0),
                 person(VALE, "Vale", true, T0, "100.00", 5, 0, 0, "0.00", 0));
-        List<Badge> badges = BadgeCalculator.compute(people, Map.of());
+        List<Badge> badges = BadgeCalculator.compute(people, Map.of(), "EUR");
         assertThat(codesOf(badges, VALE)).containsExactly(BadgeCode.BANKER, BadgeCode.PHOTOGRAPHER);
         assertThat(codesOf(badges, MARCO)).containsExactly(BadgeCode.COMPANION);
     }
 
     @Test
     void esploratoreSoloConAlmenoDueLuoghiEUnaSolaPersonaHaSoloCompagno() {
-        List<Badge> one = BadgeCalculator.compute(List.of(person(VALE, "Vale", true, T0, "0.00", 2, 0, 0, "0.00", 1)), Map.of());
+        List<Badge> one = BadgeCalculator.compute(List.of(person(VALE, "Vale", true, T0, "0.00", 2, 0, 0, "0.00", 1)), Map.of(), "EUR");
         assertThat(codesOf(one, VALE)).containsExactly(BadgeCode.PHOTOGRAPHER);           // un luogo solo non fa l'esploratore
-        List<Badge> none = BadgeCalculator.compute(List.of(person(VALE, "Vale", true, T0, "0.00", 0, 0, 0, "0.00", 0)), Map.of());
+        List<Badge> none = BadgeCalculator.compute(List.of(person(VALE, "Vale", true, T0, "0.00", 0, 0, 0, "0.00", 0)), Map.of(), "EUR");
         assertThat(codesOf(none, VALE)).containsExactly(BadgeCode.COMPANION);
+    }
+
+    @Test
+    void importiNellaValutaDelViaggioESingolareQuandoEUno() {
+        List<Person> people = List.of(
+                person(VALE, "Vale", true, T0, "2000.00", 1, 1, 1, "500.00", 0),
+                person(MARCO, "Marco", true, T0.plusSeconds(60), "0.00", 0, 0, 0, "0.00", 0));
+        List<Badge> badges = BadgeCalculator.compute(people, Map.of(), "JPY");
+        assertThat(badges).extracting(Badge::detail)
+                .contains("ha anticipato 2.000 JPY", "1 foto", "1 messaggio", "ha offerto cibo per 500 JPY", "1 reazione ricevuta");
     }
 }

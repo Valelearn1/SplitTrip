@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { configure } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 import { server } from './server'
 
@@ -18,6 +19,9 @@ if (!window.matchMedia) {
     addListener: () => {}, removeListener: () => {}, addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => false,
   }) as MediaQueryList
 }
+
+// con 50 file in parallelo un render può superare il secondo predefinito: le attese asincrone arrivano a 3 s
+configure({ asyncUtilTimeout: 3000 })
 
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => {

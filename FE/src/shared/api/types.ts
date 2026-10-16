@@ -117,3 +117,23 @@ export type Home = {
   featured: HomeFeatured | null; balances: HomeTripBalance[]; totals: HomeTotals
   latestNotifications: AppNotification[]; trips: { current: TripSummary[]; past: TripSummary[] }
 }
+
+// Riepilogo di fine viaggio (v3.2, D-53/D-55)
+export type BadgeCode = 'BANKER' | 'PHOTOGRAPHER' | 'VOICE' | 'FOODIE' | 'PUNCTUAL' | 'LOVED' | 'EXPLORER' | 'COMPANION'
+export type WrappedPerson = {
+  participantId: string; displayName: string; hasAccount: boolean; userId: string | null; joinedAt: string
+  paid: number; photos: number; messages: number; reactionsReceived: number; foodPaid: number; places: number
+}
+export type WrappedBadge = { participantId: string; code: BadgeCode; title: string; detail: string }
+export type Wrapped = {
+  trip: { id: string; name: string; destination: string; startDate: string; endDate: string; nights: number; people: number; currency: string; coverPhotoId: string | null }
+  totals: { groupTotal: number; perPerson: number; expenseCount: number; photos: number; messages: number; reactions: number }
+  byCategory: { category: ExpenseCategory; amount: number; share: number }[]
+  biggestExpense: { description: string; amount: number; payerName: string } | null
+  priciestDay: { date: string; amount: number } | null
+  moments: { photoId: string; caption: string | null; placeName: string | null; latitude: number | null; longitude: number | null }[]
+  people: WrappedPerson[]
+  badges: WrappedBadge[]
+  settlement: { settled: boolean; openTransfers: number }
+  guess: { mine: number | null; played: number; others: { participantId: string; displayName: string; amount: number; diff: number }[] | null }
+}

@@ -17,6 +17,7 @@ import { WelcomePage } from '../features/trips/WelcomePage'
 import { NotificationsPage } from '../features/notifications/NotificationsPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { TodoListsPage } from '../features/todo/TodoListsPage'
+import { WrappedPage } from '../features/wrapped/WrappedPage'
 import { Layout } from './Layout'
 import { NotFoundPage } from './NotFoundPage'
 import { RequireAuth } from './RequireAuth'
@@ -51,6 +52,7 @@ export const routes: RouteObject[] = [
               { path: 'benvenuto', element: <WelcomePage /> },
               { path: 'settings', element: <TripSettingsPage /> },
               { path: 'lists', element: <TodoListsPage /> },
+              { path: 'riepilogo', element: <WrappedPage /> },
               // Leaflet pesa: la pagina Foto si scarica solo quando la si apre
               { path: 'chat', lazy: () => import('../features/chat/ChatPage').then((m) => ({ Component: m.ChatPage })) },
               { path: 'photos', lazy: () => import('../features/photos/PhotosPage').then((m) => ({ Component: m.PhotosPage })) },

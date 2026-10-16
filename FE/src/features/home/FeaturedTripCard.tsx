@@ -40,6 +40,9 @@ export function FeaturedTripCard({ featured: f }: { featured: HomeFeatured }) {
           {f.myNet !== 0 && <MoneyText amount={Math.abs(f.myNet)} currency={f.trip.currency} />}
         </p>
         <Link to={`/trips/${f.trip.id}`} className="btn btn-primary" aria-label={`Apri ${f.trip.name}`}>Apri il viaggio<Icon name="arrow_forward" /></Link>
+        {(f.status === 'ENDED' || f.status === 'PAST') && (
+          <Link to={`/trips/${f.trip.id}/riepilogo`} className="btn btn-soft"><Icon name="celebration" />Il vostro viaggio in numeri</Link>
+        )}
       </div>
     </article>
   )
