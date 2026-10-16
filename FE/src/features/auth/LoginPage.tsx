@@ -41,6 +41,7 @@ export function LoginPage() {
         <PasswordField label="Password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
         <FormError error={mutation.error} />
         <Button type="submit" loading={mutation.isPending}>Entra</Button>
+        <Link to="/password-dimenticata" className="forgot-link">Password dimenticata?</Link>
       </form>
       <p className="muted" style={{ textAlign: 'center' }}>
         Prima volta qui? <Link to="/register" state={location.state}>Crea un account</Link>

@@ -14,8 +14,8 @@ export function Layout() {
   const { auth, logout } = useAuth()
   const inTrip = useMatch('/trips/:tripId/*')
   const path = useLocation().pathname.replace(/\/+$/, '') || '/'
-  // ovunque tranne Home, landing, accesso e registrazione; la Chat ha il suo nell'intestazione
-  const showBack = !!auth && !['/', '/trips', '/login', '/register'].includes(path) && !path.endsWith('/chat')
+  // ovunque tranne Home, landing, accesso, registrazione e ripristino della password; la Chat ha il suo nell'intestazione
+  const showBack = !!auth && !['/', '/trips', '/login', '/register', '/password-dimenticata', '/reimposta-password'].includes(path) && !path.endsWith('/chat')
   return (
     <SeasonProvider>
       <SeasonBackground />

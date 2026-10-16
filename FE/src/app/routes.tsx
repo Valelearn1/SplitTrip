@@ -3,6 +3,8 @@ import { LoginPage } from '../features/auth/LoginPage'
 import { HomePage } from '../features/home/HomePage'
 import { LandingPage } from '../features/home/LandingPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
+import { ForgotPasswordPage } from '../features/auth/ForgotPasswordPage'
+import { ResetPasswordPage } from '../features/auth/ResetPasswordPage'
 import { BalancesPage } from '../features/balances/BalancesPage'
 import { SettlementFormPage } from '../features/balances/SettlementFormPage'
 import { ExpenseFormPage } from '../features/expenses/ExpenseFormPage'
@@ -29,6 +31,8 @@ export const routes: RouteObject[] = [
       { index: true, element: <LandingPage /> },
       { path: '/login', element: <LoginPage /> },
       { path: '/register', element: <RegisterPage /> },
+      { path: '/password-dimenticata', element: <ForgotPasswordPage /> },
+      { path: '/reimposta-password', element: <ResetPasswordPage /> },
       {
         element: <RequireAuth />,
         children: [
