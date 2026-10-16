@@ -4,6 +4,7 @@ import com.splittrip.IntegrationTest;
 import com.splittrip.TestExpenses;
 import com.splittrip.TestTrips;
 import com.splittrip.TestUsers;
+import com.splittrip.photo.PhotoControllerTest;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -55,6 +57,16 @@ class WrappedControllerTest extends IntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         String msgId = TestUsers.extract(m, "\"id\":\"([^\"]+)\"");
         mvc.perform(post("/api/trips/" + tripId + "/messages/" + msgId + "/reactions/👍").header("Authorization", "Bearer " + vale)).andExpect(status().isNoContent());
+        // foto: Vale in due luoghi (un luogo si salva solo con le coordinate), Marco l'ultima e senza luogo
+        mvc.perform(multipart("/api/trips/" + tripId + "/photos").file(PhotoControllerTest.file(PhotoControllerTest.jpeg(400, 300)))
+                .param("placeName", "Alfama").param("latitude", "38.7112").param("longitude", "-9.1277").header("Authorization", "Bearer " + vale)).andExpect(status().isCreated());
+        Thread.sleep(20);
+        mvc.perform(multipart("/api/trips/" + tripId + "/photos").file(PhotoControllerTest.file(PhotoControllerTest.jpeg(400, 300)))
+                .param("placeName", "Belém").param("latitude", "38.6979").param("longitude", "-9.2065").header("Authorization", "Bearer " + vale)).andExpect(status().isCreated());
+        Thread.sleep(20);
+        String last = mvc.perform(multipart("/api/trips/" + tripId + "/photos").file(PhotoControllerTest.file(PhotoControllerTest.jpeg(400, 300)))
+                .header("Authorization", "Bearer " + marco)).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        String lastPhoto = TestUsers.extract(last, "\"id\":\"([^\"]+)\"");
 
         // prima della chiusura ma a data passata: aperto lo stesso (stessa regola della Home)
         mvc.perform(get("/api/trips/" + tripId + "/wrapped").header("Authorization", "Bearer " + vale))
@@ -69,6 +81,17 @@ class WrappedControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.biggestExpense.description").value("Casa")).andExpect(jsonPath("$.biggestExpense.payerName").value("Vale"))
                 .andExpect(jsonPath("$.priciestDay.amount").value(300.00))                       // «Casa» è del 2026-11-02 (data fissa di TestExpenses), l'appartamento di 6 giorni fa
                 .andExpect(jsonPath("$.people", hasSize(3)))
+                .andExpect(jsonPath("$.totals.photos").value(3))
+                .andExpect(jsonPath("$.trip.coverPhotoId").value(lastPhoto))                    // copertina: l'ultima foto caricata
+                .andExpect(jsonPath("$.moments", hasSize(3)))
+                .andExpect(jsonPath("$.moments[0].placeName").value("Belém")).andExpect(jsonPath("$.moments[0].latitude").value(38.6979))   // prima quelle con un luogo, dalla più recente
+                .andExpect(jsonPath("$.moments[1].placeName").value("Alfama")).andExpect(jsonPath("$.moments[1].latitude").value(38.7112))
+                .andExpect(jsonPath("$.moments[2].placeName").value(nullValue()))
+                .andExpect(jsonPath("$.people[?(@.displayName=='Vale')].photos").value(2))
+                .andExpect(jsonPath("$.people[?(@.displayName=='Vale')].places").value(2))
+                .andExpect(jsonPath("$.people[?(@.displayName=='Marco')].places").value(0))
+                .andExpect(jsonPath("$.badges[?(@.code=='PHOTOGRAPHER')].participantId").value(valeP.toString()))
+                .andExpect(jsonPath("$.badges[?(@.code=='EXPLORER')].participantId").value(valeP.toString()))
                 .andExpect(jsonPath("$.badges[?(@.code=='BANKER')].participantId").value(valeP.toString()))
                 .andExpect(jsonPath("$.badges[?(@.code=='VOICE')].participantId").value(marcoP.toString()))
                 .andExpect(jsonPath("$.badges[?(@.code=='PUNCTUAL')].participantId").value(marcoP.toString()))

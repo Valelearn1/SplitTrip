@@ -40,8 +40,11 @@ export function WrappedPage() {
   const d = wrapped.data
   const colors = wheelColors(tripSeason(trip))
   if (phase === 'gate' && d.guess.mine === null) {
-    return <GuessGate currency={d.trip.currency} pending={guess.isPending}
-      onGuess={(a) => guess.mutate(a, { onSuccess: () => setPhase('reveal') })} onSkip={() => setPhase('reveal')} />
+    // 409 = l'ipotesi c'è già (un altro dispositivo): niente errore, si va alla rivelazione con i dati ricaricati
+    const already = guess.error instanceof ApiError && guess.error.status === 409
+    return <GuessGate currency={d.trip.currency} pending={guess.isPending} error={already ? null : guess.error}
+      onGuess={(a) => guess.mutate(a, { onSuccess: () => setPhase('reveal'), onError: (e) => { if (e instanceof ApiError && e.status === 409) setPhase('reveal') } })}
+      onSkip={() => setPhase('reveal')} />
   }
   if (phase !== 'page') return <Reveal data={d} me={me.id} colors={colors} onContinue={() => setPhase('page')} />
 

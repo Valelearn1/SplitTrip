@@ -9,6 +9,7 @@ export function useGuess(tripId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (amount: number) => wrappedApi.guess(tripId, amount),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['trips', tripId, 'wrapped'] }),
+    // anche su 409 (ipotesi già fatta, per esempio da un altro dispositivo) i dati vanno ricaricati
+    onSettled: () => qc.invalidateQueries({ queryKey: ['trips', tripId, 'wrapped'] }),
   })
 }

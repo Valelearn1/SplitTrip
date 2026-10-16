@@ -38,7 +38,10 @@ it('con una foto molto grande la ritaglia al formato 9:16 e la sfoca', () => {
   const { ctx, calls } = fakeCtx()
   drawStory(ctx, data, { width: 6000, height: 4000 } as unknown as HTMLImageElement)
   // 6000×4000 → si prende una fascia alta 4000 e larga 2250 (9:16) centrata: x = (6000−2250)/2 = 1875
-  expect(calls.find((c) => c.startsWith('drawImage'))).toBe('drawImage(…,1875,0,2250,4000,0,0,1080,1920)')
+  // la foto sborda di 40 px per lato: la sfocatura non lascia margini trasparenti nel PNG condiviso
+  expect(calls.find((c) => c.startsWith('drawImage'))).toBe('drawImage(…,1875,0,2250,4000,-40,-40,1160,2000)')
+  // e sotto c'è già un fondo pieno
+  expect(calls.findIndex((c) => c === 'fillRect(0,0,1080,1920)')).toBeLessThan(calls.findIndex((c) => c.startsWith('drawImage')))
 })
 
 it('un nome di viaggio lunghissimo si accorcia per stare nella larghezza', () => {

@@ -36,7 +36,7 @@ public class PhotoControllerTest extends IntegrationTest {
         return out.toByteArray();
     }
 
-    static MockMultipartFile file(byte[] bytes) { return new MockMultipartFile("file", "foto.jpg", "image/jpeg", bytes); }
+    public static MockMultipartFile file(byte[] bytes) { return new MockMultipartFile("file", "foto.jpg", "image/jpeg", bytes); }
 
     @BeforeEach
     void setUp() throws Exception {

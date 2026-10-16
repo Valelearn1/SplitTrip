@@ -6,6 +6,7 @@ export const STORY_W = 1080
 export const STORY_H = 1920
 const FONT = 'DM Sans, system-ui, sans-serif'
 const MAX_W = 960
+const BLEED = 40
 const WHITE = '#ffffff'
 const SOFT = '#c9d5ff'   // cobalto chiaro (D-58) per le etichette sul fondo scuro
 
@@ -24,8 +25,11 @@ export function drawStory(ctx: CanvasRenderingContext2D, d: StoryData, cover?: C
     const ratio = STORY_W / STORY_H
     let sw = cover.width, sh = cover.height, sx = 0, sy = 0
     if (sw / sh > ratio) { sw = Math.round(sh * ratio); sx = Math.round((cover.width - sw) / 2) } else { sh = Math.round(sw / ratio); sy = Math.round((cover.height - sh) / 2) }
+    // fondo pieno sotto e foto che sborda di 40 px per lato: la sfocatura ai margini non lascia trasparenze nel PNG
+    ctx.fillStyle = '#0f1620'
+    ctx.fillRect(0, 0, STORY_W, STORY_H)
     ctx.filter = 'blur(18px)'
-    ctx.drawImage(cover, sx, sy, sw, sh, 0, 0, STORY_W, STORY_H)
+    ctx.drawImage(cover, sx, sy, sw, sh, -BLEED, -BLEED, STORY_W + 2 * BLEED, STORY_H + 2 * BLEED)
     ctx.filter = 'none'
     ctx.fillStyle = 'rgba(15, 22, 32, 0.62)'
     ctx.fillRect(0, 0, STORY_W, STORY_H)

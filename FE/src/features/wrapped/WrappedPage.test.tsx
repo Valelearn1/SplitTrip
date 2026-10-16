@@ -85,3 +85,28 @@ it('prima della fine la pagina lo dice', async () => {
   renderWithProviders(routes, '/trips/t1/riepilogo')
   expect(await screen.findByText('Il riepilogo arriva a fine viaggio')).toBeInTheDocument()
 })
+
+it('se la scommessa non parte lo dice, e se c\'era già (da un altro dispositivo) va alla rivelazione', async () => {
+  let played = false
+  let fail = true
+  server.use(
+    http.get('http://localhost/api/trips/t1/wrapped', () => HttpResponse.json(wrapped(played
+      ? { mine: 700, played: 1, others: [{ participantId: 'p1', displayName: 'Vale', amount: 700, diff: 16 }] }
+      : { mine: null, played: 0, others: null }))),
+    http.post('http://localhost/api/trips/t1/wrapped/guess', () => {
+      if (fail) return HttpResponse.json({ status: 500, title: 'Errore', detail: 'Qualcosa è andato storto' }, { status: 500 })
+      played = true
+      return HttpResponse.json({ status: 409, title: 'Conflitto', detail: 'Hai già fatto la tua ipotesi' }, { status: 409 })
+    }),
+  )
+  renderWithProviders(routes, '/trips/t1/riepilogo')
+  const user = userEvent.setup()
+  await user.type(await screen.findByLabelText('Quanto pensate di aver speso in tutto?'), '700')
+  await user.click(screen.getByRole('button', { name: 'Scommetto!' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('Qualcosa è andato storto')
+  expect(screen.getByLabelText('Quanto pensate di aver speso in tutto?')).toHaveValue('700')   // il campo resta com'era
+
+  fail = false
+  await user.click(screen.getByRole('button', { name: 'Scommetto!' }))
+  expect(await screen.findByText(/scarto di 16,00\s€/)).toBeInTheDocument()
+})
