@@ -11,12 +11,14 @@ type Props = {
 
 /**
  * Combobox dei luoghi (D-46): dalla 3ª lettera, dopo 300 ms, propone fino a 6 luoghi; scelto uno, tiene le coordinate.
- * Il testo libero resta sempre valido: senza scelta si salva solo il nome.
+ * Per la destinazione del viaggio la scelta è obbligatoria (D-60, lo controlla lo schema del modulo); se la ricerca
+ * non risponde lo dice, invece di sembrare «nessun risultato».
  */
 export function PlaceInput({ id, label, value, onChange, near, error, placeholder, hint }: Props) {
   const [options, setOptions] = useState<Place[]>([])
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(-1)
+  const [unavailable, setUnavailable] = useState(false)
   const listId = useId()
   const timer = useRef<number | null>(null)
   const lastQuery = useRef('')
@@ -33,9 +35,10 @@ export function PlaceInput({ id, label, value, onChange, near, error, placeholde
       try {
         const found = await placesApi.search(q, near)
         if (lastQuery.current !== q) return // nel frattempo si è scritto ancora
-        setOptions(found); setOpen(found.length > 0); setActive(-1)
+        setOptions(found); setOpen(found.length > 0); setActive(-1); setUnavailable(false)
       } catch {
-        setOptions([]); setOpen(false)
+        if (lastQuery.current !== q) return
+        setOptions([]); setOpen(false); setUnavailable(true)
       }
     }, 300)
   }
@@ -78,6 +81,7 @@ export function PlaceInput({ id, label, value, onChange, near, error, placeholde
       <span className="sr-only" aria-live="polite">{open ? `${options.length} ${options.length === 1 ? 'proposta' : 'proposte'}` : ''}</span>
       {hint && !error && <small id={`${id}-hint`} className="muted">{hint}</small>}
       {error && <p id={`${id}-err`} className="field-error">{error}</p>}
+      {unavailable && !error && <p role="alert" className="field-error">Ricerca dei luoghi non disponibile, riprova tra poco</p>}
     </div>
   )
 }

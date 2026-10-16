@@ -31,7 +31,7 @@ class WrappedControllerTest extends IntegrationTest {
 
     UUID createTrip(String token, LocalDate start, LocalDate end) throws Exception {
         String body = mvc.perform(post("/api/trips").header("Authorization", "Bearer " + token).contentType(APPLICATION_JSON).content("""
-                {"name":"Lisbona 2026","destination":"Lisbona","startDate":"%s","endDate":"%s"}
+                {"name":"Lisbona 2026","destination":"Lisbona","startDate":"%s","endDate":"%s","latitude":41.9,"longitude":12.5}
                 """.formatted(start, end))).andReturn().getResponse().getContentAsString();
         return UUID.fromString(TestUsers.extract(body, "\"id\":\"([^\"]+)\""));
     }

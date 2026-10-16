@@ -94,7 +94,7 @@ class ProfileControllerTest extends IntegrationTest {
         String vale = TestUsers.register(mvc, "Vale");
         UUID roma = TestTrips.create(mvc, vale, "Roma");
         String body = mvc.perform(post("/api/trips").header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON).content("""
-                {"name":"Tokyo","destination":"Tokyo","startDate":"2026-11-01","endDate":"2026-11-05","currency":"JPY"}
+                {"name":"Tokyo","destination":"Tokyo","startDate":"2026-11-01","endDate":"2026-11-05","currency":"JPY","latitude":41.9,"longitude":12.5}
                 """)).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
         UUID tokyo = UUID.fromString(TestUsers.extract(body, "\"id\":\"([^\"]+)\""));
         UUID pRoma = TestTrips.participantOf(mvc, vale, roma);

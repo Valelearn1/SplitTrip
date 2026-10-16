@@ -11,7 +11,7 @@ import { PlaceInput } from '../../../shared/ui/PlaceInput'
 import { currencyLabel } from '../../../shared/utils/currencies'
 import { formatDate } from '../../../shared/utils/format'
 import type { TripContext } from '../TripLayout'
-import { tripSchema, type TripForm } from '../tripSchema'
+import { tripSettingsSchema, type TripForm } from '../tripSchema'
 import { useDeleteTrip, useUpdateTrip } from '../useTrips'
 
 const NEXT_STATUS: Record<TripStatus, TripStatus | null> = { PLANNING: 'ONGOING', ONGOING: 'CLOSED', CLOSED: null }
@@ -42,8 +42,9 @@ function OrganizerTripTab({ trip }: Pick<TripContext, 'trip'>) {
   const deleteTrip = useDeleteTrip()
   const [confirm, setConfirm] = useState<'status' | 'delete' | null>(null)
   const { register, control, handleSubmit, setValue, formState: { errors } } = useForm<TripForm>({
-    resolver: zodResolver(tripSchema),
-    defaultValues: { name: trip.name, destination: trip.destination, startDate: trip.startDate, endDate: trip.endDate, currency: trip.currency },
+    resolver: zodResolver(tripSettingsSchema(trip.destination)),
+    defaultValues: { name: trip.name, destination: trip.destination, startDate: trip.startDate, endDate: trip.endDate, currency: trip.currency,
+      latitude: trip.latitude ?? undefined, longitude: trip.longitude ?? undefined },
   })
   const [latitude, longitude] = useWatch({ control, name: ['latitude', 'longitude'] })
   const next = NEXT_STATUS[trip.status]

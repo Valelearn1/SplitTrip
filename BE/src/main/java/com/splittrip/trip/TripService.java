@@ -60,6 +60,7 @@ public class TripService {
     public TripResponse create(UUID userId, TripRequest req) {
         validateDates(req.startDate(), req.endDate());
         validateCoordinates(req.latitude(), req.longitude());
+        requirePlace(req.latitude());
         User owner = users.require(userId);
         Instant now = clock.instant();
         String currency = req.currency() == null ? "EUR" : req.currency();
@@ -98,11 +99,10 @@ public class TripService {
         if (req.name() != null) trip.setName(req.name().strip());
         validateCoordinates(req.latitude(), req.longitude());
         if (req.destination() != null && !req.destination().strip().equals(trip.getDestination())) {
+            requirePlace(req.latitude());   // una destinazione nuova arriva con le coordinate della proposta scelta (D-60)
             trip.setDestination(req.destination().strip());
-            trip.setLatitude(null);   // il meteo ricalcola le coordinate della nuova destinazione…
-            trip.setLongitude(null);
         }
-        if (req.latitude() != null) { // …a meno che non arrivino da una proposta scelta (D-46)
+        if (req.latitude() != null) {
             trip.setLatitude(req.latitude());
             trip.setLongitude(req.longitude());
         }
@@ -193,6 +193,11 @@ public class TripService {
     }
 
     /** Come per le foto: o entrambe le coordinate o nessuna, nei limiti geografici. */
+    /** D-60: la destinazione è una proposta scelta dall'elenco, quindi arriva sempre con le coordinate. */
+    private static void requirePlace(BigDecimal lat) {
+        if (lat == null) throw new FieldException("destination", "Scegli la destinazione dall'elenco");
+    }
+
     private static void validateCoordinates(BigDecimal lat, BigDecimal lon) {
         if ((lat == null) != (lon == null)) throw new FieldException(lat == null ? "latitude" : "longitude", "Servono entrambe le coordinate");
         if (lat == null) return;

@@ -18,7 +18,7 @@ public final class TestTrips {
     public static UUID create(MockMvc mvc, String token, String name) throws Exception {
         String body = mvc.perform(post("/api/trips").header("Authorization", "Bearer " + token)
                 .contentType(APPLICATION_JSON).content("""
-                {"name":"%s","destination":"Roma","startDate":"2026-11-01","endDate":"2026-11-05"}
+                {"name":"%s","destination":"Roma","startDate":"2026-11-01","endDate":"2026-11-05","latitude":41.9,"longitude":12.5}
                 """.formatted(name)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();

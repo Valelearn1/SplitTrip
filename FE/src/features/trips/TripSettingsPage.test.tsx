@@ -84,3 +84,17 @@ it('Persone: l’organizzatore vede chi conta per quanto, aggiunge chi non usa l
   await user.click(screen.getByRole('button', { name: 'Conferma' }))
   await waitFor(() => expect(unlinked).toBe(true))
 })
+
+it('cambiare la destinazione richiede una proposta dall\'elenco', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false, preferredCurrency: 'EUR', chatSound: true, reduceMotion: false } }))
+  let patched = false
+  server.use(...baseHandlers(), http.patch('http://localhost/api/trips/t1', () => { patched = true; return HttpResponse.json(trip) }),
+    http.get('http://localhost/api/places', () => HttpResponse.json([])))
+  renderWithProviders(routes, '/trips/t1/settings')
+  const user = userEvent.setup()
+  const destination = await screen.findByLabelText('Destinazione')
+  await user.clear(destination); await user.type(destination, 'Braga')
+  await user.click(screen.getByRole('button', { name: 'Salva' }))
+  expect(await screen.findByText('Scegli la destinazione dall\'elenco')).toBeInTheDocument()
+  expect(patched).toBe(false)
+})

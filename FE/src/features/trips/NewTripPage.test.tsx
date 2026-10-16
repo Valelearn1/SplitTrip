@@ -10,10 +10,13 @@ import { NewTripPage } from './NewTripPage'
 it('la valuta si sceglie da un menu, con EUR di default', async () => {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false } }))
   let sent: { currency?: string } = {}
-  server.use(http.post('http://localhost/api/trips', async ({ request }) => {
-    sent = (await request.json()) as { currency?: string }
-    return HttpResponse.json({ id: 't9' }, { status: 201 })
-  }))
+  server.use(
+    http.post('http://localhost/api/trips', async ({ request }) => {
+      sent = (await request.json()) as { currency?: string }
+      return HttpResponse.json({ id: 't9' }, { status: 201 })
+    }),
+    http.get('http://localhost/api/places', () => HttpResponse.json([{ name: 'New York', detail: 'Stati Uniti', latitude: 40.7143, longitude: -74.006 }])),
+  )
   renderWithProviders([{ path: '/trips/new', element: <NewTripPage /> }, { path: '/trips/:tripId/benvenuto', element: <h1>Viaggio creato</h1> }], '/trips/new')
   const user = userEvent.setup()
   const currency = screen.getByRole('combobox', { name: 'Valuta' })
@@ -22,6 +25,7 @@ it('la valuta si sceglie da un menu, con EUR di default', async () => {
   await user.selectOptions(currency, 'USD')
   await user.type(screen.getByLabelText('Nome del viaggio'), 'New York')
   await user.type(screen.getByLabelText('Destinazione'), 'New York')
+  await user.click(await screen.findByRole('option', { name: /New York/ }))
   await user.type(screen.getByLabelText('Partenza'), '2026-12-01')
   await user.type(screen.getByLabelText('Ritorno'), '2026-12-08')
   await user.click(screen.getByRole('button', { name: 'Crea viaggio' }))
@@ -51,4 +55,31 @@ it('la valuta parte da quella scelta nel Profilo (D-48)', async () => {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false, preferredCurrency: 'CHF', chatSound: true, reduceMotion: false } }))
   renderWithProviders([{ path: '/trips/new', element: <NewTripPage /> }], '/trips/new')
   expect(await screen.findByRole('combobox', { name: 'Valuta' })).toHaveValue('CHF')
+})
+
+it('senza scegliere una proposta il viaggio non parte: «Scegli la destinazione dall\'elenco»', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false } }))
+  let posted = false
+  server.use(
+    http.post('http://localhost/api/trips', () => { posted = true; return HttpResponse.json({ id: 't9' }, { status: 201 }) }),
+    http.get('http://localhost/api/places', () => HttpResponse.json([])),
+  )
+  renderWithProviders([{ path: '/trips/new', element: <NewTripPage /> }], '/trips/new')
+  const user = userEvent.setup()
+  await user.type(screen.getByLabelText('Nome del viaggio'), 'Ovunque')
+  await user.type(screen.getByLabelText('Destinazione'), 'Un posto inventato')
+  await user.type(screen.getByLabelText('Partenza'), '2026-12-01')
+  await user.type(screen.getByLabelText('Ritorno'), '2026-12-08')
+  await user.click(screen.getByRole('button', { name: 'Crea viaggio' }))
+  expect(await screen.findByText('Scegli la destinazione dall\'elenco')).toBeInTheDocument()
+  expect(posted).toBe(false)
+})
+
+it('se la ricerca dei luoghi non risponde lo dice', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false } }))
+  server.use(http.get('http://localhost/api/places', () => HttpResponse.json(
+    { status: 503, title: 'Luoghi non disponibili', detail: 'Ricerca dei luoghi non disponibile, riprova tra poco' }, { status: 503 })))
+  renderWithProviders([{ path: '/trips/new', element: <NewTripPage /> }], '/trips/new')
+  await userEvent.setup().type(screen.getByLabelText('Destinazione'), 'Lisbona')
+  expect(await screen.findByText('Ricerca dei luoghi non disponibile, riprova tra poco')).toBeInTheDocument()
 })

@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Ricerca luoghi (D-46, servizio D-51): valida, limita, mette in cache; se il servizio non risponde, lista vuota. */
+/** Ricerca luoghi (D-46, servizio D-51): valida, limita, mette in cache; se il servizio non risponde, 503 (D-60). */
 @Service
 public class PlaceService {
 
@@ -59,8 +59,9 @@ public class PlaceService {
             cache.put(key, new Cached(now.plus(CACHE_TTL), found));
             return found;
         } catch (RuntimeException e) {
+            // D-60: 503, non una lista vuota, così il modulo distingue «nessun risultato» da «servizio giù»
             log.warn("Ricerca luoghi non disponibile: {}", e.getMessage());
-            return List.of();
+            throw new AppException(HttpStatus.SERVICE_UNAVAILABLE, "Luoghi non disponibili", "Ricerca dei luoghi non disponibile, riprova tra poco");
         }
     }
 

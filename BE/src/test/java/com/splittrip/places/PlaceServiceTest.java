@@ -4,6 +4,7 @@ import com.splittrip.common.AppException;
 import com.splittrip.common.FieldException;
 import com.splittrip.places.dto.Place;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -43,9 +44,13 @@ class PlaceServiceTest {
     }
 
     @Test
-    void servizioGiuDaListaVuota() {
+    void servizioGiuDa503() {                 // D-60: il modulo deve poter dire «non disponibile», non «nessun risultato»
         PlaceService broken = new PlaceService((q, lat, lon) -> { throw new RuntimeException("timeout"); }, clock);
-        assertThat(broken.search(vale, "Lisbona", null)).isEmpty();
+        assertThatThrownBy(() -> broken.search(vale, "Lisbona", null))
+                .isInstanceOfSatisfying(AppException.class, e -> {
+                    assertThat(e.getStatus()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+                    assertThat(e.getMessage()).isEqualTo("Ricerca dei luoghi non disponibile, riprova tra poco");
+                });
     }
 
     @Test

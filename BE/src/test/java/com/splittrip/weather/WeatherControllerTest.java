@@ -4,6 +4,8 @@ import com.splittrip.IntegrationTest;
 import com.splittrip.TestTrips;
 import com.splittrip.TestUsers;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -28,6 +30,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 class WeatherControllerTest extends IntegrationTest {
 
+    @Autowired JdbcTemplate jdbc;
+
+    /** Un viaggio di prima della v3.2, senza coordinate: il meteo le cerca dal nome della destinazione. */
+    UUID oldTrip(String token, String name) throws Exception {
+        UUID tripId = TestTrips.create(mvc, token, name);
+        jdbc.update("update trips set latitude = null, longitude = null where id = ?", tripId);
+        return tripId;
+    }
+
     @MockitoBean
     OpenMeteoClient openMeteo;
 
@@ -38,7 +49,7 @@ class WeatherControllerTest extends IntegrationTest {
                 new OpenMeteoClient.DayForecast(LocalDate.of(2026, 10, 31), 0, new BigDecimal("12"), new BigDecimal("20")), // prima del viaggio
                 new OpenMeteoClient.DayForecast(LocalDate.of(2026, 11, 1), 3, new BigDecimal("11"), new BigDecimal("18"))));
         String vale = TestUsers.register(mvc, "Vale");
-        UUID tripId = TestTrips.create(mvc, vale, "Roma"); // 1–5 novembre, destinazione «Roma»
+        UUID tripId = oldTrip(vale, "Roma"); // 1–5 novembre, destinazione «Roma», senza coordinate
         mvc.perform(get("/api/trips/" + tripId + "/weather").header("Authorization", "Bearer " + vale))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.days", hasSize(1)))
@@ -61,10 +72,11 @@ class WeatherControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.days", hasSize(1)));
 
         mvc.perform(patch("/api/trips/" + tripId).header("Authorization", "Bearer " + vale)
-                .contentType(APPLICATION_JSON).content("{\"destination\":\"Lisbona\",\"endDate\":\"2026-11-08\"}")).andExpect(status().isOk());
+                .contentType(APPLICATION_JSON).content("{\"destination\":\"Lisbona\",\"endDate\":\"2026-11-08\",\"latitude\":38.7169,\"longitude\":-9.1399}")).andExpect(status().isOk());
         mvc.perform(get("/api/trips/" + tripId + "/weather").header("Authorization", "Bearer " + vale))
                 .andExpect(jsonPath("$.days", hasSize(2)));       // nuove date, non la cache di prima
-        verify(openMeteo).geocode("Lisbona");                       // nuova destinazione
+        verify(openMeteo, never()).geocode(any());                  // la destinazione arriva con le sue coordinate (D-60)
+        verify(openMeteo).forecast(new BigDecimal("38.716900"), new BigDecimal("-9.139900"));   // nuova destinazione (NUMERIC a 6 decimali)
         verify(openMeteo, times(2)).forecast(any(), any());
     }
 
@@ -72,7 +84,7 @@ class WeatherControllerTest extends IntegrationTest {
     void servizioGiuOTimeoutDannoVuotoNon500() throws Exception {
         when(openMeteo.geocode(any())).thenThrow(new ResourceAccessException("timeout"));
         String vale = TestUsers.register(mvc, "Vale");
-        UUID tripId = TestTrips.create(mvc, vale, "Atlantide");
+        UUID tripId = oldTrip(vale, "Atlantide");
         mvc.perform(get("/api/trips/" + tripId + "/weather").header("Authorization", "Bearer " + vale))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.days", hasSize(0)));

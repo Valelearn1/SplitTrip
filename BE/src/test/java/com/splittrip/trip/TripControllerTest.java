@@ -4,6 +4,8 @@ import com.splittrip.IntegrationTest;
 import com.splittrip.TestTrips;
 import com.splittrip.TestUsers;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.UUID;
 
@@ -19,12 +21,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 class TripControllerTest extends IntegrationTest {
 
+    @Autowired JdbcTemplate jdbc;
+
     @Test
     void creaViaggioIlCreatoreEOrganizzatore() throws Exception {
         String token = TestUsers.register(mvc, "Vale");
         mvc.perform(post("/api/trips").header("Authorization", "Bearer " + token)
                 .contentType(APPLICATION_JSON).content("""
-                {"name":"Roma 2026","destination":"Roma","startDate":"2026-11-01","endDate":"2026-11-05"}
+                {"name":"Roma 2026","destination":"Roma","startDate":"2026-11-01","endDate":"2026-11-05","latitude":41.9,"longitude":12.5}
                 """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("PLANNING"))
@@ -84,12 +88,38 @@ class TripControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.latitude").value(38.7169)).andExpect(jsonPath("$.longitude").value(-9.1399))
                 .andReturn().getResponse().getContentAsString();
         UUID tripId = UUID.fromString(TestUsers.extract(body, "\"id\":\"([^\"]+)\""));
-        // cambiare solo il testo della destinazione azzera le coordinate (il meteo le ricalcola); con coordinate nuove si tengono
+        // destinazione nuova con le coordinate della proposta scelta: si tengono (D-60)
         mvc.perform(patch("/api/trips/" + tripId).header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON)
                 .content("{\"destination\":\"Porto\",\"latitude\":41.1579,\"longitude\":-8.6291}")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.latitude").value(41.1579));
+    }
+
+    @Test
+    void creareSenzaCoordinateDa400() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        mvc.perform(post("/api/trips").header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON).content("""
+                {"name":"Ovunque","destination":"Un posto inventato","startDate":"2026-11-01","endDate":"2026-11-06"}
+                """)).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].field").value("destination"))
+                .andExpect(jsonPath("$.errors[0].message").value("Scegli la destinazione dall'elenco"));
+    }
+
+    @Test
+    void cambiareDestinazioneSenzaCoordinateDa400() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
         mvc.perform(patch("/api/trips/" + tripId).header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON)
-                .content("{\"destination\":\"Braga\"}")).andExpect(status().isOk())
-                .andExpect(jsonPath("$.latitude").value(nullValue()));
+                .content("{\"destination\":\"Braga\"}")).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].field").value("destination"));
+    }
+
+    @Test
+    void modificaSenzaCambiareDestinazioneNonChiedeCoordinate() throws Exception {             // Review Focus 4
+        String vale = TestUsers.register(mvc, "Vale");
+        UUID tripId = TestTrips.create(mvc, vale, "Roma");
+        jdbc.update("update trips set latitude = null, longitude = null where id = ?", tripId);    // come i viaggi di prima della v3.2
+        mvc.perform(patch("/api/trips/" + tripId).header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON)
+                .content("{\"name\":\"Roma d'autunno\",\"destination\":\"Roma\"}")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Roma d'autunno")).andExpect(jsonPath("$.latitude").value(nullValue()));
     }
 }
