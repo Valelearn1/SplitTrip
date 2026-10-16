@@ -8,3 +8,32 @@ export const GLOBE_LAND = [
 ] as const
 /** Colori fissi: un mappamondo è blu e verde in entrambi i temi. */
 export const GLOBE_COLORS = { oceanLight: '#4f8cf7', oceanDeep: '#1f4fbf', land: '#2fbf71' } as const
+
+/** Lo stesso mappamondo su un canvas (immagine per le storie): (x, y) è l'angolo in alto a sinistra, `size` il lato. */
+export function drawLogo(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.scale(size / 24, size / 24)
+  const ocean = ctx.createRadialGradient(9.4, 8, 0, 12, 12, 17.6)
+  ocean.addColorStop(0, GLOBE_COLORS.oceanLight)
+  ocean.addColorStop(1, GLOBE_COLORS.oceanDeep)
+  ctx.beginPath()
+  ctx.arc(12, 12, 11, 0, Math.PI * 2)
+  ctx.fillStyle = ocean
+  ctx.fill()
+  ctx.save()
+  ctx.clip()                                   // i continenti restano dentro la sfera
+  ctx.fillStyle = GLOBE_COLORS.land
+  for (const d of GLOBE_LAND) ctx.fill(new Path2D(d))
+  ctx.restore()
+  ctx.save()                                   // riflesso di luce
+  ctx.translate(8.2, 6.6)
+  ctx.rotate(-Math.PI / 6)
+  ctx.scale(3.6, 2.2)
+  ctx.beginPath()
+  ctx.arc(0, 0, 1, 0, Math.PI * 2)
+  ctx.restore()
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.28)'
+  ctx.fill()
+  ctx.restore()
+}

@@ -679,3 +679,6 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
 /* «Indietro» (v3.2): sopra il contenuto di ogni pagina tranne Home, landing, accesso e registrazione */
 .back-bar { margin-bottom: var(--space-3); }
 .back-btn { min-height: 44px; }
+/* immagine per le storie (D-56) */
+.story-image { display: grid; justify-items: center; gap: var(--space-3); }
+.story-preview { width: 180px; aspect-ratio: 9 / 16; border-radius: 12px; box-shadow: var(--shadow-card); }

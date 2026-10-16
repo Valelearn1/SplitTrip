@@ -17,6 +17,7 @@ import { BadgeCard } from './BadgeCard'
 import { GuessGate } from './GuessGate'
 import { Podium } from './Podium'
 import { Reveal } from './Reveal'
+import { StoryImage } from './StoryImage'
 import { useGuess, useWrapped } from './useWrapped'
 
 /** Il riepilogo di fine viaggio (D-53): prima la scommessa, poi la rivelazione, poi i numeri. */
@@ -129,7 +130,11 @@ export function WrappedPage() {
         {d.settlement.settled
           ? <p><Icon name="check_circle" className="inline-icon" /> Conti chiusi: siete in pari</p>
           : <Link to={`/trips/${trip.id}/balances`} className="btn btn-secondary"><Icon name="sync_alt" />{d.settlement.openTransfers === 1 ? 'Manca 1 rimborso' : `Mancano ${d.settlement.openTransfers} rimborsi`}</Link>}
-        {/* Task 10: qui l'immagine per le storie */}
+        <StoryImage
+          data={{ name: d.trip.name, dates: `${formatDateRange(d.trip.startDate, d.trip.endDate)} · ${d.trip.nights} notti · ${d.trip.people} persone`,
+            total: d.totals.groupTotal, perPerson: d.totals.perPerson, photos: d.totals.photos, messages: d.totals.messages, currency: d.trip.currency,
+            badges: d.badges.map((b) => ({ title: b.title })) }}
+          coverPath={d.trip.coverPhotoId ? photoPath(trip.id, d.trip.coverPhotoId, 'image') : null} />
       </section>
     </div>
   )
