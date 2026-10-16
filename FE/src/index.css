@@ -666,6 +666,7 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
 .badge-card .muted { color: var(--ink-2); }   /* ink-3 sui fondi tinti è al limite dell'AA */
 .badge-who { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink-2); }
 .badge-card strong { text-wrap: balance; }
+.badge-emoji { margin-left: auto; font-size: 1.25rem; line-height: 1; }
 .podium { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; align-items: flex-end; gap: var(--space-5); }
 .podium li { display: grid; justify-items: center; gap: 4px; text-align: center; }
 .podium li:nth-child(1) { order: 2; }

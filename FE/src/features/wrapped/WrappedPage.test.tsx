@@ -60,14 +60,14 @@ it('prima scommetti, poi la rivelazione, poi i numeri, i badge e le classifiche'
   expect(screen.getByText('Alloggio')).toBeInTheDocument()                                // CATEGORY_LABELS
   expect(screen.getByText('Casa ad Alfama')).toBeInTheDocument()
   expect(screen.getByText('mappa con 1 punti')).toBeInTheDocument()
-  expect(screen.getByText('💰 Il banchiere')).toBeInTheDocument()
+  expect(screen.getByText('Il banchiere')).toBeInTheDocument()                          // l'emoji sta accanto al nome
   expect(screen.getByRole('heading', { name: 'Chi ha fatto più foto' })).toBeInTheDocument()
   expect(screen.getAllByText('Vale')[0]).toBeInTheDocument()
   expect(screen.getByRole('link', { name: /Mancano 1 rimborsi|Manca 1 rimborso/ })).toHaveAttribute('href', '/trips/t1/balances')
 })
 
 it('«Salta» mostra solo il totale e «2 hanno giocato»; con tutto a zero le classifiche non ci sono', async () => {
-  const empty = { ...wrapped({ mine: null, played: 2, others: null }), people: people.map((p) => ({ ...p, photos: 0, messages: 0, reactionsReceived: 0 })), badges: [{ participantId: 'p1', code: 'COMPANION', title: '🧳 Compagno di viaggio', detail: 'c\'era, e tanto basta' }, { participantId: 'p2', code: 'COMPANION', title: '🧳 Compagno di viaggio', detail: 'c\'era, e tanto basta' }], settlement: { settled: true, openTransfers: 0 } }
+  const empty = { ...wrapped({ mine: null, played: 2, others: null }), totals: { groupTotal: 716, perPerson: 358, expenseCount: 4, photos: 0, messages: 0, reactions: 0 }, people: people.map((p) => ({ ...p, photos: 0, messages: 0, reactionsReceived: 0 })), badges: [{ participantId: 'p1', code: 'COMPANION', title: '🧳 Compagno di viaggio', detail: 'c\'era, e tanto basta' }, { participantId: 'p2', code: 'COMPANION', title: '🧳 Compagno di viaggio', detail: 'c\'era, e tanto basta' }], settlement: { settled: true, openTransfers: 0 } }
   server.use(http.get('http://localhost/api/trips/t1/wrapped', () => HttpResponse.json(empty)))
   renderWithProviders(routes, '/trips/t1/riepilogo')
   await userEvent.setup().click(await screen.findByRole('button', { name: 'Salta e guarda i numeri' }))
@@ -76,7 +76,8 @@ it('«Salta» mostra solo il totale e «2 hanno giocato»; con tutto a zero le c
   await userEvent.setup().click(screen.getByRole('button', { name: 'Guarda i numeri' }))
   expect(await screen.findByText('Conti chiusi: siete in pari')).toBeInTheDocument()
   expect(screen.queryByRole('heading', { name: 'Chi ha fatto più foto' })).not.toBeInTheDocument()   // Review Focus 1
-  expect(screen.getAllByText('🧳 Compagno di viaggio')).toHaveLength(2)
+  expect(screen.getAllByText(/Compagno di viaggio/)).toHaveLength(2)
+  expect(screen.queryByRole('heading', { name: 'Il gruppo' })).not.toBeInTheDocument()   // tre zeri non raccontano niente
 })
 
 it('prima della fine la pagina lo dice', async () => {

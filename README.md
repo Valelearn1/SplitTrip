@@ -40,21 +40,31 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 👋 **Benvenuto nel viaggio**: chi entra con il codice sceglie subito per quante persone conta e quando arriva
 - ⚙️ **Impostazioni in tre schede** (Viaggio · Persone · Io) e **profilo completo**: nome, email, password, «i miei numeri» con la mappa delle destinazioni e preferenze che valgono su ogni dispositivo (suono, animazioni, valuta predefinita)
 - 👍 **Reazioni ai messaggi** (👍 ❤️ 😂 😮 😢 🎉) in tempo reale e **griglia emoji** nel campo della chat
+- 🎡 **«Chi offre?»**: una ruota nei colori della stagione sceglie a caso chi paga il giro e apre la spesa già compilata
+- 🎉 **Riepilogo di fine viaggio**: prima **«Indovina il totale»** (un'ipotesi a testa, dal proprio telefono), poi quanto avete speso e dove, i record, i momenti sulla mappa, **un badge a testa** e classifiche divertenti (mai sui soldi)
+- 📲 **Immagine per le storie** 1080×1920 creata nel browser e condivisa dal telefono: solo il totale del gruppo e i badge, nessun saldo personale
+- 🌙 **Tema chiaro, scuro o automatico** con luna/sole nell'intestazione, salvato sull'account
+- 🌸 **Sfondo che segue la stagione del viaggio**: sakura in primavera, spiaggia d'estate, colline d'autunno, montagne innevate d'inverno (al contrario sotto l'equatore)
+- ↩️ **«Indietro» su ogni pagina**; dopo un salvataggio si torna da dove si era partiti, senza rientrare nel modulo
 - ♿ Interfaccia **mobile-first e accessibile**: ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore
 
 ## 📸 Screenshot
 
-| Dashboard del viaggio | Nuova spesa | Saldi |
+| Home | Dashboard del viaggio | Nuova spesa |
 |---|---|---|
-| ![Dashboard mobile](docs/screenshots/mobile-dashboard.png) | ![Form nuova spesa](docs/screenshots/mobile-expense-form.png) | ![Saldi e pareggio](docs/screenshots/mobile-balances.png) |
+| ![Home con il viaggio in evidenza](docs/screenshots/mobile-home.png) | ![Dashboard mobile](docs/screenshots/mobile-dashboard.png) | ![Form nuova spesa](docs/screenshots/mobile-expense-form.png) |
 
-| Liste condivise | Foto sulla mappa | Chat del viaggio |
+| Saldi | Liste condivise | Foto sulla mappa |
 |---|---|---|
-| ![Liste con voci assegnate](docs/screenshots/mobile-lists.png) | ![Mappa delle foto](docs/screenshots/mobile-photos-map.png) | ![Chat in tempo reale](docs/screenshots/mobile-chat.png) |
+| ![Saldi e pareggio](docs/screenshots/mobile-balances.png) | ![Liste con voci assegnate](docs/screenshots/mobile-lists.png) | ![Mappa delle foto](docs/screenshots/mobile-photos-map.png) |
 
-| Home | Impostazioni del viaggio |
-|---|---|
-| ![Home con il viaggio in evidenza](docs/screenshots/mobile-home.png) | ![Impostazioni, scheda Persone](docs/screenshots/mobile-settings.png) |
+| Chat del viaggio | Impostazioni del viaggio | «Chi offre?» |
+|---|---|---|
+| ![Chat in tempo reale](docs/screenshots/mobile-chat.png) | ![Impostazioni, scheda Persone](docs/screenshots/mobile-settings.png) | ![La ruota sceglie chi offre](docs/screenshots/mobile-wheel.png) |
+
+| «Indovina il totale» | Riepilogo: badge e classifiche | Tema scuro |
+|---|---|---|
+| ![Rivelazione del totale](docs/screenshots/mobile-guess.png) | ![Badge e classifiche del riepilogo](docs/screenshots/mobile-wrapped.png) | ![Home nel tema scuro](docs/screenshots/mobile-dark-home.png) |
 
 ![Dashboard desktop](docs/screenshots/desktop-dashboard.png)
 
@@ -67,8 +77,9 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 | **v2 Social** | liste condivise con assegnatario, foto con mappa, scontrino sulla spesa, notifiche in-app, meteo, foto profilo | ✅ |
 | **v3 Live** | chat di gruppo e notifiche in tempo reale (WebSocket STOMP), consigli AI, «conta per», movimento | ✅ |
 | **v3.1 Rifinitura** | dai test con gli amici: proposte di luoghi, benvenuto, Impostazioni a schede, Home e presentazione, profilo con preferenze, reazioni ed emoji in chat | ✅ |
+| **v3.2 Giochi, riepilogo e tema** | «Chi offre?», riepilogo di fine viaggio con «Indovina il totale», badge e immagine per le storie, tema scuro, palette cobalto e lampone, sfondo stagionale, logo mappamondo, «Indietro» ovunque | ✅ |
 
-La visione di prodotto oltre il capstone (ospiti senza registrazione, multi-valuta, scontrino diviso per voce, riepilogo condivisibile): [`docs/ROADMAP.md`](docs/ROADMAP.md).
+La visione di prodotto oltre il capstone (ospiti senza registrazione, spese in altre valute, offline, scontrino diviso per voce): [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## 🏗️ Stack
 
@@ -117,8 +128,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 186 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 108 test
+cd BE && sh mvnw test   # 203 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 194 test
 ```
 
 Cosa coprono:
@@ -135,6 +146,9 @@ Cosa coprono:
 - 📍 **luoghi**: testo con caratteri speciali codificato bene, servizio giù → nessuna proposta ma testo libero valido, 30 ricerche al minuto, cache
 - 👍 **reazioni**: idempotenti, due persone insieme → il canale mostra entrambe, emoji fuori lista rifiutata
 - 👤 **account**: email unica, password attuale obbligatoria, la sessione aperta resta valida dopo il cambio
+- 🎡 **giochi e riepilogo**: la ruota si ferma sullo spicchio annunciato, chi non ha account parte non spuntato; badge con pari merito a chi è entrato prima e zero che non vince; due ipotesi inviate insieme → una sola riga; classifiche nascoste se tutto è a zero; immagine per le storie con ritaglio 9:16 e nomi lunghi accorciati
+- 🎨 **colori**: contrasto AA verificato dai test per ogni coppia testo/fondo nei due temi, anche sul vetro sopra l'illustrazione più sfavorevole e sui pastelli della ruota
+- ↩️ **«Indietro»**: pagina madre per ogni rotta, ritorno nella cronologia, moduli salvati che non restano indietro
 - 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda», liste, caricamento foto col consenso alla posizione, campanella, chat, consigli AI, «conta per», busta e valigia
 
 Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il codice.
@@ -154,6 +168,7 @@ Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il cod
 | **Tempo reale** | il JWT viaggia nel frame CONNECT del WebSocket, mai nell'URL; ogni sottoscrizione verifica che tu sia membro del viaggio; si scrive solo via REST (stessi controlli delle API), il socket spinge dati già salvati; limite di 20 messaggi al minuto e frame da 8 KB |
 | **Luoghi** | le proposte passano dal backend (Open-Meteo, D-51): al servizio arriva solo il testo cercato, mai chi sei; solo per chi ha fatto il login, 30 ricerche al minuto, risultati in cache |
 | **Account** | cambio password solo con quella attuale, stesse regole della registrazione; email unica (senza distinzione di maiuscole); preferenze sull'account, nessun dato in più |
+| **Riepilogo e immagine** | il riepilogo si apre solo a viaggio finito e solo ai membri; un'ipotesi a testa, non modificabile, e quelle degli altri si vedono solo dopo la propria; l'immagine per le storie si disegna nel browser con il totale del gruppo e i badge, senza saldi personali, e non passa dal server |
 | **AI** | al modello vanno solo destinazione, date, numero di persone, meteo e voci della valigia: mai nomi, email o importi; la chiave sta solo nelle variabili d'ambiente di Render; la risposta è JSON validato e mostrato come testo, le voci si aggiungono solo se le spunti; 5 generazioni al giorno per viaggio |
 
 ## 📐 Progettazione
@@ -162,7 +177,7 @@ Il progetto è sviluppato con un metodo **spec-driven**: prima la specifica, poi
 
 | Documento | Contenuto |
 |---|---|
-| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifiche di design: v1 (modello dati, motore dei saldi, API, sicurezza, frontend), v1.5 (partecipanti, peso e presenza) v2 (liste, foto, notifiche, meteo), v3 (chat in tempo reale, AI, movimento) e v3.1 (rifinitura dai test con gli amici) |
+| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifiche di design: v1 (modello dati, motore dei saldi, API, sicurezza, frontend), v1.5 (partecipanti, peso e presenza) v2 (liste, foto, notifiche, meteo), v3 (chat in tempo reale, AI, movimento), v3.1 (rifinitura dai test con gli amici) e v3.2 (giochi, riepilogo, tema e stagioni) |
 | [`docs/superpowers/plans/`](docs/superpowers/plans/) | piani di implementazione task per task |
 | [`docs/decisioni.md`](docs/decisioni.md) | registro delle decisioni, con alternative scartate e motivazioni |
 | [`PRODUCT.md`](PRODUCT.md) · [`DESIGN.md`](DESIGN.md) | prodotto e sistema visivo |
@@ -188,14 +203,15 @@ SplitTrip/
 │   │   ├── ai/                 consigli AI e valigia suggerita
 │   │   ├── places/             proposte di luoghi (Open-Meteo), con limiti e cache
 │   │   ├── home/               la Home in una chiamata
+│   │   ├── wrapped/            riepilogo di fine viaggio, badge, «Indovina il totale»
 │   │   └── common/             errori, configurazione, eventi
 │   ├── src/main/resources/db/migration/   migrazioni Flyway
 │   └── Dockerfile
 ├── FE/                         frontend React
 │   └── src/
 │       ├── app/                router, layout
-│       ├── features/           auth · home · trips · expenses · balances · todo · photos · notifications · weather · profile · chat · ai
-│       └── shared/             client API, componenti UI, formattazione
+│       ├── features/           auth · home · trips · expenses · balances · todo · photos · notifications · weather · profile · chat · ai · games · wrapped
+│       └── shared/             client API, componenti UI, formattazione, stagioni e illustrazioni, «Indietro»
 ├── docs/                       spec, piani, decisioni, roadmap, screenshot
 ├── docker-compose.yml          Postgres locale
 └── render.yaml                 deploy su Render

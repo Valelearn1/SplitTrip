@@ -182,8 +182,15 @@ def main():
         token = {'Vale': vale, 'Marco': marco, 'Giulia': giulia}[who]
         expense(ber['id'], token, desc, amount, dt.date.fromisoformat(d), cat, B[who], 'EQUAL', everyone)
     call('PATCH', f"/trips/{ber['id']}", {'status': 'ONGOING'}, vale)
+    # due chiacchiere in chat (prima di chiudere: dopo è in sola lettura), così il riepilogo ha classifiche e badge in più
+    m1 = message(ber['id'], marco, 'Currywurst stasera? Conosco un posto a Kreuzberg')
+    message(ber['id'], giulia, 'Ci sto! Domani mattina Museumsinsel, ho già i biglietti')
+    message(ber['id'], marco, 'Bici a noleggio per l\'ultimo giorno?')
+    react(ber['id'], vale, m1['id'], '❤️')
     call('PATCH', f"/trips/{ber['id']}", {'status': 'CLOSED'}, vale)
-    print('✓ Berlino (chiuso) pronto')
+    # «Indovina il totale»: Marco ha già scommesso (664 € spesi), così sul PC la rivelazione ha un confronto
+    call('POST', f"/trips/{ber['id']}/wrapped/guess", {'amount': 650}, marco)
+    print('✓ Berlino (chiuso) pronto, con l\'ipotesi di Marco (650 €)')
 
     print('\nAccount per la demo (password: quella in DEMO_PASSWORD)')
     print(f'  PC       Vale    {vale_email}')

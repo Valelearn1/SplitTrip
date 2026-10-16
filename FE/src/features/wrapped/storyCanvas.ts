@@ -43,9 +43,11 @@ export function drawStory(ctx: CanvasRenderingContext2D, d: StoryData, cover?: C
   text(d.dates, 430, '500 40px', SOFT)
   text(formatMoney(d.total, d.currency), 760, '800 150px', WHITE)
   text('in tutto', 830, '500 44px', SOFT)
-  const cols: [string, string][] = [[formatMoney(d.perPerson, d.currency), 'a persona'], [String(d.photos), 'foto'], [String(d.messages), 'messaggi']]
+  // le colonne a zero non raccontano niente: restano quelle con un numero, centrate
+  const cols: [string, string][] = [[formatMoney(d.perPerson, d.currency), 'a persona'],
+    ...(d.photos > 0 ? [[String(d.photos), 'foto'] as [string, string]] : []), ...(d.messages > 0 ? [[String(d.messages), 'messaggi'] as [string, string]] : [])]
   cols.forEach(([value, label], i) => {
-    const x = cx + (i - 1) * 320
+    const x = cx + (i - (cols.length - 1) / 2) * 320
     ctx.fillStyle = WHITE; ctx.font = `800 64px ${FONT}`; ctx.fillText(fit(ctx, value, 300), x, 1010)
     ctx.fillStyle = SOFT; ctx.font = `500 36px ${FONT}`; ctx.fillText(label, x, 1060)
   })

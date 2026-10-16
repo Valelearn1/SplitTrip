@@ -106,14 +106,16 @@ export function WrappedPage() {
         </section>
       )}
 
-      <section className="card">
-        <h2>Il gruppo</h2>
-        <div className="stats-grid">
-          <div className="stat-big"><strong>{d.totals.photos}</strong><span>foto</span></div>
-          <div className="stat-big"><strong>{d.totals.messages}</strong><span>messaggi</span></div>
-          <div className="stat-big"><strong>{d.totals.reactions}</strong><span>reazioni</span></div>
-        </div>
-      </section>
+      {d.totals.photos + d.totals.messages + d.totals.reactions > 0 && (
+        <section className="card">
+          <h2>Il gruppo</h2>
+          <div className="stats-grid">
+            <div className="stat-big"><strong>{d.totals.photos}</strong><span>foto</span></div>
+            <div className="stat-big"><strong>{d.totals.messages}</strong><span>messaggi</span></div>
+            <div className="stat-big"><strong>{d.totals.reactions}</strong><span>reazioni</span></div>
+          </div>
+        </section>
+      )}
 
       <section className="card">
         <h2>I badge</h2>

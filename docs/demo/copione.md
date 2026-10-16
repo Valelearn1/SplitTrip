@@ -10,10 +10,9 @@ I dati li crea `docs/demo/seed-demo.py` (vedi «Prima di salire sul palco»).
 | **0:55–1:20** | PC: **Saldi** → i trasferimenti suggeriti → tocca **«Salda»** su una riga | «Alla fine il problema è chi dà quanto a chi. L'app calcola il numero minimo di bonifici per tornare in pari; con un tocco li registri.» |
 | **1:20–1:50** | Telefono (Marco): **Chat** → scrive «Arrivo tra 10 minuti!» → sul PC il messaggio compare **subito**; dal PC tieni premuto… o «Reagisci» → 👍 → sul telefono la reazione appare | «È anche il posto dove il gruppo si parla: tempo reale, senza ricaricare. Le spese aggiunte compaiono in chat con il link.» |
 | **1:50–2:20** | PC: **«Chi offre?»** → la ruota gira tra i nomi → si ferma su qualcuno → crea la spesa del caffè | «E quando nessuno vuole decidere chi offre il caffè… decide la ruota. E la spesa è già registrata.» |
-| **2:20–2:45** | PC: Home → «Passati» → **Berlino** → **riepilogo finale** (quanto avete speso, chi ha pagato di più, i momenti) | «A fine viaggio, il racconto: quanto abbiamo speso, dove, chi ha offerto di più. I conti chiusi e un ricordo da condividere.» |
+| **2:20–2:45** | PC: Home → **«I vostri viaggi in numeri»** → **Berlino** → «Indovina il totale»: scrivi 600 → **Scommetto!** → il totale sale a 664 € e «Ha indovinato meglio: Marco» → **Guarda i numeri** → scorri: categorie, badge → in fondo **«Crea l'immagine per le storie»** | «A fine viaggio, il racconto. Prima un gioco: quanto abbiamo speso? Marco ci è andato più vicino. Poi i numeri, i badge di ognuno e un'immagine da mettere nelle storie, senza i saldi di nessuno.» |
 | **2:45–3:00** | PC: torna alla Home (o la slide finale) | «Dietro: Spring Boot e React, oltre 300 test scritti prima del codice, accessibile (mai solo il colore), in produzione su Render. SplitTrip: vacanze tra amici, conti chiari. Grazie!» |
 
-> I passi **1:50–2:45** usano «Chi offre?» e il riepilogo finale: arrivano con la prossima versione. Fino ad allora, al loro posto: **Foto sulla mappa** (le foto con il luogo, 20 s) e la **valigia** con la spunta che la chiude (10 s).
 
 ## Prima di salire sul palco
 

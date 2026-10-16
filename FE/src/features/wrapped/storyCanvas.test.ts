@@ -47,3 +47,11 @@ it('un nome di viaggio lunghissimo si accorcia per stare nella larghezza', () =>
   expect(texts[0].endsWith('…')).toBe(true)
   expect(texts[0].length * 20).toBeLessThanOrEqual(960)                     // measureText finto: 20 px a carattere
 })
+
+it('le colonne a zero (foto, messaggi) non compaiono: resta la quota a persona', () => {
+  const { ctx, texts } = fakeCtx()
+  drawStory(ctx, { ...data, photos: 0, messages: 0 })
+  expect(texts).toContain('a persona')
+  expect(texts).not.toContain('foto')
+  expect(texts).not.toContain('messaggi')
+})

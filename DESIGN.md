@@ -266,6 +266,8 @@ Una palette fredda e luminosa con un accento cobalto deciso e un lampone riserva
 
 **The Dark Raspberry For Text Rule.** Per il testo si usano solo `accent` e `negative` (contrasto WCAG AA). `negative-2` vive nelle barre e nei riempimenti, mai come colore del testo nel tema chiaro.
 
+**The Tokens Only Rule.** Ogni colore dell'interfaccia passa dai token di `index.css`, che hanno la versione scura: niente esadecimali nei componenti. Eccezioni dichiarate, perché non cambiano col tema: le illustrazioni stagionali (SVG generati), il logo mappamondo e la favicon, i pastelli della ruota con il loro inchiostro, la copertina cobalto del riepilogo e l'immagine per le storie (un PNG, fuori dall'app). Dove c'è testo sopra, il contrasto è verificato da un test (vetro sopra il disegno, pastelli della ruota) oppure scelto con largo margine (bianco su cobalto pieno e sul fondo scuro dell'immagine).
+
 ## Typography
 
 **Display Font:** DM Sans (con system-ui, -apple-system, Segoe UI, Roboto, sans-serif)
@@ -438,6 +440,26 @@ SVG nostri con colori dai token: **busta** (32×26, `ink-2`, cobalto se non lett
 
 ### Sfondo stagionale (v3.2, D-58)
 Un livello fisso dietro tutto (`.season-bg`, `position: fixed`, `z-index: -1`; non `background-attachment: fixed`, che iOS ignora) con l'illustrazione SVG della stagione: primavera (sakura, Fuji, sole rosso), estate (spiaggia, onde, ombrellone, secchiello, stella marina), autunno (colline, albero rosso, foglie a tre punte), inverno (montagne innevate, abeti, baita). Ogni stagione ha versione chiara e scura (luna, stelle, lanterna, lucciole, aurora) e due tagli: verticale per il telefono e orizzontale da 720 px, dove i fondi si ripetono a specchio e gli oggetti restano a grandezza naturale ai lati. Il disegno sta nel 40% basso; la stagione viene dal giorno a metà del viaggio aperto (invertita sotto l'equatore), dal calendario fuori da un viaggio. Decorativo: `aria-hidden`, `alt=""`, immagini pigre (la versione del tema non attivo non si scarica). File in `FE/src/shared/season/art/`, generati da uno script e non ritoccati a mano.
+
+### Tema scuro e luna/sole (v3.2, D-57)
+Stessi nomi di token con i valori notturni sotto `:root[data-theme='dark']`: fondo blu notte `#0f1620`, cobalto `#9db4ff`, lampone `#ff9cc4`, `--on-accent` blu notte per il testo sui colori pieni. Il tema (Automatico · Chiaro · Scuro) sta sull'account; il bottone luna/sole nell'intestazione lo cambia al volo, uno script in `index.html` lo applica prima del primo disegno (hash nella CSP). Le mappe invertono le tessere OpenStreetMap; i marcatori restano cobalto.
+
+### Testo sopra il disegno (v3.2)
+Lo sfondo è fisso: scorrendo, qualunque testo fuori da una card può finire sopra colline o mare. Titoli, date dei gruppi e paragrafi fuori da card, chat e modali passano a `ink-2` con un alone del colore di fondo (`text-shadow` su `--bg`); i link d'azione fuori dalle card diventano bottoni secondari (es. «Cestino»); il footer della presentazione e la Chat stanno su vetro. La Chat è un solo pannello di vetro con intestazione e barra di scrittura appiccicate; sotto i 420 px «Invia» è solo l'icona (il nome resta per i lettori di schermo).
+
+### «Indietro» (v3.2)
+Bottone secondario piccolo con freccia, alto 44 px, in cima al contenuto di ogni pagina tranne Home, presentazione, accesso e registrazione; in Chat sta nell'intestazione. Torna alla pagina precedente dell'app; aperta da un link diretto va alla pagina madre (modulo → lista, sezione → panoramica, panoramica → Home). Dopo un salvataggio si torna da dove si era partiti; le schede del viaggio sono laterali e non allungano la strada del ritorno.
+
+### Card Giochi e «Chi offre?» (v3.2, D-52)
+Card nella panoramica con sfumatura `accent-tint` → vetro: righe da 48 px con icona cobalto («Chi offre?», «Il vostro viaggio in numeri», che a viaggio aperto dice «arriva a fine viaggio»). La ruota sta in un modale: chip con avatar per scegliere chi c'è (chi non ha account parte non spuntato), ruota SVG con gli spicchi nei **pastelli della stagione del viaggio** e i nomi in inchiostro scuro `#141c26` in entrambi i temi, freccia in `ink`, 3 s di rotazione con frenata, verdetto 1.5rem/800 cobalto in `role="status"` che riceve il focus, coriandoli negli stessi pastelli. Con «Riduci le animazioni» niente rotazione né coriandoli: verdetto subito.
+
+### Riepilogo di fine viaggio (v3.2, D-53…D-55)
+Tre fasi. **Scommessa**: card centrata con il dado, il campo importo grande con la valuta, «Scommetto!» (attivo solo con un importo) e «Salta e guarda i numeri». **Rivelazione**: il totale sale da 0 in 1,2 s; solo a numero fermo arrivano lo scarto, chi ha indovinato meglio (frasi neutre: «scarto di…», «Ha indovinato meglio: …») e i coriandoli. **Pagina**: copertina 220 px (ultima foto con velo scuro, o cobalto pieno fisso: il testo è sempre bianco), totale e quota a persona, «Dove sono finiti i soldi» (righe icona · nome · importo, barra cobalto 8 px e percentuale), record in `kv`, momenti in griglia con mappa, «Il gruppo» (solo se c'è almeno una foto, un messaggio o una reazione), badge, classifiche, chiusura con «Conti chiusi» o il link ai rimborsi che mancano, e l'immagine per le storie.
+- **Badge**: griglia a 2 colonne (3 da 720 px), card raggio 16 su tinte dei token (`accent-tint`, `amber-tint`, `surface-1/2`, mai il lampone); avatar e nome, l'emoji del badge accanto al nome, titolo 700 con l'articolo legato alla parola dopo, dettaglio in `ink-2` con la valuta del viaggio.
+- **Classifiche**: solo foto, messaggi e reazioni (mai soldi); il primo al centro con avatar grande, gli altri ai lati, singolare con 1 («1 messaggio»); sparisce se sono tutti a zero.
+
+### Immagine per le storie (v3.2, D-56)
+PNG 1080×1920 disegnato con Canvas nel browser: foto di copertina ritagliata 9:16 e sfocata con velo scuro, o sfumatura cobalto → blu notte → viola notte; nome (accorciato con «…» se non sta), date, totale 150 px, colonne quota/foto/messaggi (quelle a zero non compaiono), fino a 4 badge, logo mappamondo e firma. Etichette in `#c9d5ff` sul fondo scuro. Anteprima 180 px, poi «Condividi» (foglio di condivisione del telefono) o «Scarica»; la nota sotto dice che non ci sono saldi personali.
 
 ### Modale
 `<dialog>` bianco, raggio 16 px, padding 24 px, larghezza massima 420 px, ombra modale e backdrop d'inchiostro al 45%; azioni allineate a destra.
