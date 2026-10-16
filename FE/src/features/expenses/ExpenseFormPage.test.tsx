@@ -56,6 +56,7 @@ describe('ExpenseFormPage', () => {
     expect(sent).toMatchObject({ description: 'Cena', amount: 90, payerId: 'p2', splitType: 'EQUAL', category: 'FOOD',
       shares: [{ participantId: 'p1' }, { participantId: 'p2' }] })
     expect(router.state.location.pathname).toBe('/trips/t1/expenses')
+    expect(router.state.historyAction).toBe('REPLACE')                         // «Indietro» non riapre il modulo salvato
   })
 
   it('parti uguali con chi conta per 2: precompilato dal partecipante, spiegato e inviato come WEIGHT', async () => {
@@ -192,5 +193,26 @@ describe('ExpenseFormPage', () => {
     expect(screen.getByText(money(1000, 'JPY'))).toBeInTheDocument()                       // quota a testa, in due
     expect(screen.getByRole('button', { name: /Salva/ })).toHaveTextContent(money(2000, 'JPY'))
     expect(screen.queryByText(/€/)).not.toBeInTheDocument()
+  })
+
+  it('salvata, si torna da dove si era partiti (qui la panoramica), senza voci doppie', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.post('http://localhost/api/trips/t1/expenses', () => HttpResponse.json({ id: 'e1' }, { status: 201 })),
+    )
+    const router = renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [
+        { index: true, element: <h2>Panoramica</h2> },
+        { path: 'expenses/new', element: <ExpenseFormPage /> },
+      ] }],
+      ['/trips/t1', '/trips/t1/expenses/new'],
+    )
+    const user = userEvent.setup()
+    await user.type(await screen.findByLabelText('Importo'), '12')
+    await user.type(screen.getByLabelText('Descrizione'), 'Caffè')
+    await user.click(screen.getByRole('button', { name: /Salva/ }))
+    expect(await screen.findByRole('heading', { name: 'Panoramica' })).toBeInTheDocument()
+    expect(router.state.historyAction).toBe('POP')
   })
 })

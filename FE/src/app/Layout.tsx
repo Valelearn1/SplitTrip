@@ -1,7 +1,8 @@
-import { Link, Outlet, useMatch } from 'react-router'
+import { Link, Outlet, useLocation, useMatch } from 'react-router'
 import { useAuth } from '../features/auth/useAuth'
 import { NotificationBell } from '../features/notifications/NotificationBell'
 import { Avatar } from '../shared/ui/Avatar'
+import { BackButton } from '../shared/ui/BackButton'
 import { Icon } from '../shared/ui/Icon'
 import { Logo } from '../shared/ui/Logo'
 import { SeasonBackground } from '../shared/season/SeasonBackground'
@@ -12,6 +13,9 @@ import { WakingBanner } from './WakingBanner'
 export function Layout() {
   const { auth, logout } = useAuth()
   const inTrip = useMatch('/trips/:tripId/*')
+  const path = useLocation().pathname.replace(/\/+$/, '') || '/'
+  // ovunque tranne Home, landing, accesso e registrazione; la Chat ha il suo nell'intestazione
+  const showBack = !!auth && !['/', '/trips', '/login', '/register'].includes(path) && !path.endsWith('/chat')
   return (
     <SeasonProvider>
       <SeasonBackground />
@@ -32,6 +36,7 @@ export function Layout() {
         </header>
         <WakingBanner />
         <main className="app-main">
+          {showBack && <div className="back-bar"><BackButton /></div>}
           <Outlet />
         </main>
       </div>

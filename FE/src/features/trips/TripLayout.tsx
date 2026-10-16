@@ -62,11 +62,11 @@ export function TripLayout() {
         </div>
       </div>
       <nav className="tabs" aria-label="Sezioni del viaggio">
-        <NavLink to="" end><Icon name="explore" />Panoramica</NavLink>
-        <NavLink to="expenses"><Icon name="receipt_long" />Spese</NavLink>
-        <NavLink to="balances"><Icon name="balance" />Saldi</NavLink>
-        <NavLink to="lists"><Icon name="checklist" />Liste</NavLink>
-        <NavLink to="photos"><Icon name="photo_library" />Foto</NavLink>
+        <NavLink to="" end replace><Icon name="explore" />Panoramica</NavLink>
+        <NavLink to="expenses" replace><Icon name="receipt_long" />Spese</NavLink>
+        <NavLink to="balances" replace><Icon name="balance" />Saldi</NavLink>
+        <NavLink to="lists" replace><Icon name="checklist" />Liste</NavLink>
+        <NavLink to="photos" replace><Icon name="photo_library" />Foto</NavLink>
       </nav>
       <Outlet context={ctx} />
       <NewMessageToast tripId={trip.id} myParticipantId={me.id} onChatPage={path.endsWith('/chat')} />

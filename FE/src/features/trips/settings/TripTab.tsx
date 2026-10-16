@@ -50,7 +50,7 @@ function OrganizerTripTab({ trip }: Pick<TripContext, 'trip'>) {
 
   function confirmAction() {
     if (confirm === 'status' && next) update.mutate({ status: next })
-    if (confirm === 'delete') deleteTrip.mutate(trip.id, { onSuccess: () => navigate('/trips') })
+    if (confirm === 'delete') deleteTrip.mutate(trip.id, { onSuccess: () => navigate('/trips', { replace: true }) })
     setConfirm(null)
   }
 

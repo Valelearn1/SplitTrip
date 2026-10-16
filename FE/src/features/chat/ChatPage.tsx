@@ -1,8 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigate, useOutletContext } from 'react-router'
+import { useOutletContext } from 'react-router'
 import { useLivePublish, useLiveStatus, useTripChannel } from '../../shared/live/useLive'
 import { Button } from '../../shared/ui/Button'
 import { FormError } from '../../shared/ui/FormError'
+import { BackButton } from '../../shared/ui/BackButton'
 import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
 import { Spinner } from '../../shared/ui/Spinner'
@@ -24,8 +25,6 @@ export function ChatPage() {
   const markRead = useMarkChatRead(trip.id)
   const status = useLiveStatus()
   const publish = useLivePublish()
-  const navigate = useNavigate()
-  const location = useLocation()
   const [typing, setTyping] = useState<{ name: string; until: number } | null>(null)
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const [newBelow, setNewBelow] = useState(false)
@@ -130,9 +129,7 @@ export function ChatPage() {
     <section className="chat">
       <div className="chat-head">
         {/* torna da dove si è venuti; aperta da un link diretto (nessuna pagina prima) torna alla panoramica */}
-        <button type="button" className="btn btn-secondary btn-sm" onClick={() => (location.key === 'default' ? navigate(`/trips/${trip.id}`) : navigate(-1))}>
-          <Icon name="arrow_back" />Indietro
-        </button>
+        <BackButton />
         <h2>Chat</h2>
         <button type="button" className="btn btn-secondary btn-sm icon-btn chat-sound" aria-label="Suono dei messaggi" aria-pressed={sound}
           title={sound ? 'Suono attivo' : 'Suono spento'} onClick={toggleSound}>

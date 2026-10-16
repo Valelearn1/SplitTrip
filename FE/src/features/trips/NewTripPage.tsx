@@ -23,7 +23,7 @@ export function NewTripPage() {
   return (
     <section>
       <h1>Nuovo viaggio</h1>
-      <form noValidate onSubmit={handleSubmit((values) => create.mutate(values, { onSuccess: (trip) => navigate(`/trips/${trip.id}/benvenuto`) }))}>
+      <form noValidate onSubmit={handleSubmit((values) => create.mutate(values, { onSuccess: (trip) => navigate(`/trips/${trip.id}/benvenuto`, { replace: true }) }))}>
         <Field label="Nome del viaggio" placeholder="Es. Roma 2026" error={errors.name?.message} {...register('name')} />
         <Controller control={control} name="destination" render={({ field }) => (
           <PlaceInput id="trip-destination" label="Destinazione" placeholder="Es. Lisbona" error={errors.destination?.message}

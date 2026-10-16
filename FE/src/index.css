@@ -675,3 +675,7 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
 .podium-rest { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: grid; gap: 4px; }
 .podium-rest li { display: flex; justify-content: space-between; }
 .wrapped-end { display: grid; justify-items: center; gap: var(--space-3); text-align: center; }
+
+/* «Indietro» (v3.2): sopra il contenuto di ogni pagina tranne Home, landing, accesso e registrazione */
+.back-bar { margin-bottom: var(--space-3); }
+.back-btn { min-height: 44px; }

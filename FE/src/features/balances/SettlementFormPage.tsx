@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { useNavigate, useOutletContext, useSearchParams } from 'react-router'
+import { useOutletContext, useSearchParams } from 'react-router'
+import { useGoBack } from '../../shared/navigation/useGoBack'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
+import { localToday } from '../../shared/utils/format'
 import { parseCents } from '../expenses/expenseSchema'
 import type { TripContext } from '../trips/TripLayout'
 import { settlementSchema, type SettlementForm } from './settlementSchema'
@@ -13,7 +15,7 @@ import { useCreateSettlement } from './useBalances'
 export function SettlementFormPage() {
   const { trip, me } = useOutletContext<TripContext>()
   const [params] = useSearchParams()
-  const navigate = useNavigate()
+  const goBack = useGoBack()
   const create = useCreateSettlement(trip.id)
   const { register, handleSubmit, formState: { errors } } = useForm<SettlementForm>({
     resolver: zodResolver(settlementSchema),
@@ -21,7 +23,7 @@ export function SettlementFormPage() {
       fromParticipantId: params.get('from') ?? me.id,
       toParticipantId: params.get('to') ?? '',
       amount: (params.get('amount') ?? '').replace('.', ','),
-      date: new Date().toISOString().slice(0, 10),
+      date: localToday(),
       note: '',
     },
   })
@@ -30,7 +32,7 @@ export function SettlementFormPage() {
     <form noValidate className="card" onSubmit={handleSubmit((v) =>
       create.mutate(
         { fromParticipantId: v.fromParticipantId, toParticipantId: v.toParticipantId, amount: (parseCents(v.amount) ?? 0) / 100, date: v.date, note: v.note || undefined },
-        { onSuccess: () => navigate(`/trips/${trip.id}/balances`) },
+        { onSuccess: () => goBack(`/trips/${trip.id}/balances`) },
       ))}>
       <h2>Registra un rimborso</h2>
       <div className="field">

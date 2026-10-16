@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router'
+import { useLocation, useOutletContext, useParams } from 'react-router'
+import { useGoBack } from '../../shared/navigation/useGoBack'
 import { CATEGORY_LABELS, type Expense, type ExpenseCategory, type SplitType } from '../../shared/api/types'
 import { Avatar } from '../../shared/ui/Avatar'
 import { Button } from '../../shared/ui/Button'
@@ -11,17 +12,13 @@ import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
 import { Spinner } from '../../shared/ui/Spinner'
-import { formatCount, formatMoney } from '../../shared/utils/format'
+import { formatCount, formatMoney, localToday } from '../../shared/utils/format'
 import { defaultBasis, presence, splitByWeight } from '../../shared/utils/split'
 import type { TripContext } from '../trips/TripLayout'
 import { CountsFor } from './CountsFor'
 import { expenseSchema, parseCents, toExpenseInput, type ExpenseForm } from './expenseSchema'
 import { ReceiptSection } from './ReceiptSection'
 import { useCreateExpense, useDeleteExpense, useExpense, useUpdateExpense } from './useExpenses'
-
-function today() {
-  return new Date().toISOString().slice(0, 10)
-}
 
 function toInputAmount(n: number) {
   return n.toFixed(2).replace('.', ',')
@@ -50,7 +47,8 @@ export function ExpenseFormPage() {
 
 function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense?: Expense; prefill?: ExpensePrefill }) {
   const { trip, me, isOrganizer, canWrite } = ctx
-  const navigate = useNavigate()
+  // dopo il salvataggio si torna da dove si era partiti, senza lasciare il modulo nella cronologia
+  const goBack = useGoBack()
   const create = useCreateExpense(trip.id)
   const update = useUpdateExpense(trip.id, expense?.id ?? '')
   const remove = useDeleteExpense(trip.id)
@@ -87,7 +85,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
           }),
         }
       : {
-          description: prefill?.description ?? '', amount: '', date: prefill?.date ?? today(), category: prefill?.category ?? 'FOOD',
+          description: prefill?.description ?? '', amount: '', date: prefill?.date ?? localToday(), category: prefill?.category ?? 'FOOD',
           payerId: prefill?.payerId ?? me.id, splitType: 'EQUAL', dayBasis: 'DAYS',
           shares: trip.participants.map((p) => ({ participantId: p.id, included: prefill ? prefill.participantIds.includes(p.id) : true,
             amount: '', weight: toInputNumber(p.defaultWeight) })),
@@ -133,7 +131,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
 
   const mutation = expense ? update : create
   const onSubmit = handleSubmit((values) =>
-    mutation.mutate(toExpenseInput(values), { onSuccess: () => navigate(`/trips/${trip.id}/expenses`) }),
+    mutation.mutate(toExpenseInput(values), { onSuccess: () => goBack(`/trips/${trip.id}/expenses`) }),
   )
 
   return (
@@ -263,7 +261,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
         <div className="modal-actions">
           <Button type="button" variant="secondary" onClick={() => setConfirmDelete(false)}>Annulla</Button>
           <Button type="button" variant="danger" loading={remove.isPending}
-            onClick={() => expense && remove.mutate(expense.id, { onSuccess: () => navigate(`/trips/${trip.id}/expenses`) })}>
+            onClick={() => expense && remove.mutate(expense.id, { onSuccess: () => goBack(`/trips/${trip.id}/expenses`) })}>
             Elimina
           </Button>
         </div>

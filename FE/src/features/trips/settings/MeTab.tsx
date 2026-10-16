@@ -30,7 +30,7 @@ export function MeTab({ trip, me, isOrganizer }: TripContext) {
         <p className="muted">Non vedrai più il viaggio. Puoi rientrare con il codice invito e ritroverai i tuoi dati.</p>
         <div className="modal-actions">
           <Button variant="secondary" onClick={() => setConfirm(false)}>Annulla</Button>
-          <Button variant="danger" onClick={() => { setConfirm(false); leave.mutate(me.id, { onSuccess: () => navigate('/trips') }) }}>Conferma</Button>
+          <Button variant="danger" onClick={() => { setConfirm(false); leave.mutate(me.id, { onSuccess: () => navigate('/trips', { replace: true }) }) }}>Conferma</Button>
         </div>
       </Modal>
     </section>
