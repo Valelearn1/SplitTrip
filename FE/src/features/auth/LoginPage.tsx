@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
+import { PasswordField } from '../../shared/ui/PasswordField'
 import { FormError } from '../../shared/ui/FormError'
 import { Logo } from '../../shared/ui/Logo'
 import { authApi } from './authApi'
@@ -37,7 +38,7 @@ export function LoginPage() {
       </div>
       <form className="card" onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
         <Field label="Email" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
-        <Field label="Password" type="password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
+        <PasswordField label="Password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
         <FormError error={mutation.error} />
         <Button type="submit" loading={mutation.isPending}>Entra</Button>
       </form>

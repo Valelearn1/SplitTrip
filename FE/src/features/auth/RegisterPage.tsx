@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router'
 import { ApiError } from '../../shared/api/client'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
+import { PasswordField } from '../../shared/ui/PasswordField'
 import { FormError } from '../../shared/ui/FormError'
 import { Logo } from '../../shared/ui/Logo'
 import { authApi } from './authApi'
@@ -41,7 +42,7 @@ export function RegisterPage() {
       <form className="card" onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
         <Field label="Nome" autoComplete="name" placeholder="Come ti chiamano gli amici" error={errors.displayName?.message} {...register('displayName')} />
         <Field label="Email" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
-        <Field label="Password" type="password" autoComplete="new-password" placeholder="Almeno 8 caratteri, una lettera e una cifra" error={errors.password?.message} {...register('password')} />
+        <PasswordField label="Password" autoComplete="new-password" placeholder="Almeno 8 caratteri, una lettera e una cifra" error={errors.password?.message} {...register('password')} />
         <FormError error={mutation.error} />
         <Button type="submit" loading={mutation.isPending}>Registrati</Button>
       </form>

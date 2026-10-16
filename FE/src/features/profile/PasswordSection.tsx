@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { ApiError } from '../../shared/api/client'
 import { Button } from '../../shared/ui/Button'
-import { Field } from '../../shared/ui/Field'
+import { PasswordField } from '../../shared/ui/PasswordField'
 import { FormError } from '../../shared/ui/FormError'
 import { registerSchema } from '../auth/authSchemas'
 import { profileApi } from './profileApi'
@@ -31,9 +31,9 @@ export function PasswordSection() {
   const fieldErrors = change.error instanceof ApiError && change.error.errors.length > 0
   return (
     <form noValidate className="stack" onSubmit={handleSubmit((v) => change.mutate({ currentPassword: v.currentPassword, newPassword: v.newPassword }))}>
-      <Field label="Password attuale" type="password" autoComplete="current-password" error={errors.currentPassword?.message} {...register('currentPassword')} />
-      <Field label="Nuova password" type="password" autoComplete="new-password" error={errors.newPassword?.message} {...register('newPassword')} />
-      <Field label="Conferma la nuova password" type="password" autoComplete="new-password" error={errors.confirm?.message} {...register('confirm')} />
+      <PasswordField label="Password attuale" autoComplete="current-password" error={errors.currentPassword?.message} {...register('currentPassword')} />
+      <PasswordField label="Nuova password" autoComplete="new-password" error={errors.newPassword?.message} {...register('newPassword')} />
+      <PasswordField label="Conferma la nuova password" autoComplete="new-password" error={errors.confirm?.message} {...register('confirm')} />
       <p className="muted hint">Almeno 8 caratteri, con almeno una lettera e una cifra.</p>
       {!fieldErrors && <FormError error={change.error} />}
       {change.isSuccess && <p role="status" className="money-positive">Password cambiata</p>}
