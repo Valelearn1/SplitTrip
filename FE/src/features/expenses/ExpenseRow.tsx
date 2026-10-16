@@ -4,7 +4,7 @@ import type { Expense } from '../../shared/api/types'
 import { CategoryIcon } from '../../shared/ui/CategoryIcon'
 import { Icon } from '../../shared/ui/Icon'
 import { MoneyText } from '../../shared/ui/MoneyText'
-import { formatCount } from '../../shared/utils/format'
+import { formatCount, formatMoney } from '../../shared/utils/format'
 import { splitLabel } from './splitLabels'
 
 /** Accanto al nome, nel dettaglio: per quanto conta o quante notti/giorni (D-44). */
@@ -34,7 +34,7 @@ export function ExpenseRow({ expense, currency, meId }: { expense: Expense; curr
           {expense.payerId === meId ? (
             <small className="muted" style={{ display: 'block', color: 'var(--accent)' }}>Hai anticipato</small>
           ) : (
-            mine && <small className="muted" style={{ display: 'block' }}>tua quota {mine.amount.toFixed(2).replace('.', ',')} €</small>
+            mine && <small className="muted" style={{ display: 'block' }}>tua quota {formatMoney(mine.amount, currency)}</small>
           )}
         </span>
       </Link>

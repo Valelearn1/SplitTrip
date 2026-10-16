@@ -3,7 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { expect, it } from 'vitest'
 import type { Expense } from '../../shared/api/types'
+import { formatMoney } from '../../shared/utils/format'
 import { ExpenseRow } from './ExpenseRow'
+
+// Intl separa importo e valuta con uno spazio non separabile; Testing Library confronta il testo con spazi normali
+const money = (n: number, c: string) => formatMoney(n, c).replace(/\s/g, ' ')
 
 const cena: Expense = {
   id: 'e1', description: 'Cena a Bairro Alto', amount: 90, currency: 'EUR', date: '2026-11-03', category: 'FOOD', splitType: 'WEIGHT', dayBasis: null,
@@ -27,4 +31,10 @@ it('«Dettagli» apre la divisione completa e la quota di ognuno', async () => {
   expect(within(quotes).getByText(/40,00/)).toBeInTheDocument()
   expect(within(quotes).getByText('Tu')).toBeInTheDocument()
   expect(screen.getByText('Pagato da Marco · in parti uguali · Marco conta per 2, Nonna conta per ½')).toBeInTheDocument()
+})
+
+it('la mia quota è nella valuta del viaggio, non sempre in euro', () => {
+  render(<MemoryRouter><ExpenseRow expense={{ ...cena, currency: 'JPY', amount: 9000, shares: [{ ...cena.shares[0], amount: 2000 }] }} currency="JPY" meId="p1" /></MemoryRouter>)
+  expect(screen.getByText(`tua quota ${money(2000, 'JPY')}`)).toBeInTheDocument()
+  expect(screen.queryByText(/€/)).not.toBeInTheDocument()
 })

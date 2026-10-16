@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useNavigate, useOutletContext, useParams } from 'react-router'
+import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router'
 import { CATEGORY_LABELS, type Expense, type ExpenseCategory, type SplitType } from '../../shared/api/types'
 import { Avatar } from '../../shared/ui/Avatar'
 import { Button } from '../../shared/ui/Button'
@@ -34,17 +34,21 @@ function toInputNumber(n: number) {
 
 const DAYS_LABEL = { NIGHTS: 'Notti', DAYS: 'Giorni' } as const
 
+/** Una spesa nuova già impostata da chi apre il modulo (es. «Chi offre?»): arriva in `location.state.prefill`. */
+export type ExpensePrefill = { payerId: string; participantIds: string[]; category: ExpenseCategory; date: string; description?: string }
+
 /** Stessa pagina per /expenses/new e /expenses/:expenseId/edit. */
 export function ExpenseFormPage() {
   const { expenseId } = useParams<{ expenseId?: string }>()
   const ctx = useOutletContext<TripContext>()
   const existing = useExpense(ctx.trip.id, expenseId ?? '')
+  const prefill = (useLocation().state as { prefill?: ExpensePrefill } | null)?.prefill
   if (expenseId && existing.isPending) return <Spinner />
   if (expenseId && !existing.data) return <FormError error={existing.error ?? new Error('Spesa non trovata')} />
-  return <ExpenseFormInner ctx={ctx} expense={existing.data} />
+  return <ExpenseFormInner ctx={ctx} expense={existing.data} prefill={expenseId ? undefined : prefill} />
 }
 
-function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expense }) {
+function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense?: Expense; prefill?: ExpensePrefill }) {
   const { trip, me, isOrganizer, canWrite } = ctx
   const navigate = useNavigate()
   const create = useCreateExpense(trip.id)
@@ -83,8 +87,10 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
           }),
         }
       : {
-          description: '', amount: '', date: today(), category: 'FOOD', payerId: me.id, splitType: 'EQUAL', dayBasis: 'DAYS',
-          shares: trip.participants.map((p) => ({ participantId: p.id, included: true, amount: '', weight: toInputNumber(p.defaultWeight) })),
+          description: prefill?.description ?? '', amount: '', date: prefill?.date ?? today(), category: prefill?.category ?? 'FOOD',
+          payerId: prefill?.payerId ?? me.id, splitType: 'EQUAL', dayBasis: 'DAYS',
+          shares: trip.participants.map((p) => ({ participantId: p.id, included: prefill ? prefill.participantIds.includes(p.id) : true,
+            amount: '', weight: toInputNumber(p.defaultWeight) })),
         },
   })
 
@@ -186,7 +192,7 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
         {splitType === 'EQUAL' && !countsDiffer && includedCount > 0 && totalCents > 0 && (
           <div className="info" style={{ marginBottom: 8 }}>
             <Icon name="groups" />
-            <span>Quota a testa: <strong>{toInputAmount(perHead)} €</strong> a persona</span>
+            <span>Quota a testa: <strong>{formatMoney(perHead, trip.currency)}</strong> a persona</span>
           </div>
         )}
         {splitType === 'EQUAL' && !countsShown && (
@@ -233,7 +239,7 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
         {splitType === 'CUSTOM' && (
           <p className={remaining === 0 ? 'muted' : 'field-error'} style={{ marginTop: 8 }}>
             {remaining !== 0 && <Icon name="error" />}
-            <span>Resta da assegnare: {toInputAmount(remaining)} €</span>
+            <span>Resta da assegnare: {formatMoney(remaining, trip.currency)}</span>
           </p>
         )}
         {errors.shares?.message && <p className="field-error"><Icon name="error" /><span>{errors.shares.message}</span></p>}
@@ -246,7 +252,7 @@ function ExpenseFormInner({ ctx, expense }: { ctx: TripContext; expense?: Expens
       {canEdit ? (
         <div className="actions">
           {expense && <Button type="button" variant="danger" onClick={() => setConfirmDelete(true)}><Icon name="delete" />Elimina</Button>}
-          <Button type="submit" loading={mutation.isPending}><Icon name="save" />Salva{totalCents > 0 && <span className="echo" aria-hidden="true">· {toInputAmount(totalCents / 100)} €</span>}</Button>
+          <Button type="submit" loading={mutation.isPending}><Icon name="save" />Salva{totalCents > 0 && <span className="echo" aria-hidden="true">· {formatMoney(totalCents / 100, trip.currency)}</span>}</Button>
         </div>
       ) : (
         <p className="muted">Puoi solo consultare questa spesa.</p>

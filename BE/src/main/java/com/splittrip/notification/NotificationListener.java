@@ -8,6 +8,7 @@ import com.splittrip.live.AfterCommit;
 import com.splittrip.live.LivePublisher;
 import com.splittrip.notification.dto.LiveNotification;
 import com.splittrip.notification.dto.NotificationResponse;
+import com.splittrip.trip.Trip;
 import com.splittrip.trip.TripRepository;
 import com.splittrip.user.UserRepository;
 import org.springframework.stereotype.Component;
@@ -49,7 +50,7 @@ public class NotificationListener {
         e.shareByUserId().forEach((userId, share) -> {
             if (!userId.equals(e.actorUserId())) {
                 save(userId, e.tripId(), NotificationType.EXPENSE_ADDED,
-                        NotificationMessages.expense(e.actorName(), e.description(), share), link);
+                        NotificationMessages.expense(e.actorName(), e.description(), share, e.currency()), link);
             }
         });
     }
@@ -58,13 +59,14 @@ public class NotificationListener {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void on(SettlementCreated e) {
         String link = "/trips/" + e.tripId() + "/balances";
+        String currency = trips.findById(e.tripId()).map(Trip::getCurrency).orElse("EUR");
         if (e.toUserId() != null && !e.toUserId().equals(e.actorUserId())) {
             save(e.toUserId(), e.tripId(), NotificationType.SETTLEMENT_ADDED,
-                    NotificationMessages.settlement(e.actorName(), e.amount(), true, e.fromName()), link);
+                    NotificationMessages.settlement(e.actorName(), e.amount(), currency, true, e.fromName()), link);
         }
         if (e.fromUserId() != null && !e.fromUserId().equals(e.actorUserId())) {
             save(e.fromUserId(), e.tripId(), NotificationType.SETTLEMENT_ADDED,
-                    NotificationMessages.settlement(e.actorName(), e.amount(), false, e.toName()), link);
+                    NotificationMessages.settlement(e.actorName(), e.amount(), currency, false, e.toName()), link);
         }
     }
 

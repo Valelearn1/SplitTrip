@@ -160,6 +160,16 @@ S3 (id dal client) può restare fuori dal capstone: si fa prima di iniziare l'of
 
 Vincoli D-24: con `prefers-reduced-motion` niente rotazione e risultato immediato; il nome scelto annunciato come testo (`role="status"`); usabile da tastiera. Scartati: quiz sulla destinazione (fuori tema), «pari o dispari» sui debiti (sembra una scommessa sui soldi veri); badge e classifiche vanno semmai nel riepilogo di fine viaggio («Wrapped», §4.2).
 
+**Altri candidati per il punto di controllo di lunedì 19 ottobre** (D-27 aggiornata), proposti il 16 ottobre, dopo la v3.2:
+
+| Cosa | Perché | Compl. | Costo stimato |
+|---|---|---|---|
+| 💱 **Spesa in un'altra valuta** (v3.3 «Valute»): nel modulo si sceglie la valuta, il tasso del giorno della spesa arriva precompilato (Frankfurter/BCE, gratis e senza chiave, chiamato **solo dal backend** come Open-Meteo, D-46) e resta modificabile; si salvano importo originale, `fx_rate` e `amount_base`, e quote, saldi e riepilogo restano nella valuta del viaggio | il caso vero: viaggio in euro, ramen pagato in yen; lo schema S2 c'è già (`currency`, `fx_rate`, `amount_base` dalla `V2`), nessuna migrazione | M | ~1 giorno (BE + FE) |
+| ↳ ripiego: **solo convertitore** «2000 JPY ≈ 12,30 €» accanto all'importo | aiuta senza toccare i soldi | B | ~0,5 giorni |
+| 📶 **Offline in lettura** (PWA): app installabile, guscio dell'app in cache col service worker, ultimi dati visti (viaggi, spese, saldi, liste) salvati sul dispositivo e mostrati senza rete con un avviso «Sei offline: dati di HH:MM»; le modifiche restano disattivate finché torna la rete | all'estero senza roaming i conti restano consultabili; aiuta anche col risveglio lento del server gratuito (si vedono subito gli ultimi dati) | M | ~1 giorno, solo frontend |
+
+Vincoli da mettere nella spec: valute fuori dalla lista BCE (circa 30) e servizio dei tassi giù → tasso scritto a mano; offline: i dati salvati sul dispositivo si cancellano all'uscita dall'account, `sw.js` servito senza cache lunga, CSP invariata (tutto da `'self'`). **Fuori dal capstone**: saldi in più valute e **offline in scrittura** (spese inserite senza rete e sincronizzate dopo), che richiede S3 (id dal client, `version`) e la gestione dei conflitti (§2 voce 2, §5).
+
 ### 4.2 MVP di prodotto (dopo il capstone)
 
 Il tuo candidato era: **giorni di presenza, scontrino per voce, riepilogo condivisibile.**

@@ -1,10 +1,8 @@
 package com.splittrip.chat;
 
+import com.splittrip.common.MoneyFormat;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 /** Testi delle righe evento: una fotografia, non si ricalcolano se la spesa cambia (D-40). */
 final class ChatMessages {
@@ -12,8 +10,7 @@ final class ChatMessages {
     private ChatMessages() {}
 
     static String money(BigDecimal amount, String currency) {
-        String n = new DecimalFormat("#,##0.00", DecimalFormatSymbols.getInstance(Locale.ITALY)).format(amount.setScale(2, RoundingMode.HALF_UP));
-        return n + ("EUR".equals(currency) ? " €" : " " + currency);
+        return MoneyFormat.format(amount, currency);
     }
 
     static String expense(String actor, String description, BigDecimal amount, String currency) {

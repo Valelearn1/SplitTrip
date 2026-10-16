@@ -6,7 +6,11 @@ import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripLayout } from '../trips/TripLayout'
+import { formatMoney } from '../../shared/utils/format'
 import { ExpenseFormPage } from './ExpenseFormPage'
+
+// Intl separa importo e valuta con uno spazio non separabile; Testing Library confronta il testo con spazi normali
+const money = (n: number, c: string) => formatMoney(n, c).replace(/\s/g, ' ')
 
 const trip = {
   id: 't1', name: 'Roma', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR', status: 'ONGOING',
@@ -155,5 +159,38 @@ describe('ExpenseFormPage', () => {
     await user.click(screen.getByRole('radio', { name: 'Presenza' }))
     expect(screen.getByLabelText('Notti di Vale')).toHaveValue('2')
     expect(screen.getByLabelText('Notti di Marco')).toHaveValue('4')
+  })
+
+  it('aperta da «Chi offre?» ha pagante, partecipanti, categoria e data già scelti', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    const tripThree = { ...trip, participants: [...trip.participants,
+      { id: 'p3', userId: null, displayName: 'Nonna Pina', role: 'MEMBER', defaultWeight: 1, arrivalDate: null, departureDate: null }] }
+    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json(tripThree)))
+    renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }],
+      { pathname: '/trips/t1/expenses/new', state: { prefill: { payerId: 'p2', participantIds: ['p1', 'p2'], category: 'ACTIVITY', date: '2026-11-03', description: 'Gelato' } } },
+    )
+    expect(await screen.findByLabelText('Descrizione')).toHaveValue('Gelato')
+    const payer = screen.getByRole('group', { name: 'Chi ha pagato?' })
+    expect(within(payer).getByRole('radio', { name: /Marco/ })).toBeChecked()
+    expect(within(payer).getByRole('radio', { name: /Tu/ })).not.toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Attività' })).toBeChecked()
+    expect(screen.getByLabelText('Data')).toHaveValue('2026-11-03')
+    expect(screen.getByRole('checkbox', { name: /Marco/ })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /Tu \(io\)/ })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /Nonna Pina/ })).not.toBeChecked()   // non era nella ruota
+  })
+
+  it('quota a testa e «Salva» usano la valuta del viaggio, non sempre l\'euro', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json({ ...trip, currency: 'JPY' })))
+    renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }],
+      '/trips/t1/expenses/new',
+    )
+    await userEvent.setup().type(await screen.findByLabelText('Importo'), '2000')
+    expect(screen.getByText(money(1000, 'JPY'))).toBeInTheDocument()                       // quota a testa, in due
+    expect(screen.getByRole('button', { name: /Salva/ })).toHaveTextContent(money(2000, 'JPY'))
+    expect(screen.queryByText(/€/)).not.toBeInTheDocument()
   })
 })
