@@ -461,6 +461,18 @@ Tre fasi. **Scommessa**: card centrata con il dado, il campo importo grande con 
 ### Immagine per le storie (v3.2, D-56)
 PNG 1080×1920 disegnato con Canvas nel browser: foto di copertina ritagliata 9:16 e sfocata con velo scuro, o sfumatura cobalto → blu notte → viola notte; nome (accorciato con «…» se non sta), date, totale 150 px, colonne quota/foto/messaggi (quelle a zero non compaiono), fino a 4 badge, logo mappamondo e firma. Etichette in `#c9d5ff` sul fondo scuro. Anteprima 180 px, poi «Condividi» (foglio di condivisione del telefono) o «Scarica»; la nota sotto dice che non ci sono saldi personali.
 
+### Campo importo (v3.2, aggiunte)
+`AmountField` sopra `Field`: tastiera decimale, suffisso della valuta in cobalto, ripulisce mentre scrivi o incolli (`sanitizeAmount`): solo cifre e una virgola, al massimo 6 cifre intere e 2 decimali (999.999,99). Il punto delle migliaia si toglie («1.234,56», «1,234.56», «1.234»), un punto con 1–2 cifre dopo diventa la virgola. Stessa pulizia nelle quote personalizzate. Il layout regge l'importo massimo a 390 px senza scorrimenti.
+
+### Campo password con occhiolino (v3.2, aggiunte)
+`PasswordField`: bottone 44 px dentro il campo a destra, icona `visibility` / `visibility_off` in `ink-2`, nome «Mostra password» / «Nascondi password» e `aria-pressed`; anello di focus interno cobalto. In accesso, registrazione, profilo e ripristino.
+
+### Password dimenticata (v3.2, D-61)
+Due pagine pubbliche nello stile dell'accesso (logo, titolo, una card): «Password dimenticata» (email → card di conferma con icona, sempre lo stesso testo, «Il link vale 30 minuti») e «Nuova password» (due `PasswordField`, poi card «Password cambiata» con «Accedi»; link non valido o scaduto → card con icona `link_off` e «Chiedi un nuovo link»). «Password dimenticata?» sotto «Entra», area di 44 px. Niente «Indietro» globale: «Torna all'accesso».
+
+### Destinazione dall'elenco (v3.2, D-60)
+Il combobox dei luoghi è obbligatorio per la destinazione del viaggio: senza una proposta scelta l'errore di campo è «Scegli la destinazione dall'elenco»; se la ricerca non risponde, sotto il campo compare in lampone «Ricerca dei luoghi non disponibile, riprova tra poco». Nelle impostazioni la scelta serve solo se la destinazione cambia.
+
 ### Modale
 `<dialog>` bianco, raggio 16 px, padding 24 px, larghezza massima 420 px, ombra modale e backdrop d'inchiostro al 45%; azioni allineate a destra.
 

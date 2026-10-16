@@ -4,7 +4,7 @@ App per vacanze tra amici: spese divise, conti chiari (capstone corso fullstack)
 Mission e scelte: `docs/superpowers/specs/2026-10-12-splittrip-design.md`, `docs/decisioni.md`.
 
 ## Struttura
-- `BE/` Spring Boot 4.1 / Java 25, PostgreSQL, Flyway. Package per funzionalità sotto `com.splittrip`: `common`, `auth`, `user`, `trip` (viaggi, partecipanti anche senza account, codice invito), `expense`, `todo` (liste), `photo` (foto e scontrini), `notification` (ascolta gli eventi), `weather` (Open-Meteo), `live` (WebSocket STOMP), `chat` (anche reazioni), `ai` (consigli con l'API di Anthropic), `places` (proposte di luoghi), `home` (la Home in una chiamata), `wrapped` (riepilogo di fine viaggio, badge, «Indovina il totale»).
+- `BE/` Spring Boot 4.1 / Java 25, PostgreSQL, Flyway. Package per funzionalità sotto `com.splittrip`: `common`, `auth` (anche `auth/reset`, password dimenticata), `user`, `trip` (viaggi, partecipanti anche senza account, codice invito), `expense`, `todo` (liste), `photo` (foto e scontrini), `notification` (ascolta gli eventi), `weather` (Open-Meteo), `live` (WebSocket STOMP), `chat` (anche reazioni), `ai` (consigli con l'API di Anthropic), `places` (proposte di luoghi), `home` (la Home in una chiamata), `wrapped` (riepilogo di fine viaggio, badge, «Indovina il totale»).
 - `FE/` React 19 + TypeScript + Vite. Feature folders sotto `src/features/`, condiviso in `src/shared/`.
 - `docs/` spec, piani (`docs/superpowers/plans/`), registro decisioni, prompt Stitch, card Trello.
 
@@ -26,6 +26,9 @@ Mission e scelte: `docs/superpowers/specs/2026-10-12-splittrip-design.md`, `docs
 - AI (D-41): al modello mai nomi, email o importi; chiave solo in `ANTHROPIC_API_KEY`.
 - Luoghi (D-46, D-51): la ricerca passa solo dal backend (`/api/places`, Open-Meteo), mai dal browser; al servizio va solo il testo cercato.
 - Colori (D-57, D-58): sempre dai token di `FE/src/index.css` (con la versione scura), nomi per ruolo (`--accent` cobalto, `--negative` lampone); il lampone vuol dire solo «devi dare» ed errori, mai decorazione. Eccezioni dichiarate in `DESIGN.md` (illustrazioni, logo, pastelli della ruota, immagine per le storie). Testo nuovo fuori dalle card: verificarlo sopra lo sfondo stagionale.
+- Importi (v3.2): nel browser solo cifre e una virgola (`AmountField`/`sanitizeAmount`), al massimo 999.999,99 con 2 decimali; lo stesso tetto nei DTO (`@Digits(integer = 6, fraction = 2)`).
+- Destinazione del viaggio (D-60): sempre una proposta scelta dall'elenco, con coordinate; `/api/places` risponde 503 se il servizio è giù.
+- Password dimenticata (D-61): token solo come hash SHA-256, monouso, 30 minuti; email con l'API di Brevo dopo il commit; chiave solo in `BREVO_API_KEY`, mai nel repository.
 - Preferenze (D-48): suono, animazioni, valuta predefinita e tema stanno sull'account (`PATCH /api/me/preferences`), `localStorage` è solo la copia della sessione.
 - TDD: test prima del codice. Un commit per task, direttamente su `main`: niente branch di funzionalità né pull request (D-23). Un tag per versione.
 - **I commit li fa l'autrice**: segnalare «Puoi committare: `<messaggio>`» e fermarsi. Mai `git commit`/`git push`. Nessuna riga `Co-Authored-By`: l'autrice è l'unica autrice.
@@ -35,7 +38,7 @@ Mission e scelte: `docs/superpowers/specs/2026-10-12-splittrip-design.md`, `docs
 v1 Core (auth, viaggi, spese, saldi) → v1.5 Divisioni smart (D-28: i soldi puntano ai partecipanti, valuta sulla spesa, divisione per giorni e pesi) → v2 Social (to-do, foto+mappa, notifiche) → v3 Live (chat, notifiche live) → v3.1 Rifinitura (dai test con gli amici) → v3.2 Giochi, riepilogo e tema (ruota, riepilogo di fine viaggio, tema scuro, stagioni). Tag `v1.0`, `v1.5`, `v2.0`, `v3.0`, `v3.1`, `v3.2`.
 
 ## Stato
-- v1 Core completa (2026-10-13, tag `v1.0`, `v1.0.1`). v1.5 Divisioni smart completa (2026-10-14, tag `v1.5`). v2 Social completa (2026-10-14, tag `v2.0`). v3 Live completa (2026-10-15, tag `v3.0`): backend 162 test, frontend 89 test. v3.1 Rifinitura completa (2026-10-15, tag `v3.1`): backend 186 test, frontend 108 test. v3.2 Giochi, riepilogo e tema completa (2026-10-16, tag `v3.2`): backend 203 test, frontend 196 test. Prossimo: punto di controllo di lunedì 19 (valute, offline in lettura, inclusività: `docs/ROADMAP.md` §4.1).
+- v1 Core completa (2026-10-13, tag `v1.0`, `v1.0.1`). v1.5 Divisioni smart completa (2026-10-14, tag `v1.5`). v2 Social completa (2026-10-14, tag `v2.0`). v3 Live completa (2026-10-15, tag `v3.0`): backend 162 test, frontend 89 test. v3.1 Rifinitura completa (2026-10-15, tag `v3.1`): backend 186 test, frontend 108 test. v3.2 Giochi, riepilogo e tema completa (2026-10-16, tag `v3.2`, con le aggiunte prima del tag: importi, occhiolino, destinazione reale, «Chi offre?» come offerta, password dimenticata): backend 219 test, frontend 223 test. Prossimo: punto di controllo di lunedì 19 (valute, offline in lettura, inclusività: `docs/ROADMAP.md` §4.1).
 - Punto di controllo sullo scope: lunedì 19 ottobre 2026 (D-27, spostato dal 18).
 - Grafica: sistema visivo in `DESIGN.md` (token in `FE/src/index.css`), prodotto in `PRODUCT.md`, brief Impeccable in `.impeccable/surfaces/fe-src.md`.
 - Visione oltre il capstone: `docs/ROADMAP.md`.
