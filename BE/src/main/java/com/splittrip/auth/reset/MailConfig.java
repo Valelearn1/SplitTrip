@@ -2,28 +2,22 @@ package com.splittrip.auth.reset;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.web.client.RestClient;
 
-import java.util.Properties;
+import java.net.http.HttpClient;
+import java.time.Duration;
 
-/** SMTP se MAIL_HOST è impostata (Brevo: smtp-relay.brevo.com:587, STARTTLS), altrimenti il log: l'avvio non fallisce mai per l'email. */
+/** API di Brevo se BREVO_API_KEY è impostata, altrimenti il log: l'avvio non fallisce mai per l'email. */
 @Configuration
 class MailConfig {
 
     @Bean
     PasswordResetMailer passwordResetMailer(MailProperties mail) {
-        if (mail.host() == null || mail.host().isBlank()) return new LogPasswordResetMailer(mail.logLinks());
-        JavaMailSenderImpl sender = new JavaMailSenderImpl();
-        sender.setHost(mail.host());
-        sender.setPort(mail.port());
-        sender.setUsername(mail.username());
-        sender.setPassword(mail.password());
-        Properties props = sender.getJavaMailProperties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.connectiontimeout", "5000");
-        props.put("mail.smtp.timeout", "5000");
-        props.put("mail.smtp.writetimeout", "5000");
-        return new SmtpPasswordResetMailer(sender, mail.from());
+        if (mail.apiKey() == null || mail.apiKey().isBlank()) return new LogPasswordResetMailer(mail.logLinks());
+        // timeout di 5 s: un servizio lento non deve tenere appesa la richiesta di chi ha dimenticato la password
+        var factory = new JdkClientHttpRequestFactory(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build());
+        factory.setReadTimeout(Duration.ofSeconds(5));
+        return new BrevoApiPasswordResetMailer(RestClient.builder().requestFactory(factory), mail.apiKey(), mail.from());
     }
 }

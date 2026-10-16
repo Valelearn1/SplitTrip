@@ -14,6 +14,6 @@ class LogPasswordResetMailer implements PasswordResetMailer {
     @Override
     public void send(String to, String link) {
         if (logLinks) log.info("Link di ripristino (solo sviluppo): {}", link);
-        else log.warn("Email non configurata (MAIL_HOST vuota): link di ripristino non spedito");
+        else log.warn("Email non configurata (BREVO_API_KEY vuota): link di ripristino non spedito");
     }
 }

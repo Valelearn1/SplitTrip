@@ -2,6 +2,6 @@ package com.splittrip.auth.reset;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** Credenziali SMTP solo dalle variabili d'ambiente (MAIL_*); host vuoto = niente SMTP. */
+/** Chiave dell'API di Brevo e mittente verificato, solo dalle variabili d'ambiente; chiave vuota = niente invio. */
 @ConfigurationProperties("app.mail")
-public record MailProperties(String host, int port, String username, String password, String from, boolean logLinks) {}
+public record MailProperties(String apiKey, String from, boolean logLinks) {}

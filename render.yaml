@@ -31,14 +31,8 @@ services:
       # Consigli AI (D-41): il valore lo inserisce l'autrice nella dashboard di Render, mai nel repository
       - key: ANTHROPIC_API_KEY
         sync: false
-      # Password dimenticata (D-61): SMTP di Brevo; i valori li inserisce l'autrice nella dashboard, mai nel repository
-      - key: MAIL_HOST
-        sync: false
-      - key: MAIL_PORT
-        sync: false
-      - key: MAIL_USERNAME
-        sync: false
-      - key: MAIL_PASSWORD
+      # Password dimenticata (D-61): API di Brevo; i valori li inserisce l'autrice nella dashboard, mai nel repository
+      - key: BREVO_API_KEY
         sync: false
       - key: MAIL_FROM
         sync: false
