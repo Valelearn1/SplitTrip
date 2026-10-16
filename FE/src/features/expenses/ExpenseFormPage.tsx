@@ -7,11 +7,13 @@ import { CATEGORY_LABELS, type Expense, type ExpenseCategory, type SplitType } f
 import { Avatar } from '../../shared/ui/Avatar'
 import { Button } from '../../shared/ui/Button'
 import { CATEGORY_ICONS } from '../../shared/ui/categoryIcons'
+import { AmountField } from '../../shared/ui/AmountField'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
 import { Spinner } from '../../shared/ui/Spinner'
+import { withAmountSanitizer } from '../../shared/utils/amount'
 import { formatCount, formatMoney, localToday } from '../../shared/utils/format'
 import { defaultBasis, presence, splitByWeight } from '../../shared/utils/split'
 import type { TripContext } from '../trips/TripLayout'
@@ -139,7 +141,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
       <h2>{expense ? 'Modifica spesa' : 'Nuova spesa'}</h2>
 
       <div className="card">
-        <Field label="Importo" inputMode="decimal" placeholder="0,00" className="amount-input" suffix={trip.currency === 'EUR' ? '€' : trip.currency} error={errors.amount?.message} {...register('amount')} />
+        <AmountField label="Importo" className="amount-input" currency={trip.currency} error={errors.amount?.message} {...register('amount')} />
         <Field label="Descrizione" placeholder="Es. Cena in trattoria" error={errors.description?.message} {...register('description')} />
         <fieldset className="field" style={{ marginBottom: 0 }}>
           <legend>Categoria</legend>
@@ -230,7 +232,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
               </span>
             )}
             {splitType === 'CUSTOM' && shares[i]?.included && (
-              <input aria-label={`Quota di ${p.displayName}`} inputMode="decimal" placeholder="0,00" className="share-input" {...register(`shares.${i}.amount`)} />
+              <input aria-label={`Quota di ${p.displayName}`} inputMode="decimal" placeholder="0,00" autoComplete="off" className="share-input" {...withAmountSanitizer(register(`shares.${i}.amount`))} />
             )}
           </div>
         ))}

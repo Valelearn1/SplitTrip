@@ -215,4 +215,20 @@ describe('ExpenseFormPage', () => {
     expect(await screen.findByRole('heading', { name: 'Panoramica' })).toBeInTheDocument()
     expect(router.state.historyAction).toBe('POP')
   })
+
+  it('nell\'importo entrano solo cifre, una virgola, due decimali e sei cifre intere', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)))
+    renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }],
+      '/trips/t1/expenses/new',
+    )
+    const user = userEvent.setup()
+    const amount = await screen.findByLabelText('Importo')
+    await user.type(amount, '12a,345')
+    expect(amount).toHaveValue('12,34')
+    await user.clear(amount)
+    await user.type(amount, '12345678')
+    expect(amount).toHaveValue('123456')
+  })
 })

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { ExpenseInput } from '../../shared/api/types'
+import { MAX_AMOUNT_CENTS } from '../../shared/utils/amount'
 import { formatMoney } from '../../shared/utils/format'
 
 /** "12,50" o "12.50" → 1250 centesimi; null se non è un importo valido. */
@@ -7,7 +8,8 @@ export function parseCents(raw: string | undefined): number | null {
   if (raw === undefined) return null
   const normalized = raw.trim().replace(',', '.')
   if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return null
-  return Math.round(Number(normalized) * 100)
+  const cents = Math.round(Number(normalized) * 100)
+  return cents > MAX_AMOUNT_CENTS ? null : cents   // lo stesso tetto del server: 999.999,99
 }
 
 const hasCount = (w: string | undefined) => w !== undefined && w.trim() !== ''

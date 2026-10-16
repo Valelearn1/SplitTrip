@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '../../shared/ui/Button'
-import { Field } from '../../shared/ui/Field'
+import { AmountField } from '../../shared/ui/AmountField'
 import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { parseCents } from '../expenses/expenseSchema'
@@ -18,8 +18,7 @@ export function GuessGate({ currency, pending, error, onGuess, onSkip }: Props) 
       <h1>Indovina il totale</h1>
       <p className="muted">Prima di vedere i numeri: quanto avete speso? Chi ci va più vicino vince la gloria.</p>
       <form onSubmit={(e) => { e.preventDefault(); if (valid) onGuess(cents / 100) }}>
-        <Field label="Quanto pensate di aver speso in tutto?" inputMode="decimal" placeholder="0,00" autoComplete="off" className="amount-input"
-          suffix={currency === 'EUR' ? '€' : currency} value={raw} onChange={(e) => setRaw(e.target.value)} />
+        <AmountField label="Quanto pensate di aver speso in tutto?" className="amount-input" currency={currency} value={raw} onChange={(e) => setRaw(e.target.value)} />
         <FormError error={error} />
         <div className="actions">
           <Button type="submit" disabled={!valid} loading={pending}>Scommetto!</Button>

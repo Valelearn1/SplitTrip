@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useOutletContext, useSearchParams } from 'react-router'
 import { useGoBack } from '../../shared/navigation/useGoBack'
 import { Button } from '../../shared/ui/Button'
+import { AmountField } from '../../shared/ui/AmountField'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
 import { localToday } from '../../shared/utils/format'
@@ -49,7 +50,7 @@ export function SettlementFormPage() {
         </select>
         {errors.toParticipantId && <p className="field-error">{errors.toParticipantId.message}</p>}
       </div>
-      <Field label="Importo" inputMode="decimal" error={errors.amount?.message} {...register('amount')} />
+      <AmountField label="Importo" currency={trip.currency} error={errors.amount?.message} {...register('amount')} />
       <Field label="Data" type="date" error={errors.date?.message} {...register('date')} />
       <Field label="Nota (facoltativa)" error={errors.note?.message} {...register('note')} />
       <FormError error={create.error} />
