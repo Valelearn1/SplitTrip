@@ -1,7 +1,7 @@
 import { api } from '../../shared/api/client'
 import type { Stats, User } from '../../shared/api/types'
 
-export type Preferences = Partial<Pick<User, 'preferredCurrency' | 'chatSound' | 'reduceMotion'>>
+export type Preferences = Partial<Pick<User, 'preferredCurrency' | 'chatSound' | 'reduceMotion' | 'theme'>>
 
 export const profileApi = {
   setAvatar: (file: Blob) => {

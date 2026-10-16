@@ -3,6 +3,7 @@ import type { User } from '../../shared/api/types'
 import { FormError } from '../../shared/ui/FormError'
 import { currencyLabel, TRAVEL_CURRENCIES } from '../../shared/utils/currencies'
 import { useAuth } from '../auth/useAuth'
+import type { ThemePref } from '../../shared/utils/theme'
 import { profileApi, type Preferences } from './profileApi'
 
 function Switch({ label, hint, checked, onChange }: { label: string; hint: string; checked: boolean; onChange: (v: boolean) => void }) {
@@ -36,6 +37,14 @@ export function PreferencesSection({ user }: { user: User }) {
         <label htmlFor="pref-currency">Valuta predefinita per i nuovi viaggi</label>
         <select id="pref-currency" className="select" value={user.preferredCurrency} onChange={(e) => set({ preferredCurrency: e.target.value })}>
           {TRAVEL_CURRENCIES.map((c) => <option key={c} value={c}>{currencyLabel(c)}</option>)}
+        </select>
+      </div>
+      <div className="field">
+        <label htmlFor="pref-theme">Tema</label>
+        <select id="pref-theme" className="select" value={user.theme} onChange={(e) => set({ theme: e.target.value as ThemePref })}>
+          <option value="SYSTEM">Automatico (come il dispositivo)</option>
+          <option value="LIGHT">Chiaro</option>
+          <option value="DARK">Scuro</option>
         </select>
       </div>
       <FormError error={save.error} />

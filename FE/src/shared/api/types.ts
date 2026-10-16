@@ -2,6 +2,7 @@ export type User = {
   id: string; email: string; displayName: string; hasAvatar: boolean
   // preferenze sull'account (D-48)
   preferredCurrency: string; chatSound: boolean; reduceMotion: boolean
+  theme: 'SYSTEM' | 'LIGHT' | 'DARK' // D-57
 }
 export type Stats = {
   trips: number; destinations: { name: string; latitude: number | null; longitude: number | null }[]

@@ -3,6 +3,7 @@ import { useAuth } from '../features/auth/useAuth'
 import { NotificationBell } from '../features/notifications/NotificationBell'
 import { Avatar } from '../shared/ui/Avatar'
 import { Icon } from '../shared/ui/Icon'
+import { ThemeToggle } from './ThemeToggle'
 import { WakingBanner } from './WakingBanner'
 
 export function Layout() {
@@ -14,6 +15,7 @@ export function Layout() {
         <Link to="/trips" className="brand"><Icon name="luggage" fill />SplitTrip</Link>
         {auth && (
           <nav aria-label="Account">
+            <ThemeToggle />
             <NotificationBell />
             <Link to="/profile" className="avatar-link" aria-label="Il tuo profilo">
               <Avatar name={auth.user.displayName} me size="sm" userId={auth.user.id} hasAvatar={auth.user.hasAvatar} />

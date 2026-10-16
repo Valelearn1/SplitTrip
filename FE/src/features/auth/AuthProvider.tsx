@@ -5,7 +5,7 @@ import { authApi } from './authApi'
 import { AUTH_STORAGE_KEY, AuthContext, type AuthState } from './authContext'
 
 // sessioni salvate prima della v3.1 non hanno le preferenze (D-48): valori di base finché il server non le rimanda
-const DEFAULT_PREFERENCES = { preferredCurrency: 'EUR', chatSound: true, reduceMotion: false }
+const DEFAULT_PREFERENCES = { preferredCurrency: 'EUR', chatSound: true, reduceMotion: false, theme: 'SYSTEM' as const }
 
 function read(): AuthState | null {
   try {

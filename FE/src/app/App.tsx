@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import { AuthProvider } from '../features/auth/AuthProvider'
 import { LiveProvider } from '../shared/live/LiveProvider'
 import { MotionRoot } from './MotionRoot'
+import { ThemeRoot } from './ThemeRoot'
 import { routes } from './routes'
 
 const queryClient: QueryClient = new QueryClient({
@@ -20,11 +21,13 @@ export function App() {
     <LazyMotion features={loadMotionFeatures}>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <MotionRoot>
-          <LiveProvider>
-            <RouterProvider router={router} />
-          </LiveProvider>
-        </MotionRoot>
+        <ThemeRoot>
+          <MotionRoot>
+            <LiveProvider>
+              <RouterProvider router={router} />
+            </LiveProvider>
+          </MotionRoot>
+        </ThemeRoot>
       </AuthProvider>
     </QueryClientProvider>
     </LazyMotion>
