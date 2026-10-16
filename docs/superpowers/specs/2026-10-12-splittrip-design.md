@@ -52,6 +52,7 @@ Ogni versione è un progetto completo e presentabile da solo. Ogni versione = un
 | **v2** | Social | to-do list (valigia / generali), foto con posizione e mappa, notifiche in-app; extra dalle schermate Stitch (D-25): foto profilo, foto scontrino allegata alla spesa, meteo della destinazione via Open-Meteo. Spec `2026-10-14-v2-social-design.md` | ✅ 2026-10-14 |
 | **v3** | Live | chat di gruppo WebSocket, notifiche in tempo reale; extra (D-25): «consiglio di viaggio» generato con AI. Spec `2026-10-15-v3-live-design.md` | ✅ 2026-10-15 |
 | **v3.1** | Rifinitura | dai test con gli amici: proposte di luoghi (D-46, D-51), benvenuto e Impostazioni a schede (D-50), Home e presentazione (D-49), profilo con preferenze sull'account (D-48), reazioni ed emoji in chat (D-47). Spec `2026-10-15-v3.1-rifinitura-design.md` | ✅ 2026-10-15 |
+| **v3.2** | Giochi, riepilogo e tema | «Chi offre?» (D-52), riepilogo di fine viaggio con «Indovina il totale», badge e classifiche (D-53…D-55), immagine per le storie (D-56), tema scuro, logo, sfondo e footer (D-57). Spec `2026-10-16-v3.2-giochi-riepilogo-tema-design.md` | in corso |
 | — | Rifinitura | README finale, prova presentazione | 13–14 |
 
 **Regola di taglio:** se a fine giorno 7 v1 non è chiusa, v3 esce dal piano. Meglio v1 e v2 impeccabili.
