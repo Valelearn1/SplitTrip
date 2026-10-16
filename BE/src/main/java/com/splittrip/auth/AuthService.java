@@ -52,7 +52,8 @@ public class AuthService {
         return new AuthResponse(jwt.issue(user.getId()), UserResponse.from(user, avatars.existsById(user.getId())));
     }
 
-    static String normalize(String email) {
+    /** Email come la salva e la cerca l'app: senza spazi ai lati e in minuscolo. */
+    public static String normalize(String email) {
         return email.strip().toLowerCase(Locale.ROOT);
     }
 }

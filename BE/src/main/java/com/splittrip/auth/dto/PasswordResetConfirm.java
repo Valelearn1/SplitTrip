@@ -1,0 +1,12 @@
+package com.splittrip.auth.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+/** Stesse regole della password della registrazione. */
+public record PasswordResetConfirm(
+        @NotBlank @Size(max = 100) String token,
+        @NotBlank @Size(min = 8, max = 72, message = "La password deve avere tra 8 e 72 caratteri")
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "La password deve contenere almeno una lettera e una cifra")
+        String newPassword) {}
