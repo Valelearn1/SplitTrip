@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, expect, it } from 'vitest'
 import { renderWithProviders } from '../../test/renderWithProviders'
@@ -35,6 +35,9 @@ it('viaggio in evidenza, conti, novità e azioni rapide', async () => {
   expect(screen.getByRole('heading', { name: 'In corso e in arrivo' })).toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'Passati' })).toBeInTheDocument()
   expect(screen.getAllByText('3 partecipanti')).toHaveLength(3)                // le card dei viaggi (dal vecchio TripsPage.test)
+  const numbers = screen.getByRole('region', { name: 'I vostri viaggi in numeri' })
+  expect(within(numbers).getByRole('link', { name: /Berlino/ })).toHaveAttribute('href', '/trips/t0/riepilogo')   // solo i passati
+  expect(within(numbers).queryByRole('link', { name: /Lisbona/ })).not.toBeInTheDocument()
 })
 
 it('senza viaggi: stato vuoto con i due bottoni e niente «Nuova spesa»', async () => {
@@ -56,6 +59,7 @@ it('viaggio finito ma non chiuso: «da chiudere», e «Nuova spesa» segue lo st
   renderWithProviders([{ path: '/trips', element: <HomePage /> }], '/trips')
   expect(await screen.findByText('Finito il 6 nov 2026 · da chiudere')).toBeInTheDocument()
   expect(screen.queryByRole('link', { name: 'Nuova spesa' })).not.toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Il vostro viaggio in numeri' })).toHaveAttribute('href', '/trips/t1/riepilogo')
 })
 
 it('viaggio in corso rimasto «in pianificazione»: «Nuova spesa» c’è lo stesso', async () => {

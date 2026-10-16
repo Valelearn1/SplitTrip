@@ -97,6 +97,17 @@ export function HomePage() {
         </section>
       )}
 
+      {/* v3.2: il riepilogo di ogni viaggio passato, a un tocco (quello finito ma non chiuso è nella card in evidenza) */}
+      {d && d.trips.past.length > 0 && (
+        <section className="card games-card" aria-labelledby="home-numbers">
+          <h2 id="home-numbers">I vostri viaggi in numeri</h2>
+          <ul className="list">
+            {d.trips.past.map((t) => (
+              <li key={t.id}><Link to={`/trips/${t.id}/riepilogo`} className="row game-row"><span><Icon name="celebration" />{t.name}</span><Icon name="chevron_right" /></Link></li>
+            ))}
+          </ul>
+        </section>
+      )}
       {d && d.trips.current.length > 0 && (
         <section><h2>In corso e in arrivo</h2><div className="card-list">{d.trips.current.map((t) => <TripCard key={t.id} trip={t} />)}</div></section>
       )}
