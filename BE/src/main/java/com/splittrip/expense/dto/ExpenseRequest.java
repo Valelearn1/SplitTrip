@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public record ExpenseRequest(
         @NotBlank @Size(max = 120) String description,
-        @NotNull @DecimalMin("0.01") @Digits(integer = 10, fraction = 2) BigDecimal amount,
+        @NotNull @DecimalMin("0.01") @Digits(integer = 6, fraction = 2, message = "Al massimo 999.999,99 (due decimali)") BigDecimal amount,
         @NotNull LocalDate date,
         @NotNull ExpenseCategory category,
         @NotNull UUID payerId, // id del partecipante

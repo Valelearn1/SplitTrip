@@ -6,4 +6,4 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record GuessRequest(@NotNull @DecimalMin("0.00") @Digits(integer = 10, fraction = 2) BigDecimal amount) {}
+public record GuessRequest(@NotNull @DecimalMin("0.00") @Digits(integer = 6, fraction = 2, message = "Al massimo 999.999,99 (due decimali)") BigDecimal amount) {}
