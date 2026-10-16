@@ -16,4 +16,7 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
     @Modifying
     @Query("update PasswordResetToken t set t.usedAt = :now where t.user.id = :userId and t.usedAt is null")
     int closeOpen(UUID userId, Instant now);
+
+    /** Quante richieste ha fatto quell'utente da un certo momento (attesa tra un'email e l'altra, tetto giornaliero). */
+    long countByUserIdAndCreatedAtAfter(UUID userId, Instant since);
 }

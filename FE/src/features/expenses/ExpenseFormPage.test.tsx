@@ -231,4 +231,28 @@ describe('ExpenseFormPage', () => {
     await user.type(amount, '12345678')
     expect(amount).toHaveValue('123456')
   })
+
+  it('un punto di troppo non sposta la virgola; i punti delle migliaia spariscono uscendo; incollare oltre il tetto lo dice', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)))
+    renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }],
+      '/trips/t1/expenses/new',
+    )
+    const user = userEvent.setup()
+    const amount = await screen.findByLabelText('Importo')
+    await user.type(amount, '12,50.')
+    expect(amount).toHaveValue('12,50')
+    await user.clear(amount)
+    await user.type(amount, '1.234,56')
+    expect(amount).toHaveValue('1.234,56')
+    await user.tab()
+    expect(amount).toHaveValue('1234,56')
+    await user.clear(amount)
+    await user.paste('1.000.000,00')
+    expect(amount).toHaveValue('1000000,00')
+    await user.type(screen.getByLabelText('Descrizione'), 'Villa')
+    await user.click(screen.getByRole('button', { name: /Salva/ }))
+    expect(await screen.findByText('Al massimo 999.999,99')).toBeInTheDocument()
+  })
 })

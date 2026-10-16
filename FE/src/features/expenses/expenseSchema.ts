@@ -1,16 +1,26 @@
 import { z } from 'zod'
 import type { ExpenseInput } from '../../shared/api/types'
-import { MAX_AMOUNT_CENTS } from '../../shared/utils/amount'
+import { MAX_AMOUNT_CENTS, normalizeSeparators } from '../../shared/utils/amount'
 import { formatMoney } from '../../shared/utils/format'
 
-/** "12,50" o "12.50" → 1250 centesimi; null se non è un importo valido. */
-export function parseCents(raw: string | undefined): number | null {
+/** "12,50", "12.50" o "1.234,56" → centesimi, senza tetto; null se non è un numero con al massimo 2 decimali. */
+function centsOf(raw: string | undefined): number | null {
   if (raw === undefined) return null
-  const normalized = raw.trim().replace(',', '.')
+  const normalized = normalizeSeparators(raw.trim()).replace(',', '.')
   if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return null
-  const cents = Math.round(Number(normalized) * 100)
-  return cents > MAX_AMOUNT_CENTS ? null : cents   // lo stesso tetto del server: 999.999,99
+  return Math.round(Number(normalized) * 100)
 }
+
+/** Come `centsOf`, ma null anche oltre il tetto del server (999.999,99). */
+export function parseCents(raw: string | undefined): number | null {
+  const cents = centsOf(raw)
+  return cents === null || cents > MAX_AMOUNT_CENTS ? null : cents
+}
+
+/** Un importo da spesa o rimborso: entro il tetto e maggiore di zero, ciascuno col suo messaggio. */
+export const amountSchema = z.string()
+  .refine((v) => (centsOf(v) ?? 0) <= MAX_AMOUNT_CENTS, 'Al massimo 999.999,99')
+  .refine((v) => (parseCents(v) ?? 0) > 0, 'Inserisci un importo maggiore di zero')
 
 const hasCount = (w: string | undefined) => w !== undefined && w.trim() !== ''
 
@@ -24,7 +34,7 @@ const shareSchema = z.object({
 export const expenseSchema = z
   .object({
     description: z.string().trim().min(1, 'Scrivi cosa avete pagato').max(120, 'Al massimo 120 caratteri'),
-    amount: z.string().refine((v) => (parseCents(v) ?? 0) > 0, 'Inserisci un importo maggiore di zero'),
+    amount: amountSchema,
     date: z.string().min(1, 'Scegli una data'),
     category: z.enum(['FOOD', 'TRANSPORT', 'LODGING', 'ACTIVITY', 'OTHER']),
     payerId: z.string().min(1, 'Chi ha pagato?'),

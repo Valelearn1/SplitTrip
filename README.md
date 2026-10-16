@@ -46,7 +46,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 🌙 **Tema chiaro, scuro o automatico** con luna/sole nell'intestazione, salvato sull'account
 - 🌸 **Sfondo che segue la stagione del viaggio**: sakura in primavera, spiaggia d'estate, colline d'autunno, montagne innevate d'inverno (al contrario sotto l'equatore)
 - 🔑 **Password dimenticata**: un link via email (Brevo) valido 30 minuti, una volta sola; e l'**occhiolino** per vedere la password mentre la scrivi
-- 🔢 **Importi a prova di dito**: nel campo entrano solo cifre e una virgola, con due decimali e fino a 999.999,99 (anche «1.234,56» incollato si legge giusto)
+- 🔢 **Importi a prova di dito**: un tasto sbagliato (lettera, separatore in più, terzo decimale, settima cifra) viene ignorato invece di cambiare il numero; «1.234,56» si legge giusto, scritto o incollato; oltre 999.999,99 lo dice un messaggio
 - 📍 **Destinazioni reali**: il viaggio si crea scegliendo un luogo dall'elenco, così meteo, mappa e stagione sono quelli giusti
 - ↩️ **«Indietro» su ogni pagina**; dopo un salvataggio si torna da dove si era partiti, senza rientrare nel modulo
 - ♿ Interfaccia **mobile-first e accessibile**: ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore
@@ -135,8 +135,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 219 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 223 test
+cd BE && sh mvnw test   # 222 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 246 test
 ```
 
 Cosa coprono:
@@ -156,7 +156,7 @@ Cosa coprono:
 - 🎡 **giochi e riepilogo**: la ruota si ferma sullo spicchio annunciato, chi non ha account parte non spuntato; badge con pari merito a chi è entrato prima e zero che non vince; due ipotesi inviate insieme → una sola riga; classifiche nascoste se tutto è a zero; immagine per le storie con ritaglio 9:16 e nomi lunghi accorciati
 - 🎨 **colori**: contrasto AA verificato dai test per ogni coppia testo/fondo nei due temi, anche sul vetro sopra l'illustrazione più sfavorevole e sui pastelli della ruota
 - 🔑 **ripristino password**: email sconosciuta senza email, link monouso, scaduto o inventato rifiutato, un link nuovo annulla il vecchio, token mai salvato in chiaro, richiesta all'API di Brevo verificata con un server finto
-- 🔢 **importi**: 18 casi di pulizia del campo (lettere, migliaia, decimali), tetto 999.999,99 uguale nel browser e nel server
+- 🔢 **importi**: il campo provato un tasto alla volta (punto di troppo, migliaia, decimali, settima cifra) e incollando, tetto 999.999,99 uguale nel browser e nel server
 - ↩️ **«Indietro»**: pagina madre per ogni rotta, ritorno nella cronologia, moduli salvati che non restano indietro
 - 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda», liste, caricamento foto col consenso alla posizione, campanella, chat, consigli AI, «conta per», busta e valigia
 
@@ -176,7 +176,7 @@ Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il cod
 | **Immagini** | il server decodifica e riscrive ogni foto in JPEG (via EXIF e metadati, file finti rifiutati dal contenuto, non dal nome); la posizione si salva solo con il consenso esplicito di chi carica; le immagini si scaricano con il token (`Authorization: Bearer`), mai da URL pubblici; limiti di 3 MB a file e 200 foto a viaggio |
 | **Tempo reale** | il JWT viaggia nel frame CONNECT del WebSocket, mai nell'URL; ogni sottoscrizione verifica che tu sia membro del viaggio; si scrive solo via REST (stessi controlli delle API), il socket spinge dati già salvati; limite di 20 messaggi al minuto e frame da 8 KB |
 | **Luoghi** | le proposte passano dal backend (Open-Meteo, D-51): al servizio arriva solo il testo cercato, mai chi sei; solo per chi ha fatto il login, 30 ricerche al minuto, risultati in cache |
-| **Ripristino password** | risposta sempre uguale (nessuno scopre chi è registrato); token casuale da 32 byte, valido 30 minuti e una volta sola, salvato solo come hash SHA-256; un link nuovo annulla i precedenti; email spedita dopo il salvataggio con l'API di Brevo (chiave solo nelle variabili d'ambiente, permesso minimo); stesso limite anti-forza-bruta dell'accesso |
+| **Ripristino password** | risposta sempre uguale (nessuno scopre chi è registrato); token casuale da 32 byte, valido 30 minuti e una volta sola, salvato solo come hash SHA-256; un link nuovo annulla i precedenti; per account al massimo un'email al minuto e cinque al giorno; email spedita dopo il salvataggio, su un thread a parte, con l'API di Brevo (chiave solo nelle variabili d'ambiente, permesso minimo); stesso limite anti-forza-bruta dell'accesso |
 | **Account** | cambio password solo con quella attuale, stesse regole della registrazione; email unica (senza distinzione di maiuscole); preferenze sull'account, nessun dato in più |
 | **Riepilogo e immagine** | il riepilogo si apre solo a viaggio finito e solo ai membri; un'ipotesi a testa, non modificabile, e quelle degli altri si vedono solo dopo la propria; l'immagine per le storie si disegna nel browser con il totale del gruppo e i badge, senza saldi personali, e non passa dal server |
 | **AI** | al modello vanno solo destinazione, date, numero di persone, meteo e voci della valigia: mai nomi, email o importi; la chiave sta solo nelle variabili d'ambiente di Render; la risposta è JSON validato e mostrato come testo, le voci si aggiungono solo se le spunti; 5 generazioni al giorno per viaggio |

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { expenseSchema, toExpenseInput } from './expenseSchema'
+import { settlementSchema } from '../balances/settlementSchema'
+import { expenseSchema, parseCents, toExpenseInput } from './expenseSchema'
 
 const base = { description: 'Cena', amount: '90', date: '2026-11-02', category: 'FOOD', payerId: 'p1', splitType: 'EQUAL' as const, dayBasis: 'DAYS' as const,
   shares: [{ participantId: 'p1', included: true }, { participantId: 'p2', included: true }, { participantId: 'p3', included: false }] }
@@ -50,5 +51,19 @@ describe('expenseSchema', () => {
     expect(toExpenseInput(expenseSchema.parse(counts('1', '1')))).toMatchObject({ splitType: 'EQUAL', shares: [{ participantId: 'p1' }, { participantId: 'p2' }] })
     expect(toExpenseInput(expenseSchema.parse(counts('1', '1'))).shares[0]).not.toHaveProperty('weight')
     expect(expenseSchema.safeParse(counts('1', 'abc')).success).toBe(false)
+  })
+
+  it('oltre 999.999,99 il messaggio dice il tetto, non «maggiore di zero»', () => {
+    const r = expenseSchema.safeParse({ ...base, amount: '1000000,00' })
+    expect(r.success).toBe(false)
+    expect(r.error?.issues.find((i) => i.path[0] === 'amount')?.message).toBe('Al massimo 999.999,99')
+    const s = settlementSchema.safeParse({ fromParticipantId: 'p1', toParticipantId: 'p2', amount: '1000000', date: '2026-11-02' })
+    expect(s.error?.issues.find((i) => i.path[0] === 'amount')?.message).toBe('Al massimo 999.999,99')
+  })
+
+  it('parseCents legge anche i punti delle migliaia rimasti nel campo', () => {
+    expect(parseCents('1.234,56')).toBe(123456)
+    expect(parseCents('1.234')).toBe(123400)
+    expect(parseCents('12.5')).toBe(1250)
   })
 })
