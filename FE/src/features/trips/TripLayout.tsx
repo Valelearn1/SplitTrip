@@ -13,6 +13,7 @@ import { useBalances } from '../balances/useBalances'
 import { BalancePill } from '../../shared/ui/BalancePill'
 import { MoneyText } from '../../shared/ui/MoneyText'
 import { useTrip } from './useTrips'
+import { useTripSeason } from '../../shared/season/seasonContext'
 
 /** me = il mio partecipante: me.id è l'id usato nei soldi, me.userId il mio utente. */
 export type TripContext = { trip: Trip; me: Participant; isOrganizer: boolean; canWrite: boolean }
@@ -26,6 +27,7 @@ export function TripLayout() {
   // la cache della chat resta aggiornata in tutto il viaggio, non solo nella pagina Chat
   const myParticipantId = trip?.participants.find((p) => p.userId === auth?.user.id)?.id ?? ''
   useTripLiveSync(myParticipantId ? tripId : null, myParticipantId)
+  useTripSeason(trip) // D-58: lo sfondo prende la stagione di questo viaggio
 
   if (isPending) return <Spinner />
   if (error || !trip) return <FormError error={error ?? new Error('Viaggio non disponibile')} />

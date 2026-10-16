@@ -6,7 +6,7 @@ import { ApiError } from '../../shared/api/client'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
-import { Icon } from '../../shared/ui/Icon'
+import { Logo } from '../../shared/ui/Logo'
 import { authApi } from './authApi'
 import { registerSchema, type RegisterForm } from './authSchemas'
 import { useAuth } from './useAuth'
@@ -34,7 +34,7 @@ export function RegisterPage() {
   return (
     <section className="auth-page">
       <div className="auth-logo">
-        <Icon name="luggage" fill />
+        <Logo size={64} />
         <h1>Crea il tuo account</h1>
         <p className="muted">Bastano un nome, un'email e una password.</p>
       </div>

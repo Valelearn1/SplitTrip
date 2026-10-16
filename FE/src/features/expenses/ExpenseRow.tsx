@@ -32,7 +32,7 @@ export function ExpenseRow({ expense, currency, meId }: { expense: Expense; curr
         <span className="row-side">
           <MoneyText amount={expense.amount} currency={currency} />
           {expense.payerId === meId ? (
-            <small className="muted" style={{ display: 'block', color: 'var(--teal)' }}>Hai anticipato</small>
+            <small className="muted" style={{ display: 'block', color: 'var(--accent)' }}>Hai anticipato</small>
           ) : (
             mine && <small className="muted" style={{ display: 'block' }}>tua quota {mine.amount.toFixed(2).replace('.', ',')} €</small>
           )}

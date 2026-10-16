@@ -34,7 +34,7 @@ export function PhotoMap({ tripId, photos, onOpen }: Props) {
           <FitBounds photos={located} />
           {located.map((p) => (
             <CircleMarker key={p.id} center={[p.latitude!, p.longitude!]} radius={10}
-              pathOptions={{ color: '#ffffff', weight: 2, fillColor: '#00685c', fillOpacity: 1 }}>
+              pathOptions={{ color: '#ffffff', weight: 2, fillColor: '#2347b8', fillOpacity: 1 }}>
               <Popup>
                 <button type="button" className="map-popup" onClick={() => onOpen(p)}>
                   <AuthImage path={photoPath(tripId, p.id, 'thumbnail')} alt={p.caption ?? `Foto di ${p.uploaderName}`} />

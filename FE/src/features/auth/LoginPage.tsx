@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
-import { Icon } from '../../shared/ui/Icon'
+import { Logo } from '../../shared/ui/Logo'
 import { authApi } from './authApi'
 import { loginSchema, type LoginForm } from './authSchemas'
 import { useAuth } from './useAuth'
@@ -31,7 +31,7 @@ export function LoginPage() {
   return (
     <section className="auth-page">
       <div className="auth-logo">
-        <Icon name="luggage" fill />
+        <Logo size={64} />
         <h1>Bentornata su SplitTrip</h1>
         <p className="muted">Spese divise, conti chiari.</p>
       </div>

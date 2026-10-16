@@ -1,6 +1,6 @@
 export type ThemePref = 'SYSTEM' | 'LIGHT' | 'DARK'
 export type Resolved = 'light' | 'dark'
-export const THEME_COLOR: Record<Resolved, string> = { light: '#00685c', dark: '#0f1620' }
+export const THEME_COLOR: Record<Resolved, string> = { light: '#2347b8', dark: '#0f1620' }
 
 export function resolveTheme(pref: ThemePref | undefined, systemDark: boolean): Resolved {
   if (pref === 'DARK') return 'dark'

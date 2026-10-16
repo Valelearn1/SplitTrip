@@ -16,7 +16,7 @@ function mount() {
 }
 let systemDark = false
 beforeEach(() => {
-  document.head.insertAdjacentHTML('beforeend', '<meta name="theme-color" content="#00685c">')
+  document.head.insertAdjacentHTML('beforeend', '<meta name="theme-color" content="#2347b8">')
   vi.spyOn(window, 'matchMedia').mockImplementation((q) => ({ matches: q.includes('dark') && systemDark, media: q, addEventListener: () => {}, removeEventListener: () => {}, onchange: null, addListener: () => {}, removeListener: () => {}, dispatchEvent: () => false }))
   server.use(http.get('http://localhost/api/me', () => HttpResponse.json({ ...base, theme: 'SYSTEM' })))
 })

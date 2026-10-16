@@ -22,7 +22,7 @@ export function PointsMap({ points }: { points: MapPoint[] }) {
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
         <FitPoints points={points} />
         {points.map((p) => (
-          <CircleMarker key={p.id} center={[p.latitude, p.longitude]} radius={9} pathOptions={{ color: '#ffffff', weight: 2, fillColor: '#00685c', fillOpacity: 1 }}>
+          <CircleMarker key={p.id} center={[p.latitude, p.longitude]} radius={9} pathOptions={{ color: '#ffffff', weight: 2, fillColor: '#2347b8', fillOpacity: 1 }}>
             <Popup>{p.name}</Popup>
           </CircleMarker>
         ))}

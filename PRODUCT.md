@@ -32,7 +32,7 @@ Progetto finale (capstone) di un corso fullstack, consegnato con presentazione; 
 
 ## Brand Commitments
 
-Nome «SplitTrip» (provvisorio ma in uso). Lingua dell'interfaccia: italiano. Tono: caldo, amichevole, affidabile, un compagno di viaggio, non una banca. Riferimento visivo vincolante: le schermate Stitch in `docs/stitch/` (font DM Sans, icone Material Symbols, palette teal `#00685c`/`#1b8375`/`#97f3e2`, corallo `#ff7355`/`#aa361e`, sfondo `#f8f9ff`, superfici `#eff4ff`→`#dbe3f1`, testo `#141c26`; tab bar in basso su mobile).
+Nome «SplitTrip» (provvisorio ma in uso). Lingua dell'interfaccia: italiano. Tono: caldo, amichevole, affidabile, un compagno di viaggio, non una banca. Riferimento visivo vincolante: le schermate Stitch in `docs/stitch/` (font DM Sans, icone Material Symbols, sfondo `#f8f9ff`, superfici `#eff4ff`→`#dbe3f1`, testo `#141c26`; tab bar in basso su mobile). La palette di Stitch (teal e corallo) è stata sostituita in v3.2 da cobalto `#2347b8` e lampone `#a3305e`, con lo sfondo illustrato della stagione del viaggio (D-58).
 
 ## Evidence on Hand
 
@@ -48,4 +48,4 @@ Schermate di riferimento: `docs/stitch/*/screen.png` e `code.html` (7 schermate:
 
 ## Accessibility & Inclusion
 
-Decisione D-24: mai solo il colore (segno + etichetta accanto agli importi, testo nei badge, icona + testo negli errori); contrasto WCAG AA (teal `#00685c` e corallo scuro `#aa361e` per il testo, corallo chiaro solo per barre e sfondi); tastiera e lettori di schermo (focus visibile, `aria-label` sulle icone, `role="alert"`, `<dialog>`); target touch ≥ 44 px e font ≥ 16 px nei campi; `prefers-reduced-motion` rispettato; notifiche sempre visive.
+Decisione D-24: mai solo il colore (segno + etichetta accanto agli importi, testo nei badge, icona + testo negli errori); contrasto WCAG AA (cobalto `#2347b8` e lampone `#a3305e` per il testo, scuro `#9db4ff` e `#ff9cc4`; il lampone vivo solo per barre e riempimenti; il testo sulle card in vetro sopra l'illustrazione è verificato dal contrast test); tastiera e lettori di schermo (focus visibile, `aria-label` sulle icone, `role="alert"`, `<dialog>`); target touch ≥ 44 px e font ≥ 16 px nei campi; `prefers-reduced-motion` rispettato; notifiche sempre visive.

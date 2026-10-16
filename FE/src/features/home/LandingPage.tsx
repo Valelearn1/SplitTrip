@@ -1,6 +1,6 @@
 import { Link, Navigate } from 'react-router'
 import { Icon } from '../../shared/ui/Icon'
-import { Suitcase } from '../../shared/ui/illustrations/Suitcase'
+import { Logo } from '../../shared/ui/Logo'
 import { useAuth } from '../auth/useAuth'
 
 const PILLARS = [
@@ -17,7 +17,7 @@ export function LandingPage() {
   return (
     <div className="landing">
       <section className="landing-hero">
-        <Suitcase size={72} />
+        <Logo size={72} />
         <h1>Vacanze tra amici, conti chiari</h1>
         <p className="muted">Pianificate insieme prima di partire, tenete traccia di spese e cose da fare durante, e ritrovatevi con ricordi condivisi e conti a posto al ritorno.</p>
         <div className="actions">
@@ -35,7 +35,10 @@ export function LandingPage() {
         <h2>Come funziona</h2>
         <ol>{STEPS.map((s) => <li key={s}>{s}</li>)}</ol>
       </section>
-      <footer className="landing-footer muted">Fatto con ☕ da Valentina · <a href="https://github.com/Valelearn1/SplitTrip">codice su GitHub</a></footer>
+      <footer className="landing-footer muted">
+        <strong>Dividete le spese, non gli amici.</strong>
+        Fatto con ☕ da Valentina · <a href="https://github.com/Valelearn1/SplitTrip">codice su GitHub</a>
+      </footer>
     </div>
   )
 }

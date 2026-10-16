@@ -13,6 +13,7 @@ it('presenta l’app a chi non è loggato', async () => {
   expect(screen.getByRole('link', { name: 'Accedi' })).toHaveAttribute('href', '/login')
   expect(screen.getByRole('link', { name: 'Ho un codice invito' })).toHaveAttribute('href', '/login?next=/join')
   expect(screen.getByText('Prima: pianificate insieme')).toBeInTheDocument()
+  expect(screen.getByText('Dividete le spese, non gli amici.')).toBeInTheDocument()
 })
 
 it('chi è loggato va alla Home', async () => {
