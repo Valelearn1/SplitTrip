@@ -17,9 +17,3 @@ export function tripSeason(trip: TripDates): Season {
   const middle = new Date(start + (Date.parse(trip.endDate) - start) / 2).toISOString().slice(0, 10)
   return seasonOf(middle, trip.latitude)
 }
-
-/** Oggi in ISO, con il fuso di chi guarda. */
-export function localToday(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}

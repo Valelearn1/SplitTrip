@@ -57,7 +57,7 @@ export function ChatComposer({ onSend, onTyping, sending }: Props) {
       <EmojiPicker onPick={insert} />
       <textarea ref={input} id="chat-input" rows={1} maxLength={1000} value={text} onKeyDown={onKeyDown} onChange={(e) => change(e.target.value)} placeholder="Scrivi un messaggio" />
       {text.length >= 900 && <small className="muted chat-counter">{text.length}/1000</small>}
-      <Button type="submit" loading={sending} disabled={!trimmed}><Icon name="send" />Invia</Button>
+      <Button type="submit" loading={sending} disabled={!trimmed} aria-label="Invia" className="chat-send"><Icon name="send" /><span className="send-text">Invia</span></Button>
     </form>
   )
 }

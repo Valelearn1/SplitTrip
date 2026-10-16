@@ -26,3 +26,9 @@ export function formatDateRange(startIso: string, endIso: string): string {
 export function formatCount(n: number): string {
   return n === 0.5 ? '½' : String(n).replace('.', ',')
 }
+
+/** Oggi in ISO, col fuso di chi guarda (toISOString darebbe ancora ieri fino alle 2 di notte in Italia). */
+export function localToday(): string {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}

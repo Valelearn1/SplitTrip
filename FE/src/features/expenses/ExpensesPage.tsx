@@ -7,6 +7,7 @@ import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Spinner } from '../../shared/ui/Spinner'
 import { formatDate } from '../../shared/utils/format'
+import { WhoPays } from '../games/WhoPays'
 import type { TripContext } from '../trips/TripLayout'
 import { ExpenseRow } from './ExpenseRow'
 import { useExpenses } from './useExpenses'
@@ -14,6 +15,7 @@ import { useExpenses } from './useExpenses'
 export function ExpensesPage() {
   const { trip, me, isOrganizer, canWrite } = useOutletContext<TripContext>()
   const [category, setCategory] = useState<ExpenseCategory | undefined>()
+  const [wheel, setWheel] = useState(false)
   const { data, isPending, error } = useExpenses(trip.id, category)
 
   const byDay = new Map<string, Expense[]>()
@@ -23,6 +25,11 @@ export function ExpensesPage() {
 
   return (
     <div>
+      {canWrite && (
+        <div className="list-actions">
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setWheel(true)}><Icon name="casino" />Chi offre?</button>
+        </div>
+      )}
       <div className="chips chips-scroll" role="group" aria-label="Filtra per categoria">
         <button type="button" className={`chip ${!category ? 'active' : ''}`} onClick={() => setCategory(undefined)}>Tutte</button>
         {(Object.keys(CATEGORY_LABELS) as ExpenseCategory[]).map((c) => (
@@ -47,8 +54,9 @@ export function ExpensesPage() {
           </div>
         </section>
       ))}
-      {isOrganizer && <p style={{ marginTop: 16 }}><Link to="trash" className="muted"><Icon name="delete" /> Cestino</Link></p>}
+      {isOrganizer && <p style={{ marginTop: 16 }}><Link to="trash" className="btn btn-secondary btn-sm"><Icon name="delete" />Cestino</Link></p>}
       {canWrite && <Link to="new" className="fab" aria-label="Nuova spesa"><Icon name="add" /></Link>}
+      {wheel && <WhoPays trip={trip} me={me} open onClose={() => setWheel(false)} />}
     </div>
   )
 }

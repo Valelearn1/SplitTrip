@@ -1,5 +1,6 @@
 import { useContext } from 'react'
-import { localToday, seasonOf, type Season } from './season'
+import { localToday } from '../utils/format'
+import { seasonOf, type Season } from './season'
 import { SeasonContext } from './seasonContext'
 import autumnDark from './art/autumn-dark.svg'
 import autumnLight from './art/autumn-light.svg'
