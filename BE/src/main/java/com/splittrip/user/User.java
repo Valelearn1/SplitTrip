@@ -43,6 +43,7 @@ public class User {
     @Setter @Column(name = "preferred_currency", nullable = false, length = 3) private String preferredCurrency = "EUR";
     @Setter @Column(name = "chat_sound", nullable = false) private boolean chatSound = true;
     @Setter @Column(name = "reduce_motion", nullable = false) private boolean reduceMotion = false;
+    @Setter @Column(nullable = false, length = 8) private String theme = "SYSTEM"; // SYSTEM | LIGHT | DARK (D-57)
 
     public User(String email, String passwordHash, String displayName, Instant createdAt) {
         this.email = email;

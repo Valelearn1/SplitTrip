@@ -109,4 +109,14 @@ class ProfileControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.spending[1].groupTotal").value(30000.00))
                 .andExpect(jsonPath("$.spending[1].myShare").value(30000.00));
     }
+
+    @Test
+    void ilTemaSiSalvaSoloSeInLista() throws Exception {
+        String vale = TestUsers.register(mvc, "Vale");
+        mvc.perform(get("/api/me").header("Authorization", "Bearer " + vale)).andExpect(jsonPath("$.theme").value("SYSTEM"));
+        mvc.perform(patch("/api/me/preferences").header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON).content("{\"theme\":\"DARK\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.theme").value("DARK"));
+        mvc.perform(patch("/api/me/preferences").header("Authorization", "Bearer " + vale).contentType(APPLICATION_JSON).content("{\"theme\":\"neon\"}"))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.errors[0].field").value("theme"));
+    }
 }

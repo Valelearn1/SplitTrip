@@ -66,6 +66,7 @@ public class ProfileService {
         if (req.preferredCurrency() != null) u.setPreferredCurrency(req.preferredCurrency());
         if (req.chatSound() != null) u.setChatSound(req.chatSound());
         if (req.reduceMotion() != null) u.setReduceMotion(req.reduceMotion());
+        if (req.theme() != null) u.setTheme(req.theme());
         return UserResponse.from(u, avatars.existsById(userId));
     }
 
