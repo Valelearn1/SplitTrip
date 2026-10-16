@@ -57,4 +57,8 @@ public interface PhotoRepository extends JpaRepository<Photo, UUID> {
         for (Object[] row : receiptPairs(tripId)) out.put((UUID) row[0], (UUID) row[1]);
         return out;
     }
+
+    /** (uploaderUserId, placeName, createdAt, id, caption, latitude, longitude) delle foto del viaggio, dalla più recente. */
+    @Query("select p.uploader.id, p.placeName, p.createdAt, p.id, p.caption, p.latitude, p.longitude from Photo p where p.trip.id = :tripId and p.kind = com.splittrip.photo.PhotoKind.PHOTO order by p.createdAt desc")
+    List<Object[]> findWrappedRows(UUID tripId);
 }

@@ -22,4 +22,8 @@ public interface SettlementRepository extends JpaRepository<Settlement, UUID> {
             where s.trip.id = :tripId and (s.fromParticipant.id = :participantId or s.toParticipant.id = :participantId)
             """)
     boolean existsByTripIdAndParticipantInvolved(UUID tripId, UUID participantId);
+
+    /** Primo rimborso per chi paga (per «Il puntuale»); i cestinati sono esclusi da @SoftDelete. */
+    @Query("select s.fromParticipant.id, min(s.createdAt) from Settlement s where s.trip.id = :tripId group by s.fromParticipant.id")
+    List<Object[]> firstSettlementByPayer(UUID tripId);
 }

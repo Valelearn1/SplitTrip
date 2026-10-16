@@ -70,13 +70,18 @@ public class HomeService {
         return new HomeResponse(featured, myBalances, new Totals(toReceive.setScale(2), toGive.setScale(2), tripsToReceive, tripsToGive), latest, new Trips(current, past));
     }
 
+    /** Finito: chiuso dall'organizzatore oppure data di ritorno passata (Home e riepilogo, D-53). */
+    public static boolean isOver(TripStatus status, LocalDate endDate, LocalDate today) {
+        return status == TripStatus.CLOSED || today.isAfter(endDate);
+    }
+
     /**
      * Stato da mostrare: «chiuso» lo decide l'organizzatore, il resto lo dicono le date.
      * Un viaggio rimasto «in pianificazione» ma già iniziato è in corso; finito ma non chiuso è ENDED (revisione v3.1).
      */
     static String displayStatus(TripSummaryResponse t, LocalDate today) {
         if (t.status() == TripStatus.CLOSED) return "PAST";
-        if (today.isAfter(t.endDate())) return "ENDED";
+        if (isOver(t.status(), t.endDate(), today)) return "ENDED";
         if (t.status() == TripStatus.ONGOING || !today.isBefore(t.startDate())) return "ONGOING";
         return "UPCOMING";
     }

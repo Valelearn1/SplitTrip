@@ -26,4 +26,8 @@ public interface MessageReactionRepository extends JpaRepository<MessageReaction
             values (:messageId, :participantId, :emoji, :now) on conflict do nothing
             """, nativeQuery = true)
     int insertIfAbsent(UUID messageId, UUID participantId, String emoji, Instant now);
+
+    /** Reazioni ricevute per autore del messaggio (messaggi non eliminati). */
+    @Query("select r.message.author.id, count(r) from MessageReaction r where r.message.trip.id = :tripId and r.message.deletedAt is null group by r.message.author.id")
+    List<Object[]> countReceivedByAuthor(UUID tripId);
 }

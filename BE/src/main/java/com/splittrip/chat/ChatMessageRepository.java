@@ -35,4 +35,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> 
               and (m.actor is null or m.actor.id <> :me)
             """)
     long countUnread(UUID tripId, UUID me, Instant since);
+
+    /** Messaggi di testo non eliminati, per autore. */
+    @Query("select m.author.id, count(m) from ChatMessage m where m.trip.id = :tripId and m.kind = com.splittrip.chat.ChatMessageKind.TEXT and m.deletedAt is null group by m.author.id")
+    List<Object[]> countTextByAuthor(UUID tripId);
 }
