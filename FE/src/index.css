@@ -139,6 +139,10 @@ small { font-size: 0.875rem; }
 .app-header nav { display: flex; gap: var(--space-2); align-items: center; }
 .app-main { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: var(--space-4) var(--space-4) var(--space-6); }
 .waking { display: flex; align-items: center; gap: 8px; background: var(--amber-tint); color: var(--amber); padding: 10px var(--space-4); font-size: 0.9375rem; }
+/* Offline (D-63): stessa forma della barra «si sta svegliando», tinta neutra; il testo sta sempre su fondo pieno */
+.offline-banner { display: flex; align-items: center; gap: 8px; background: var(--surface-2); color: var(--ink); padding: 10px var(--space-4); font-size: 0.9375rem; }
+.offline-banner.back { background: var(--accent-tint); color: var(--accent); }
+.offline-empty p { max-width: 32ch; margin: 0 auto; }
 
 /* ===== Buttons ===== */
 .btn {

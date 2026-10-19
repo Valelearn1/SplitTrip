@@ -1,10 +1,12 @@
 import { useIsFetching, useIsMutating } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { useOnline } from '../features/pwa/useOnline'
 import { Suitcase } from '../shared/ui/illustrations/Suitcase'
 
 /** Dopo 5 s di attesa avvisa che il backend (piano free di Render) si sta svegliando. */
 export function WakingBanner() {
   const busy = useIsFetching() + useIsMutating() > 0
+  const online = useOnline()
   const [slow, setSlow] = useState(false)
   useEffect(() => {
     if (!busy) return
@@ -14,7 +16,7 @@ export function WakingBanner() {
       setSlow(false)
     }
   }, [busy])
-  if (!slow) return null
+  if (!slow || !online) return null   // offline vince: il server non c'entra (D-63)
   return (
     <div className="waking" role="status">
       <Suitcase bouncing size={20} />

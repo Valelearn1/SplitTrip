@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { configure } from '@testing-library/react'
+import { onlineManager } from '@tanstack/react-query'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 import { server } from './server'
 
@@ -27,5 +28,6 @@ beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => {
   server.resetHandlers()
   localStorage.clear()
+  onlineManager.setOnline(true)   // un test offline non deve lasciare offline il successivo (D-63)
 })
 afterAll(() => server.close())

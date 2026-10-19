@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useMatch } from 'react-router'
 import { useAuth } from '../features/auth/useAuth'
+import { OfflineBanner } from '../features/pwa/OfflineBanner'
 import { NotificationBell } from '../features/notifications/NotificationBell'
 import { Avatar } from '../shared/ui/Avatar'
 import { BackButton } from '../shared/ui/BackButton'
@@ -34,6 +35,7 @@ export function Layout() {
             </nav>
           )}
         </header>
+        <OfflineBanner />
         <WakingBanner />
         <main className="app-main">
           {showBack && <div className="back-bar"><BackButton /></div>}
