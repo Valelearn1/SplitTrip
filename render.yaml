@@ -56,10 +56,17 @@ services:
     headers:
       - path: /*
         name: Content-Security-Policy
-        value: "default-src 'self'; script-src 'self' 'sha256-VFCtbqEYwoPkXMzQfNWIzvpUoO8JB5sLIKoodj/5qew='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://splittrip-api.onrender.com wss://splittrip-api.onrender.com; img-src 'self' data: blob: https://tile.openstreetmap.org; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        value: "default-src 'self'; script-src 'self' 'sha256-VFCtbqEYwoPkXMzQfNWIzvpUoO8JB5sLIKoodj/5qew='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://splittrip-api.onrender.com wss://splittrip-api.onrender.com; img-src 'self' data: blob: https://tile.openstreetmap.org; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; worker-src 'self'; manifest-src 'self'"
       - path: /*
         name: X-Content-Type-Options
         value: nosniff
       - path: /*
         name: Referrer-Policy
         value: strict-origin-when-cross-origin
+      # D-63: il service worker e il manifest non vanno tenuti in cache, altrimenti gli aggiornamenti non arrivano
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+      - path: /manifest.webmanifest
+        name: Cache-Control
+        value: no-cache
