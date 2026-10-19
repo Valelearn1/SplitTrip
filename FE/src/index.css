@@ -208,7 +208,7 @@ fieldset.field.card { padding: var(--space-4); }
 /* Nota sotto un campo: legata al campo sopra, staccata da quello dopo */
 .hint { margin: calc(-1 * var(--space-2)) 0 var(--space-4); font-size: 0.875rem; }
 .list { list-style: none; padding: 0; margin: 0; }
-.stack { display: grid; gap: var(--space-3); }
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }   /* una colonna che non supera lo schermo, anche con un nome lungo */
 .actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
 .actions > .btn { flex: 1 1 140px; padding: 0 12px; }
 .row-wrap { flex-wrap: wrap; }
@@ -516,6 +516,7 @@ fieldset.field.card { padding: var(--space-4); }
 .place-options { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 25; margin: 0; padding: 4px; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-card); max-height: 280px; overflow-y: auto; }
 .place-options li { display: grid; gap: 2px; min-height: 44px; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
 .place-options li.active, .place-options li:hover { background: var(--accent-tint); }
+.place-searching { display: block; margin-top: 4px; font-size: 0.875rem; color: var(--ink-2); }
 
 /* Impostazioni a schede (v3.1, D-50): stesso aspetto delle sezioni del viaggio su desktop, ma mai fisse in basso */
 .settings-tabs { display: flex; gap: 2px; padding: 4px; background: var(--surface-2); border-radius: 14px; }
@@ -666,21 +667,22 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
 .cat-bars li > small { grid-area: share; text-align: right; }
 .cat-bars li.top .cat-name { font-weight: 800; }
 .wrapped-moments small { display: block; font-size: 0.75rem; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.badge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
-@media (min-width: 720px) { .badge-grid { grid-template-columns: repeat(3, 1fr); } }
+.badge-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+@media (min-width: 720px) { .badge-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .badge-card { display: grid; align-content: start; gap: 4px; padding: var(--space-4); border-radius: var(--radius); }
 .badge-card .muted { color: var(--ink-2); }   /* ink-3 sui fondi tinti è al limite dell'AA */
 .badge-who { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink-2); }
 .badge-card strong { text-wrap: balance; }
 .badge-emoji { margin-left: auto; font-size: 1.25rem; line-height: 1; }
+.badge-name { min-width: 0; overflow-wrap: anywhere; }
 .podium { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; align-items: flex-end; gap: var(--space-5); }
-.podium li { display: grid; justify-items: center; gap: 4px; text-align: center; }
+.podium li { display: grid; justify-items: center; gap: 4px; text-align: center; min-width: 0; overflow-wrap: anywhere; }
 .podium li:nth-child(1) { order: 2; }
 .podium li:nth-child(2) { order: 1; }
 .podium li:nth-child(3) { order: 3; }
 .podium li.first > span { font-weight: 800; }
 .podium-rest { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: grid; gap: 4px; }
-.podium-rest li { display: flex; justify-content: space-between; }
+.podium-rest li { display: flex; justify-content: space-between; gap: var(--space-3); overflow-wrap: anywhere; }
 .wrapped-end { display: grid; justify-items: center; gap: var(--space-3); text-align: center; }
 
 /* «Indietro» (v3.2): sopra il contenuto di ogni pagina tranne Home, landing, accesso e registrazione */

@@ -22,9 +22,11 @@ services:
       - key: CORS_ORIGIN
         value: https://splittrip-750q.onrender.com
       # Istanza free: 512 MB e CPU condivisa. Con -Xmx384m l'avvio di Hibernate si bloccava (14/10, deploy 6f38932):
-      # heap più piccolo, un solo thread di GC e JIT leggero lasciano spazio a metaspace e thread (~310 MB in tutto)
+      # heap più piccolo, un solo thread di GC e JIT leggero lasciano spazio a metaspace e thread (~310 MB in tutto).
+      # keepalive 300 s: la connessione verso Open-Meteo (luoghi, meteo) resta aperta tra una ricerca e l'altra;
+      # col valore di base (30 s) ogni ricerca dopo una pausa rifaceva la stretta di mano TLS oltre oceano (19/10)
       - key: JAVA_TOOL_OPTIONS
-        value: -Xmx256m -Xss512k -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:TieredStopAtLevel=1
+        value: -Xmx256m -Xss512k -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Djdk.httpclient.keepalive.timeout=300
       # Davanti a Render c'è Cloudflare: l'IP vero del client arriva in questo header (non falsificabile dal client)
       - key: RATE_LIMIT_IP_HEADER
         value: CF-Connecting-IP

@@ -10,15 +10,19 @@ type Props = {
 }
 
 /**
- * Combobox dei luoghi (D-46): dalla 3ª lettera, dopo 300 ms, propone fino a 6 luoghi; scelto uno, tiene le coordinate.
+ * Combobox dei luoghi (D-46): dalla 3ª lettera, dopo 150 ms, propone fino a 6 luoghi; scelto uno, tiene le coordinate.
+ * Mentre cerca dice «Cerco luoghi…», così l'attesa della rete si vede.
  * Per la destinazione del viaggio la scelta è obbligatoria (D-60, lo controlla lo schema del modulo); se la ricerca
  * non risponde lo dice, invece di sembrare «nessun risultato».
  */
+export const SEARCH_DELAY_MS = 150   // abbastanza per non cercare a ogni lettera, poco da non sentirlo
+
 export function PlaceInput({ id, label, value, onChange, near, error, placeholder, hint }: Props) {
   const [options, setOptions] = useState<Place[]>([])
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(-1)
   const [unavailable, setUnavailable] = useState(false)
+  const [searching, setSearching] = useState(false)
   const listId = useId()
   const timer = useRef<number | null>(null)
   const lastQuery = useRef('')
@@ -30,21 +34,23 @@ export function PlaceInput({ id, label, value, onChange, near, error, placeholde
     if (timer.current) window.clearTimeout(timer.current)
     const q = text.trim()
     lastQuery.current = q
-    if (q.length < 3) { setOptions([]); setOpen(false); return }
+    if (q.length < 3) { setOptions([]); setOpen(false); setSearching(false); return }
+    setSearching(true)
     timer.current = window.setTimeout(async () => {
       try {
         const found = await placesApi.search(q, near)
         if (lastQuery.current !== q) return // nel frattempo si è scritto ancora
-        setOptions(found); setOpen(found.length > 0); setActive(-1); setUnavailable(false)
+        setOptions(found); setOpen(found.length > 0); setActive(-1); setUnavailable(false); setSearching(false)
       } catch {
         if (lastQuery.current !== q) return
-        setOptions([]); setOpen(false); setUnavailable(true)
+        setOptions([]); setOpen(false); setUnavailable(true); setSearching(false)
       }
-    }, 300)
+    }, SEARCH_DELAY_MS)
   }
 
   function choose(p: Place) {
     lastQuery.current = ''
+    setSearching(false)
     onChange({ name: p.name, latitude: p.latitude, longitude: p.longitude })
     setOpen(false); setOptions([]); setActive(-1)
   }
@@ -78,7 +84,9 @@ export function PlaceInput({ id, label, value, onChange, near, error, placeholde
           </ul>
         )}
       </div>
-      <span className="sr-only" aria-live="polite">{open ? `${options.length} ${options.length === 1 ? 'proposta' : 'proposte'}` : ''}</span>
+      <span className={searching ? 'place-searching' : 'sr-only'} aria-live="polite">
+        {searching ? 'Cerco luoghi…' : open ? `${options.length} ${options.length === 1 ? 'proposta' : 'proposte'}` : ''}
+      </span>
       {hint && !error && <small id={`${id}-hint`} className="muted">{hint}</small>}
       {error && <p id={`${id}-err`} className="field-error">{error}</p>}
       {unavailable && !error && <p role="alert" className="field-error">Ricerca dei luoghi non disponibile, riprova tra poco</p>}

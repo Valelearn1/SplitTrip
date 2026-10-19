@@ -293,7 +293,7 @@ Una palette fredda e luminosa con un accento cobalto deciso e un lampone riserva
 
 ## Layout
 
-Mobile-first, una colonna fino a 719 px; da 720 px le card della dashboard e dei saldi si dispongono su una griglia a due colonne (`grid-2`, gap 12 px) con la card del saldo a tutta larghezza (`span-2`). Il contenuto principale ha larghezza massima 1040 px, centrato, con padding 16 px ai lati e 32 px in fondo; le pagine di accesso si restringono a 420 px.
+Mobile-first, una colonna fino a 719 px; da 720 px le card della dashboard e dei saldi si dispongono su una griglia a due colonne (`grid-2`, gap 12 px) con la card del saldo a tutta larghezza (`span-2`). Il contenuto principale ha larghezza massima 1040 px, centrato, con padding 16 px ai lati e 32 px in fondo; le pagine di accesso si restringono a 420 px. **Larghezze di prova:** 430 px (riferimento indicato dal docente, iPhone grandi), 390 e 360 px, con nomi lunghi; le colonne `.stack` sono `minmax(0, 1fr)`, così un contenuto lungo va a capo invece di allargare la pagina.
 
 Ritmo di spaziatura su scala 4/8/12/16/24/32 (`space-1` → `space-6`): 12 px fra card e fra elementi di una riga, 16 px di padding nelle card e sotto le intestazioni di pagina, 24 px nelle modali, 32 px negli stati vuoti. Le righe di lista hanno padding verticale 10 px e un divisore `surface-1`; le colonne destre delle righe sono allineate a destra e non si stringono.
 
@@ -415,7 +415,7 @@ Nelle liste Valigia, in fondo alla card sotto l'aggiunta voci, «Suggerisci voci
 - **Campi data:** larghezza bloccata al contenitore anche in Safari su iPhone.
 
 ### Proposte di luoghi (v3.1, D-46/D-51)
-Campo con `role="combobox"`: dalla 3ª lettera, dopo 300 ms, una lista sotto il campo (card bianca, bordo `line`, raggio 12 px, ombra card, al massimo 280 px con scorrimento). Ogni proposta è una riga da 44 px: nome 600 e sotto, in `muted`, regione e paese; la riga attiva su `accent-tint`. Frecce, Invio ed Esc; il numero di proposte è annunciato ai lettori di schermo. Il testo libero resta sempre valido: scegliere una proposta aggiunge solo le coordinate.
+Campo con `role="combobox"`: dalla 3ª lettera, dopo 150 ms (sotto il campo «Cerco luoghi…» finché la risposta non arriva), una lista sotto il campo (card bianca, bordo `line`, raggio 12 px, ombra card, al massimo 280 px con scorrimento). Ogni proposta è una riga da 44 px: nome 600 e sotto, in `muted`, regione e paese; la riga attiva su `accent-tint`. Frecce, Invio ed Esc; il numero di proposte è annunciato ai lettori di schermo. Il testo libero resta sempre valido: scegliere una proposta aggiunge solo le coordinate.
 
 ### Benvenuto nel viaggio (v3.1, D-50)
 Card centrata (max 480 px) con la valigia 48 px cobalto, «Ti diamo il benvenuto in {viaggio}» e una frase `muted`; sotto il form a sinistra: «Conta per», arrivo e partenza già compilate con le date del viaggio, «Va bene così» primario e «Salta» secondario sulla stessa riga.
@@ -462,7 +462,7 @@ Tre fasi. **Scommessa**: card centrata con il dado, il campo importo grande con 
 PNG 1080×1920 disegnato con Canvas nel browser: foto di copertina ritagliata 9:16 e sfocata con velo scuro, o sfumatura cobalto → blu notte → viola notte; nome (accorciato con «…» se non sta), date, totale 150 px, colonne quota/foto/messaggi (quelle a zero non compaiono), fino a 4 badge, logo mappamondo e firma. Etichette in `#c9d5ff` sul fondo scuro. Anteprima 180 px, poi «Condividi» (foglio di condivisione del telefono) o «Scarica»; la nota sotto dice che non ci sono saldi personali.
 
 ### Campo importo (v3.2, aggiunte)
-`AmountField` sopra `Field`: tastiera decimale, suffisso della valuta in cobalto, ripulisce mentre scrivi o incolli (`sanitizeAmount`): solo cifre e una virgola, al massimo 6 cifre intere e 2 decimali (999.999,99). Il punto delle migliaia si toglie («1.234,56», «1,234.56», «1.234»), un punto con 1–2 cifre dopo diventa la virgola. Stessa pulizia nelle quote personalizzate. Il layout regge l'importo massimo a 390 px senza scorrimenti.
+`AmountField` sopra `Field`: tastiera decimale, suffisso della valuta in cobalto, un tasto che rende l'importo impossibile (lettera, separatore in più, terzo decimale, settima cifra intera) viene ignorato (`nextAmount`); i punti delle migliaia restano mentre scrivi e spariscono uscendo dal campo («1.234,56» → «1234,56»); l'incolla si ripulisce senza tagliare le cifre intere e oltre 999.999,99 il modulo dice «Al massimo 999.999,99». Stessa pulizia nelle quote personalizzate. Il layout regge l'importo massimo a 390 px senza scorrimenti.
 
 ### Campo password con occhiolino (v3.2, aggiunte)
 `PasswordField`: bottone 44 px dentro il campo a destra, icona `visibility` / `visibility_off` in `ink-2`, nome «Mostra password» / «Nascondi password» e `aria-pressed`; anello di focus interno cobalto. In accesso, registrazione, profilo e ripristino.

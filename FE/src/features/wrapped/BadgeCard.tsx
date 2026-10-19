@@ -15,7 +15,7 @@ export function BadgeCard({ badge, person }: { badge: WrappedBadge; person: Wrap
     <article className="badge-card" style={{ background: BADGE_STYLE[badge.code] }}>
       <div className="badge-who">
         <Avatar name={person?.displayName ?? '?'} size="sm" userId={person?.userId ?? undefined} />
-        <span>{person?.displayName}</span>
+        <span className="badge-name">{person?.displayName}</span>
         {emoji && <span className="badge-emoji" aria-hidden="true">{emoji}</span>}
       </div>
       <strong>{text}</strong>

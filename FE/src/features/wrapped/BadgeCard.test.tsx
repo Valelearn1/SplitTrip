@@ -14,3 +14,9 @@ it('un titolo senza emoji resta com\'è', () => {
   expect(container.querySelector('strong')?.textContent).toBe('Compagno di viaggio')
   expect(container.querySelector('.badge-emoji')).not.toBeInTheDocument()
 })
+
+it('il nome sta in .badge-name, la classe che lo manda a capo quando è lungo', () => {
+  const person = { participantId: 'p1', userId: null, displayName: 'Massimiliano Rossi' }
+  const { container } = render(<BadgeCard badge={{ participantId: 'p1', code: 'FOODIE', title: '🍝 Il buongustaio', detail: 'x' }} person={person as never} />)
+  expect(container.querySelector('.badge-name')).toHaveTextContent('Massimiliano Rossi')
+})
