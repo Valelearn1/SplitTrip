@@ -272,7 +272,7 @@ describe('ExpenseFormPage', () => {
     await user.type(await screen.findByLabelText('Importo'), '12')
     await user.type(screen.getByLabelText('Descrizione'), 'Gelato')
     await user.click(screen.getByRole('button', { name: /Salva/ }))
-    expect(await screen.findByText('Sei offline: la modifica non è stata salvata. Riprova quando torna la rete')).toBeInTheDocument()
+    expect(await screen.findByText('Connessione persa: la modifica potrebbe non essere stata salvata. Controlla prima di riprovare')).toBeInTheDocument()
     expect(screen.getByLabelText('Descrizione')).toHaveValue('Gelato')
     act(() => onlineManager.setOnline(true))
     await new Promise((r) => setTimeout(r, 300))

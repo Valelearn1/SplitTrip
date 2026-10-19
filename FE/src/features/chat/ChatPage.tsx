@@ -98,11 +98,12 @@ export function ChatPage() {
     return () => clearTimeout(t)
   }, [typing])
 
-  // all'apertura e a ogni messaggio nuovo con la pagina visibile: letti fin qui
+  // all'apertura e a ogni messaggio nuovo con la pagina visibile: letti fin qui; offline si aspetta la rete (D-63),
+  // altrimenti aprire la chat mostrerebbe «non è stato salvato» senza che si sia cambiato niente
   const { mutate: read } = markRead
   useEffect(() => {
-    if (newestId && document.visibilityState === 'visible') read()
-  }, [newestId, read])
+    if (newestId && online && document.visibilityState === 'visible') read()
+  }, [newestId, read, online])
 
   useEffect(() => {
     if (!newestId) return

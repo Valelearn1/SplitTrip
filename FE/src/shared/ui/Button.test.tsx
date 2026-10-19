@@ -19,3 +19,10 @@ it('needsNetwork={false} lascia attivo anche un submit (accesso); needsNetwork s
   expect(screen.getByRole('button', { name: 'Entra' })).toBeEnabled()
   expect(screen.getByRole('button', { name: 'Elimina' })).toBeDisabled()
 })
+
+it('offline anche i bottoni «danger» (eliminare, lasciare il viaggio) si spengono: nelle finestre di conferma l\'avviso non si vedrebbe', () => {
+  render(<Button type="button" variant="danger">Elimina</Button>)
+  act(() => onlineManager.setOnline(false))
+  expect(screen.getByRole('button', { name: 'Elimina' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: 'Elimina' })).toHaveAttribute('aria-describedby', 'offline-reason')
+})

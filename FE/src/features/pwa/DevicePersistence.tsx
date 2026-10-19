@@ -8,6 +8,8 @@ import { busterFor, MAX_AGE, persister, shouldPersist, storageGate } from './per
  * Per l'utente che ha fatto l'accesso: prima ripristina la copia salvata sul telefono, poi la tiene aggiornata (D-63).
  * Il marchio contiene l'id: la copia di un'altra persona si scarta invece di comparire. Senza accesso non salva nulla.
  */
+const RESTORE_TIMEOUT_MS = 1500
+
 export function DevicePersistence({ children }: { children: ReactNode }) {
   const { auth } = useAuth()
   const client = useQueryClient()
@@ -19,7 +21,9 @@ export function DevicePersistence({ children }: { children: ReactNode }) {
     let alive = true
     let unsubscribe = () => {}
     const buster = busterFor(userId)
-    persistQueryClientRestore({ queryClient: client, persister, buster, maxAge: MAX_AGE })
+    // al massimo 1,5 s: se IndexedDB resta appesa l'app si apre lo stesso, online, invece di uno schermo bianco
+    const timeout = new Promise<void>((resolve) => setTimeout(resolve, RESTORE_TIMEOUT_MS))
+    Promise.race([persistQueryClientRestore({ queryClient: client, persister, buster, maxAge: MAX_AGE }), timeout])
       .catch(() => console.warn('Copia offline non disponibile su questo dispositivo'))   // IndexedDB assente o piena: si va avanti online
       .finally(() => {
         if (!alive) return

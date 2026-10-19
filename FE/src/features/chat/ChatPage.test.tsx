@@ -1,5 +1,6 @@
 import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { onlineManager } from '@tanstack/react-query'
 import { http, HttpResponse } from 'msw'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { server } from '../../test/server'
@@ -96,3 +97,16 @@ it('il suono dei messaggi si spegne dalla chat e resta sull’account (D-48)', a
   await waitFor(() => expect(sent).toEqual({ chatSound: false }))
   expect(JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)!).user.chatSound).toBe(false)
 })
+
+it('offline aprire la chat o vedere un messaggio non prova a segnare «letti» (niente avviso «non è stato salvato»)', async () => {
+  mount('ONGOING', [msg({ id: 'm1', content: 'Ciao' })])
+  expect(await screen.findByText('Ciao')).toBeInTheDocument()
+  let reads = 0
+  server.use(http.post('http://localhost/api/trips/t1/messages/read', () => { reads++; return new HttpResponse(null, { status: 204 }) }))
+  act(() => onlineManager.setOnline(false))
+  act(() => push({ type: 'message.created', data: msg({ id: 'n2', content: 'Arrivato prima che cadesse la rete' }) }))
+  expect(await screen.findByText('Arrivato prima che cadesse la rete')).toBeInTheDocument()
+  await new Promise((r) => setTimeout(r, 100))
+  expect(reads).toBe(0)
+})
+

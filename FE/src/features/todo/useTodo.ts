@@ -37,7 +37,7 @@ export function useAddItem(tripId: string) {
   })
 }
 
-/** Spunta ottimistica: la casella cambia subito, poi la lista si riallinea col server. */
+/** Spunta ottimistica: la casella cambia subito, poi la lista si riallinea col server; se fallisce (anche offline) torna com'era. */
 export function usePatchItem(tripId: string) {
   const qc = useQueryClient()
   return useMutation({
@@ -45,9 +45,13 @@ export function usePatchItem(tripId: string) {
     onMutate: async ({ itemId, patch }) => {
       if (patch.done === undefined) return
       await qc.cancelQueries({ queryKey: key(tripId) })
+      const before = qc.getQueryData<TodoList[]>(key(tripId))
       qc.setQueryData<TodoList[]>(key(tripId), (lists) =>
         lists?.map((l) => ({ ...l, items: l.items.map((i) => (i.id === itemId ? { ...i, done: patch.done! } : i)) })))
+      return { before }
     },
+    // offline l'invalidazione resta in pausa: senza questo la spunta resterebbe e finirebbe salvata sul telefono (D-63)
+    onError: (_e, _v, ctx) => { if (ctx?.before) qc.setQueryData(key(tripId), ctx.before) },
     onSettled: () => qc.invalidateQueries({ queryKey: key(tripId) }),
   })
 }

@@ -18,7 +18,8 @@ export class ApiError extends Error {
   }
 }
 
-export const OFFLINE_DETAIL = 'Sei offline: la modifica non è stata salvata. Riprova quando torna la rete'
+// «potrebbe»: se la rete cade dopo il salvataggio sul server il browser non lo sa, e un «riprova» farebbe un doppione
+export const OFFLINE_DETAIL = 'Connessione persa: la modifica potrebbe non essere stata salvata. Controlla prima di riprovare'
 
 /** fetch rifiutata (niente rete o server irraggiungibile) → ApiError leggibile; un'interruzione voluta resta com'è. */
 async function send(url: string, init: RequestInit): Promise<Response> {
