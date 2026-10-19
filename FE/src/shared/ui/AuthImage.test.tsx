@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { onlineManager, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { expect, it, vi } from 'vitest'
@@ -23,4 +23,11 @@ it('scarica con il Bearer, mostra un object URL e lo libera allo smontaggio', as
   expect(createUrl).toHaveBeenCalled()
   unmount()
   expect(revoke).toHaveBeenCalledWith('blob:fake')
+})
+
+it('offline una foto mai vista lascia un segnaposto che dice che serve la rete', async () => {
+  server.use(http.get('http://localhost/api/trips/t1/photos/p9/image', () => HttpResponse.error()))
+  onlineManager.setOnline(false)
+  render(<QueryClientProvider client={new QueryClient()}><AuthImage path="/trips/t1/photos/p9/image" alt="Tramonto" /></QueryClientProvider>)
+  expect(await screen.findByRole('img', { name: 'Tramonto: serve la rete' })).toHaveTextContent('Serve la rete')
 })

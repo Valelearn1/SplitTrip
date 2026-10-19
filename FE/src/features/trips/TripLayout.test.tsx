@@ -1,4 +1,5 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
+import { focusManager } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { expect, it } from 'vitest'
@@ -43,3 +44,25 @@ it('le schede del viaggio sono laterali: cambiarle non allunga la strada del rit
   expect(await screen.findByRole('heading', { name: 'Spese' })).toBeInTheDocument()
   expect(router.state.historyAction).toBe('REPLACE')
 })
+
+it('se il server non si raggiunge più, il viaggio già caricato resta a schermo invece di un errore (D-63)', async () => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false } }))
+  server.use(
+    http.get('http://localhost/api/trips/t1', () => HttpResponse.json({
+      id: 't1', name: 'Roma', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR', status: 'ONGOING',
+      inviteCode: 'ROMA-7K2P', ownerId: 'u1',
+      participants: [{ id: 'p1', userId: 'u1', displayName: 'Vale', role: 'ORGANIZER', defaultWeight: 1, arrivalDate: null, departureDate: null, hasAvatar: false }],
+    })),
+    http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+  )
+  const live = { status: 'connected' as const, publish: () => {}, subscribe: () => () => {} }
+  renderWithProviders([{ path: '/trips/:tripId', element: <LiveContext value={live}><TripLayout /></LiveContext> }], '/trips/t1')
+  expect(await screen.findByRole('heading', { name: 'Roma' })).toBeInTheDocument()
+  server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.error()))
+  act(() => { focusManager.setFocused(false); focusManager.setFocused(true) })   // si torna sull'app: ricarica, e fallisce
+  await new Promise((r) => setTimeout(r, 200))
+  expect(screen.getByRole('heading', { name: 'Roma' })).toBeInTheDocument()
+  expect(screen.queryByText('Il server non risponde, riprova tra poco')).not.toBeInTheDocument()
+  act(() => focusManager.setFocused(undefined))
+})
+

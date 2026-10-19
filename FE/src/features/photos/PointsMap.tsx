@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from 'react-leaflet'
 import { reduceMotion } from '../../shared/utils/motion'
+import { useOnline } from '../pwa/useOnline'
+import { MapOffline } from './MapOffline'
 
 export type MapPoint = { id: string; name: string; latitude: number; longitude: number }
 
@@ -16,6 +18,8 @@ function FitPoints({ points }: { points: MapPoint[] }) {
 
 /** Mappa semplice di punti con nome (profilo, «i miei numeri»): i nomi sono anche in testo fuori dalla mappa. */
 export function PointsMap({ points }: { points: MapPoint[] }) {
+  const online = useOnline()
+  if (!online) return <MapOffline />
   return (
     <div className="points-map" aria-label="Mappa delle destinazioni">
       <MapContainer center={[points[0].latitude, points[0].longitude]} zoom={4} scrollWheelZoom={false} zoomAnimation={!reduceMotion()} fadeAnimation={!reduceMotion()} markerZoomAnimation={!reduceMotion()}>

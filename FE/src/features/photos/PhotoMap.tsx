@@ -4,6 +4,8 @@ import { reduceMotion } from '../../shared/utils/motion'
 import type { Photo } from '../../shared/api/types'
 import { AuthImage } from '../../shared/ui/AuthImage'
 import { formatDate } from '../../shared/utils/format'
+import { useOnline } from '../pwa/useOnline'
+import { MapOffline } from './MapOffline'
 import { photoPath } from './photosApi'
 
 
@@ -22,30 +24,33 @@ type Props = { tripId: string; photos: Photo[]; onOpen: (p: Photo) => void }
 
 /** Mappa delle foto con posizione (D-10): sotto, la stessa lista in testo, perché la mappa non sia l'unico accesso. */
 export function PhotoMap({ tripId, photos, onOpen }: Props) {
+  const online = useOnline()
   const located = photos.filter((p) => p.latitude !== null && p.longitude !== null)
   if (located.length === 0) {
     return <p className="muted">Nessuna foto con posizione: al caricamento spunta «Mostra sulla mappa dove è stata scattata».</p>
   }
   return (
     <div className="stack">
-      <div className="photo-map" aria-label="Mappa delle foto">
-        <MapContainer center={[located[0].latitude!, located[0].longitude!]} zoom={13} scrollWheelZoom={false} zoomAnimation={!reduceMotion()} fadeAnimation={!reduceMotion()} markerZoomAnimation={!reduceMotion()}>
-          <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
-          <FitBounds photos={located} />
-          {located.map((p) => (
-            <CircleMarker key={p.id} center={[p.latitude!, p.longitude!]} radius={10}
-              pathOptions={{ color: '#ffffff', weight: 2, fillColor: '#2347b8', fillOpacity: 1 }}>
-              <Popup>
-                <button type="button" className="map-popup" onClick={() => onOpen(p)}>
-                  <AuthImage path={photoPath(tripId, p.id, 'thumbnail')} alt={p.caption ?? `Foto di ${p.uploaderName}`} />
-                  <span>{p.caption ?? 'Senza didascalia'}</span>
-                  {p.placeName && <small className="muted">{p.placeName}</small>}
-                </button>
-              </Popup>
-            </CircleMarker>
-          ))}
-        </MapContainer>
-      </div>
+      {online ? (
+        <div className="photo-map" aria-label="Mappa delle foto">
+          <MapContainer center={[located[0].latitude!, located[0].longitude!]} zoom={13} scrollWheelZoom={false} zoomAnimation={!reduceMotion()} fadeAnimation={!reduceMotion()} markerZoomAnimation={!reduceMotion()}>
+            <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
+            <FitBounds photos={located} />
+            {located.map((p) => (
+              <CircleMarker key={p.id} center={[p.latitude!, p.longitude!]} radius={10}
+                pathOptions={{ color: '#ffffff', weight: 2, fillColor: '#2347b8', fillOpacity: 1 }}>
+                <Popup>
+                  <button type="button" className="map-popup" onClick={() => onOpen(p)}>
+                    <AuthImage path={photoPath(tripId, p.id, 'thumbnail')} alt={p.caption ?? `Foto di ${p.uploaderName}`} />
+                    <span>{p.caption ?? 'Senza didascalia'}</span>
+                    {p.placeName && <small className="muted">{p.placeName}</small>}
+                  </button>
+                </Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+        </div>
+      ) : <MapOffline />}
       <ul className="list">
         {located.map((p) => (
           <li key={p.id} className="row">
