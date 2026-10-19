@@ -473,6 +473,15 @@ Due pagine pubbliche nello stile dell'accesso (logo, titolo, una card): «Passwo
 ### Destinazione dall'elenco (v3.2, D-60)
 Il combobox dei luoghi è obbligatorio per la destinazione del viaggio: senza una proposta scelta l'errore di campo è «Scegli la destinazione dall'elenco»; se la ricerca non risponde, sotto il campo compare in lampone «Ricerca dei luoghi non disponibile, riprova tra poco». Nelle impostazioni la scelta serve solo se la destinazione cambia.
 
+### Offline e app installata (v3.5, D-63)
+- **Barra offline**, sotto l'intestazione come «si sta svegliando»: fondo `surface-2`, testo `ink`, icona `cloud_off`, «Sei offline · dati delle HH:MM · serve la rete per salvare» (con la data se i dati non sono di oggi; l'ora è quella del dato più vecchio della pagina). Al ritorno «Di nuovo online» su `accent-tint` per 3 s. Offline la barra del server che si sveglia non compare.
+- **Pagina mai aperta**: al posto dello spinner, empty state con `cloud_off` e «Questa pagina non è ancora salvata sul telefono: aprila una volta con la rete».
+- **Controlli offline**: i bottoni di salvataggio e le azioni («Nuova spesa», «Salda», «Carica foto», «Chi offre?», campo della chat) restano visibili ma spenti (opacità 0.5), con `title` «Serve la rete» e `aria-describedby="offline-reason"` verso la barra; un tocco che prova a cambiare qualcosa mostra in basso «Serve la rete: non è stato salvato» per 4 s (fondo `ink`, testo `surface`).
+- **Foto e mappa**: foto mai vista → segnaposto `surface-2` con `image_not_supported` e «Serve la rete»; mappa → riquadro `surface-2` alto 160 px con «La mappa serve la rete» (la lista sotto resta).
+- **Barra «Aggiorna»**: card fissa in basso (sopra le tab su mobile), `surface` con ombra float, `system_update` + «C'è una nuova versione di SplitTrip», bottoni piccoli «Aggiorna» (primario) e «Dopo» (secondario).
+- **Profilo, sezione «App»**: installabile → testo breve + «Installa SplitTrip» (`install_mobile`); iPhone/iPad → due passi numerati con `ios_share` e `add_box`; già installata → `check_circle` cobalto + «SplitTrip è installata su questo dispositivo»; altrimenti «Puoi installarla dal menu del browser, se lo permette».
+- **Icone**: mappamondo del logo, 192/512 trasparenti, 512 maskable e 180 per iPhone su fondo `#f8f9ff` (`FE/scripts/make-pwa-icons.sh`).
+
 ### Modale
 `<dialog>` bianco, raggio 16 px, padding 24 px, larghezza massima 420 px, ombra modale e backdrop d'inchiostro al 45%; azioni allineate a destra.
 

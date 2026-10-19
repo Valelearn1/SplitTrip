@@ -48,6 +48,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 🔑 **Password dimenticata**: un link via email (Brevo) valido 30 minuti, una volta sola; e l'**occhiolino** per vedere la password mentre la scrivi
 - 🔢 **Importi a prova di dito**: un tasto sbagliato (lettera, separatore in più, terzo decimale, settima cifra) viene ignorato invece di cambiare il numero; «1.234,56» si legge giusto, scritto o incollato; oltre 999.999,99 lo dice un messaggio
 - 📍 **Destinazioni reali**: il viaggio si crea scegliendo un luogo dall'elenco, così meteo, mappa e stagione sono quelli giusti
+- 📲 **App installabile e offline**: si installa dal Profilo (su iPhone con «Aggiungi alla schermata Home») e, senza rete, mostra gli ultimi viaggi, spese, saldi, liste, chat e foto già visti con «Sei offline · dati delle HH:MM»; le modifiche tornano con la rete, e una barra avvisa quando c'è una versione nuova
 - ↩️ **«Indietro» su ogni pagina**; dopo un salvataggio si torna da dove si era partiti, senza rientrare nel modulo
 - ♿ Interfaccia **mobile-first e accessibile**: ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore
 
@@ -81,6 +82,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 | **v3 Live** | chat di gruppo e notifiche in tempo reale (WebSocket STOMP), consigli AI, «conta per», movimento | ✅ |
 | **v3.1 Rifinitura** | dai test con gli amici: proposte di luoghi, benvenuto, Impostazioni a schede, Home e presentazione, profilo con preferenze, reazioni ed emoji in chat | ✅ |
 | **v3.2 Giochi, riepilogo e tema** | «Chi offre?», riepilogo di fine viaggio con «Indovina il totale», badge e immagine per le storie, tema scuro, palette cobalto e lampone, sfondo stagionale, logo mappamondo, «Indietro» ovunque, password dimenticata, importi solo numerici, destinazioni reali | ✅ |
+| **v3.5 App installabile e offline** | PWA installabile, consultazione offline in sola lettura, foto già viste, avviso «Aggiorna», dati cancellati all'uscita | ✅ |
 
 La visione di prodotto oltre il capstone (ospiti senza registrazione, spese in altre valute, offline, scontrino diviso per voce): [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
@@ -90,7 +92,7 @@ La visione di prodotto oltre il capstone (ospiti senza registrazione, spese in a
 |---|---|
 | **Backend** | Java 25, Spring Boot 4.1 (WebMVC, Data JPA / Hibernate 7, Security 7 + OAuth2 Resource Server, Validation, Actuator), Flyway, springdoc-openapi, ImageIO + TwelveMonkeys (WebP), WebSocket STOMP (broker in memoria), API di Anthropic (Claude Haiku) |
 | **Database** | PostgreSQL 16 |
-| **Frontend** | React 19, TypeScript, Vite, React Router, TanStack Query, React Hook Form + Zod, date-fns, react-leaflet + OpenStreetMap, exifr, @stomp/stompjs, Motion |
+| **Frontend** | React 19, TypeScript, Vite, React Router, TanStack Query (con persistenza in IndexedDB, idb-keyval), React Hook Form + Zod, date-fns, react-leaflet + OpenStreetMap, exifr, @stomp/stompjs, Motion, vite-plugin-pwa (Workbox) |
 | **Design** | DM Sans, Material Symbols, token CSS (nessun framework CSS) — sistema documentato in [`DESIGN.md`](DESIGN.md) |
 | **Test** | JUnit 5, Mockito, Testcontainers, MockMvc · Vitest, Testing Library, MSW |
 | **Deploy** | Render (backend Docker, frontend statico, Postgres) via [`render.yaml`](render.yaml) |
@@ -136,7 +138,7 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 
 ```bash
 cd BE && sh mvnw test   # 222 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 250 test
+cd FE && npm test       # 284 test
 ```
 
 Cosa coprono:
@@ -158,6 +160,7 @@ Cosa coprono:
 - 🔑 **ripristino password**: email sconosciuta senza email, link monouso, scaduto o inventato rifiutato, un link nuovo annulla il vecchio, token mai salvato in chiaro, richiesta all'API di Brevo verificata con un server finto
 - 🔢 **importi**: il campo provato un tasto alla volta (punto di troppo, migliaia, decimali, settima cifra) e incollando, tetto 999.999,99 uguale nel browser e nel server
 - ↩️ **«Indietro»**: pagina madre per ogni rotta, ritorno nella cronologia, moduli salvati che non restano indietro
+- 📶 **offline**: cosa si salva e cosa no, marchio per persona, cancellazione all'uscita anche con IndexedDB bloccata, app aperta già in modalità aereo, barra con l'età dei dati, pagine mai aperte, modifiche bloccate senza coda, foto e mappa senza rete, installazione e aggiornamento
 - 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda», liste, caricamento foto col consenso alla posizione, campanella, chat, consigli AI, «conta per», busta e valigia
 
 Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il codice.
@@ -178,6 +181,7 @@ Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il cod
 | **Luoghi** | le proposte passano dal backend (Open-Meteo, D-51): al servizio arriva solo il testo cercato, mai chi sei; solo per chi ha fatto il login, 30 ricerche al minuto, risultati in cache |
 | **Ripristino password** | risposta sempre uguale (nessuno scopre chi è registrato); token casuale da 32 byte, valido 30 minuti e una volta sola, salvato solo come hash SHA-256; un link nuovo annulla i precedenti; per account al massimo un'email al minuto e cinque al giorno; email spedita dopo il salvataggio, su un thread a parte, con l'API di Brevo (chiave solo nelle variabili d'ambiente, permesso minimo); stesso limite anti-forza-bruta dell'accesso |
 | **Account** | cambio password solo con quella attuale, stesse regole della registrazione; email unica (senza distinzione di maiuscole); preferenze sull'account, nessun dato in più |
+| **Dati sul dispositivo** | offline restano sul telefono solo le risposte già viste (in IndexedDB, marchiate con versione e persona) e le foto già aperte; mai il JSON nella cache del service worker; all'uscita dall'account tutto viene cancellato; sul telefono di altri, esci sempre |
 | **Riepilogo e immagine** | il riepilogo si apre solo a viaggio finito e solo ai membri; un'ipotesi a testa, non modificabile, e quelle degli altri si vedono solo dopo la propria; l'immagine per le storie si disegna nel browser con il totale del gruppo e i badge, senza saldi personali, e non passa dal server |
 | **AI** | al modello vanno solo destinazione, date, numero di persone, meteo e voci della valigia: mai nomi, email o importi; la chiave sta solo nelle variabili d'ambiente di Render; la risposta è JSON validato e mostrato come testo, le voci si aggiungono solo se le spunti; 5 generazioni al giorno per viaggio |
 
@@ -220,7 +224,7 @@ SplitTrip/
 ├── FE/                         frontend React
 │   └── src/
 │       ├── app/                router, layout
-│       ├── features/           auth · home · trips · expenses · balances · todo · photos · notifications · weather · profile · chat · ai · games · wrapped
+│       ├── features/           auth · home · trips · expenses · balances · todo · photos · notifications · weather · profile · chat · ai · games · wrapped · pwa
 │       └── shared/             client API, componenti UI, formattazione, stagioni e illustrazioni, «Indietro»
 ├── docs/                       spec, piani, decisioni, roadmap, screenshot
 ├── docker-compose.yml          Postgres locale
