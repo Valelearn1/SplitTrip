@@ -1,4 +1,4 @@
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -7,6 +7,10 @@ import { server } from '../../test/server'
 import { AuthProvider } from './AuthProvider'
 import { AUTH_STORAGE_KEY } from './authContext'
 import { useAuth } from './useAuth'
+
+// D-63: l'uscita passa da clearDeviceData (memoria, IndexedDB, immagini); qui basta che venga chiamata e svuoti il client
+const { clearDeviceData } = vi.hoisted(() => ({ clearDeviceData: vi.fn(async (client: { clear: () => void }) => client.clear()) }))
+vi.mock('../pwa/deviceData', () => ({ clearDeviceData }))
 
 function LogoutButton() {
   const { logout } = useAuth()
@@ -27,6 +31,7 @@ test('il logout svuota la cache: chi entra dopo sullo stesso telefono non vede i
   await userEvent.click(screen.getByRole('button', { name: 'Esci' }))
 
   expect(queryClient.getQueryData(['trips'])).toBeUndefined()
+  expect(clearDeviceData).toHaveBeenCalledTimes(1)
 })
 
 function SoundState() {

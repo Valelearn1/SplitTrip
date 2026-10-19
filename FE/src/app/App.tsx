@@ -2,13 +2,15 @@ import { MutationCache, QueryClient, QueryClientProvider } from '@tanstack/react
 import { LazyMotion } from 'motion/react'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { AuthProvider } from '../features/auth/AuthProvider'
+import { DevicePersistence } from '../features/pwa/DevicePersistence'
 import { LiveProvider } from '../shared/live/LiveProvider'
 import { MotionRoot } from './MotionRoot'
 import { ThemeRoot } from './ThemeRoot'
 import { routes } from './routes'
 
 const queryClient: QueryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1, staleTime: 10_000 } },
+  // gcTime lungo: le query devono restare in memoria per essere salvate sul telefono (D-63)
+  defaultOptions: { queries: { retry: 1, staleTime: 10_000, gcTime: 7 * 24 * 60 * 60 * 1000 } },
   // la Home (D-49) riassume tutto: qualsiasi scrittura riuscita la rende vecchia; si ricarica quando si torna lì
   mutationCache: new MutationCache({ onSuccess: () => queryClient.invalidateQueries({ queryKey: ['home'] }) }),
 })
@@ -21,6 +23,7 @@ export function App() {
     <LazyMotion features={loadMotionFeatures}>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <DevicePersistence>
         <ThemeRoot>
           <MotionRoot>
             <LiveProvider>
@@ -28,6 +31,7 @@ export function App() {
             </LiveProvider>
           </MotionRoot>
         </ThemeRoot>
+        </DevicePersistence>
       </AuthProvider>
     </QueryClientProvider>
     </LazyMotion>

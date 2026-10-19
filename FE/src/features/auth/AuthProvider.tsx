@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { configureClient } from '../../shared/api/client'
+import { clearDeviceData } from '../pwa/deviceData'
 import { authApi } from './authApi'
 import { AUTH_STORAGE_KEY, AuthContext, type AuthState } from './authContext'
 
@@ -32,10 +33,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuth(state)
   }, [])
 
-  // Svuota anche la cache delle query: su un telefono condiviso chi entra dopo non deve vedere i dati di prima
+  // Svuota cache, copia sul telefono e immagini salvate (D-63): su un telefono condiviso chi entra dopo non vede niente
   const logout = useCallback(() => {
     localStorage.removeItem(AUTH_STORAGE_KEY)
-    queryClient.clear()
+    void clearDeviceData(queryClient)
     setAuth(null)
   }, [queryClient])
 
