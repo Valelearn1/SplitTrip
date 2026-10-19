@@ -9,6 +9,7 @@ import { Modal } from '../../shared/ui/Modal'
 import { Spinner } from '../../shared/ui/Spinner'
 import { useAuth } from '../auth/useAuth'
 import { profileApi } from '../profile/profileApi'
+import { useOnline } from '../pwa/useOnline'
 import type { TripContext } from '../trips/TripLayout'
 import { buildTimeline } from './chatGrouping'
 import { ChatComposer } from './ChatComposer'
@@ -20,6 +21,7 @@ export function ChatPage() {
   const { trip, me, canWrite } = useOutletContext<TripContext>()
   const messages = useMessages(trip.id)
   const send = useSendMessage(trip.id)
+  const online = useOnline()
   const remove = useDeleteMessage(trip.id)
   const reaction = useToggleReaction(trip.id, me.id)
   const markRead = useMarkChatRead(trip.id)
@@ -165,7 +167,7 @@ export function ChatPage() {
         <p className="typing muted">{typing ? `${typing.name} sta scrivendo…` : ''}</p>
         <FormError error={send.error ?? remove.error} />
         {canWrite
-          ? <ChatComposer sending={send.isPending} onSend={(c) => send.mutateAsync(c)} onTyping={() => publish(`/app/trips/${trip.id}/typing`)} />
+          ? <ChatComposer offline={!online} sending={send.isPending} onSend={(c) => send.mutateAsync(c)} onTyping={() => publish(`/app/trips/${trip.id}/typing`)} />
           : <p className="info"><Icon name="lock" />Il viaggio è chiuso: la chat è in sola lettura</p>}
       </div>
       <Modal open={confirmId !== null} title="Eliminare il messaggio?" onClose={() => setConfirmId(null)}>

@@ -329,6 +329,9 @@ fieldset.field.card { padding: var(--space-4); }
 .fab { position: fixed; right: 20px; bottom: 24px; z-index: 15; border: 0; cursor: pointer; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; text-decoration: none; box-shadow: var(--shadow-float); transition: transform 150ms var(--ease), background 150ms var(--ease); }
 .fab:hover { background: var(--accent-2); transform: scale(1.04); }
 .fab .msi { font-size: 30px; }
+/* offline (D-63): azioni visibili ma spente, con il motivo nella barra in cima */
+.fab[aria-disabled='true'], .btn[aria-disabled='true'], .fab:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.network-toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 30; display: flex; align-items: center; gap: 8px; padding: 10px var(--space-4); border-radius: var(--radius); background: var(--ink); color: var(--surface); box-shadow: var(--shadow-float); font-size: 0.9375rem; }
 
 @media (max-width: 719px) {
   .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; margin: 0; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); background: var(--surface-glass); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-top: 1px solid var(--line); border-radius: 0; gap: 0; }
@@ -337,6 +340,7 @@ fieldset.field.card { padding: var(--space-4); }
   .tabs a.active { background: var(--accent-tint); box-shadow: none; }
   .has-tabs .app-main { padding-bottom: 164px; }
   .has-tabs .fab { bottom: 84px; }
+  .has-tabs .network-toast { bottom: 84px; }
   .app-header nav > .muted { display: none; }
   h1 { font-size: 1.5rem; }
 }

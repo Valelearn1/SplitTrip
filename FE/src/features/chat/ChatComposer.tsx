@@ -3,9 +3,9 @@ import { Button } from '../../shared/ui/Button'
 import { Icon } from '../../shared/ui/Icon'
 import { EmojiPicker } from './EmojiPicker'
 
-type Props = { onSend: (content: string) => Promise<unknown>; onTyping: () => void; sending: boolean }
+type Props = { onSend: (content: string) => Promise<unknown>; onTyping: () => void; sending: boolean; offline?: boolean }
 
-export function ChatComposer({ onSend, onTyping, sending }: Props) {
+export function ChatComposer({ onSend, onTyping, sending, offline = false }: Props) {
   const [text, setText] = useState('')
   const lastTyping = useRef(0)
   const input = useRef<HTMLTextAreaElement>(null)
@@ -55,7 +55,8 @@ export function ChatComposer({ onSend, onTyping, sending }: Props) {
     <form className="chat-composer" onSubmit={submit}>
       <label className="sr-only" htmlFor="chat-input">Scrivi un messaggio</label>
       <EmojiPicker onPick={insert} />
-      <textarea ref={input} id="chat-input" rows={1} maxLength={1000} value={text} onKeyDown={onKeyDown} onChange={(e) => change(e.target.value)} placeholder="Scrivi un messaggio" />
+      <textarea ref={input} id="chat-input" rows={1} maxLength={1000} value={text} onKeyDown={onKeyDown} onChange={(e) => change(e.target.value)} disabled={offline}
+        placeholder={offline ? 'Sei offline: i messaggi tornano con la rete' : 'Scrivi un messaggio'} />
       {text.length >= 900 && <small className="muted chat-counter">{text.length}/1000</small>}
       <Button type="submit" loading={sending} disabled={!trimmed} aria-label="Invia" className="chat-send"><Icon name="send" /><span className="send-text">Invia</span></Button>
     </form>

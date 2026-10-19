@@ -1,4 +1,5 @@
-import { screen, within } from '@testing-library/react'
+import { act, screen, within } from '@testing-library/react'
+import { onlineManager } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
@@ -254,5 +255,27 @@ describe('ExpenseFormPage', () => {
     await user.type(screen.getByLabelText('Descrizione'), 'Villa')
     await user.click(screen.getByRole('button', { name: /Salva/ }))
     expect(await screen.findByText('Al massimo 999.999,99')).toBeInTheDocument()
+  })
+
+  it('la rete cade durante il salvataggio: niente in coda, messaggio chiaro, campi ancora compilati', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    let calls = 0
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.post('http://localhost/api/trips/t1/expenses', () => { calls++; onlineManager.setOnline(false); return HttpResponse.error() }),
+    )
+    renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }],
+      '/trips/t1/expenses/new',
+    )
+    const user = userEvent.setup()
+    await user.type(await screen.findByLabelText('Importo'), '12')
+    await user.type(screen.getByLabelText('Descrizione'), 'Gelato')
+    await user.click(screen.getByRole('button', { name: /Salva/ }))
+    expect(await screen.findByText('Sei offline: la modifica non è stata salvata. Riprova quando torna la rete')).toBeInTheDocument()
+    expect(screen.getByLabelText('Descrizione')).toHaveValue('Gelato')
+    act(() => onlineManager.setOnline(true))
+    await new Promise((r) => setTimeout(r, 300))
+    expect(calls).toBe(1)                                                    // nessun invio automatico al ritorno della rete
   })
 })

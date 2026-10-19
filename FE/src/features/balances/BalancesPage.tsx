@@ -7,6 +7,7 @@ import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { MoneyText } from '../../shared/ui/MoneyText'
 import { Spinner } from '../../shared/ui/Spinner'
+import { useOnline } from '../pwa/useOnline'
 import type { TripContext } from '../trips/TripLayout'
 import { SettlementRow } from './SettlementRow'
 import { useBalances, useDeleteSettlement, useSettlements } from './useBalances'
@@ -20,6 +21,7 @@ function groupByDebtor(transfers: Transfer[]): Transfer[][] {
 
 export function BalancesPage() {
   const { trip, me, isOrganizer, canWrite } = useOutletContext<TripContext>()
+  const online = useOnline()
   const balances = useBalances(trip.id)
   const settlements = useSettlements(trip.id)
   const remove = useDeleteSettlement(trip.id)
@@ -85,7 +87,8 @@ export function BalancesPage() {
               <div className="transfer-foot">
                 <MoneyText amount={t.amount} currency={trip.currency} className="amount-lg" />
                 {canWrite && (
-                  <Link className="btn btn-primary btn-sm" to={`/trips/${trip.id}/settlements/new?from=${t.fromParticipantId}&to=${t.toParticipantId}&amount=${t.amount.toFixed(2)}`}>
+                  <Link className="btn btn-primary btn-sm" to={`/trips/${trip.id}/settlements/new?from=${t.fromParticipantId}&to=${t.toParticipantId}&amount=${t.amount.toFixed(2)}`}
+                    {...(online ? {} : { 'aria-label': 'Salda (serve la rete)', 'aria-disabled': true, title: 'Serve la rete', onClick: (e: { preventDefault: () => void }) => e.preventDefault() })}>
                     <Icon name="payments" />Salda
                   </Link>
                 )}

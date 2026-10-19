@@ -1,3 +1,5 @@
+import { onlineManager } from '@tanstack/react-query'
+
 export type FieldError = { field: string; message: string }
 
 export class ApiError extends Error {
@@ -15,6 +17,22 @@ export class ApiError extends Error {
     this.errors = errors
   }
 }
+
+export const OFFLINE_DETAIL = 'Sei offline: la modifica non è stata salvata. Riprova quando torna la rete'
+
+/** fetch rifiutata (niente rete o server irraggiungibile) → ApiError leggibile; un'interruzione voluta resta com'è. */
+async function send(url: string, init: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, init)
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'AbortError') throw e
+    throw onlineManager.isOnline()
+      ? new ApiError(0, 'Rete', 'Il server non risponde, riprova tra poco')
+      : new ApiError(0, 'Offline', OFFLINE_DETAIL)
+  }
+}
+
+export const isOfflineError = (e: unknown) => e instanceof ApiError && e.status === 0 && e.title === 'Offline'
 
 const BASE: string = import.meta.env.VITE_API_URL ?? '/api'
 
@@ -36,7 +54,7 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
   const token = getToken()
   if (token) headers.Authorization = `Bearer ${token}`
 
-  const res = await fetch(BASE + path, {
+  const res = await send(BASE + path, {
     method: options.method ?? 'GET',
     headers,
     body: options.body === undefined ? undefined : isForm ? (options.body as FormData) : JSON.stringify(options.body),
@@ -57,7 +75,7 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
 /** Scarica un'immagine protetta dal Bearer; da mostrare con URL.createObjectURL (vedi AuthImage). */
 export async function apiBlob(path: string): Promise<Blob> {
   const token = getToken()
-  const res = await fetch(BASE + path, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+  const res = await send(BASE + path, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
   if (!res.ok) {
     if (res.status === 401) onUnauthorized()
     throw new ApiError(res.status, 'Errore', `Immagine non disponibile (${res.status})`)

@@ -1,7 +1,8 @@
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it, vi } from 'vitest'
 import { server } from '../../test/server'
-import { api, ApiError, configureClient } from './client'
+import { onlineManager } from '@tanstack/react-query'
+import { api, ApiError, configureClient, OFFLINE_DETAIL } from './client'
 
 describe('api client', () => {
   it('aggiunge il Bearer e legge il JSON', async () => {
@@ -43,5 +44,19 @@ describe('api client', () => {
     configureClient({ getToken: () => 'tok', onUnauthorized: () => {} })
     server.use(http.delete('http://localhost/api/trips/1', () => new HttpResponse(null, { status: 204 })))
     await expect(api('/trips/1', { method: 'DELETE' })).resolves.toBeUndefined()
+  })
+
+  it('senza rete una richiesta fallisce con un errore «Offline» leggibile, non un TypeError', async () => {
+    server.use(http.post('http://localhost/api/trips/t1/expenses', () => HttpResponse.error()))
+    onlineManager.setOnline(false)
+    const error = await api('/trips/t1/expenses', { method: 'POST', body: {} }).catch((e) => e)
+    expect(error).toBeInstanceOf(ApiError)
+    expect(error).toMatchObject({ status: 0, title: 'Offline', detail: OFFLINE_DETAIL })
+  })
+
+  it('con la rete ma il server irraggiungibile lo dice', async () => {
+    server.use(http.get('http://localhost/api/trips', () => HttpResponse.error()))
+    const error = await api('/trips').catch((e) => e)
+    expect(error).toMatchObject({ status: 0, title: 'Rete', detail: 'Il server non risponde, riprova tra poco' })
   })
 })

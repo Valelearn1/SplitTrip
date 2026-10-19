@@ -30,8 +30,8 @@ export function ForgotPasswordPage() {
       ) : (
         <form className="card" noValidate onSubmit={handleSubmit((v) => mutation.mutate(v))}>
           <Field label="Email" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
-          <FormError error={mutation.error} />
-          <Button type="submit" loading={mutation.isPending}>Mandami il link</Button>
+          <FormError error={mutation.error} offlineMessage="Serve la rete per entrare" />
+          <Button type="submit" needsNetwork={false} loading={mutation.isPending}>Mandami il link</Button>
         </form>
       )}
       <p className="muted" style={{ textAlign: 'center' }}><Link to="/login">Torna all'accesso</Link></p>

@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useMatch } from 'react-router'
 import { useAuth } from '../features/auth/useAuth'
+import { NetworkToast } from '../features/pwa/NetworkToast'
 import { OfflineBanner } from '../features/pwa/OfflineBanner'
 import { NotificationBell } from '../features/notifications/NotificationBell'
 import { Avatar } from '../shared/ui/Avatar'
@@ -41,6 +42,7 @@ export function Layout() {
           {showBack && <div className="back-bar"><BackButton /></div>}
           <Outlet />
         </main>
+        <NetworkToast />
       </div>
     </SeasonProvider>
   )

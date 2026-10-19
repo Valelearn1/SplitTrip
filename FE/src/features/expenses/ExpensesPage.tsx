@@ -3,6 +3,7 @@ import { Link, useOutletContext } from 'react-router'
 import { CATEGORY_LABELS, type Expense, type ExpenseCategory } from '../../shared/api/types'
 import { CATEGORY_ICONS } from '../../shared/ui/categoryIcons'
 import { EmptyState } from '../../shared/ui/EmptyState'
+import { useOnline } from '../pwa/useOnline'
 import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Spinner } from '../../shared/ui/Spinner'
@@ -14,6 +15,7 @@ import { useExpenses } from './useExpenses'
 
 export function ExpensesPage() {
   const { trip, me, isOrganizer, canWrite } = useOutletContext<TripContext>()
+  const online = useOnline()
   const [category, setCategory] = useState<ExpenseCategory | undefined>()
   const [wheel, setWheel] = useState(false)
   const { data, isPending, error } = useExpenses(trip.id, category)
@@ -55,7 +57,9 @@ export function ExpensesPage() {
         </section>
       ))}
       {isOrganizer && <p style={{ marginTop: 16 }}><Link to="trash" className="btn btn-secondary btn-sm"><Icon name="delete" />Cestino</Link></p>}
-      {canWrite && <Link to="new" className="fab" aria-label="Nuova spesa"><Icon name="add" /></Link>}
+      {canWrite && (online
+        ? <Link to="new" className="fab" aria-label="Nuova spesa"><Icon name="add" /></Link>
+        : <Link to="new" className="fab" aria-label="Nuova spesa (serve la rete)" aria-disabled="true" title="Serve la rete" onClick={(e) => e.preventDefault()}><Icon name="add" /></Link>)}
       {wheel && <WhoPays trip={trip} me={me} open onClose={() => setWheel(false)} />}
     </div>
   )

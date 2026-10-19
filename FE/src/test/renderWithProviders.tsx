@@ -7,7 +7,7 @@ type Entry = string | { pathname: string; state?: unknown }
 
 /** Con un array la cronologia parte da lì e si è sull'ultima voce (per i test di «Indietro»). */
 export function renderWithProviders(routes: RouteObject[], initialEntry: Entry | Entry[]) {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false, networkMode: 'always' } } })
   const entries = Array.isArray(initialEntry) ? initialEntry : [initialEntry]
   const router = createMemoryRouter(routes, { initialEntries: entries, initialIndex: entries.length - 1 })
   render(

@@ -5,6 +5,7 @@ import { EmptyState } from '../../shared/ui/EmptyState'
 import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Spinner } from '../../shared/ui/Spinner'
+import { useOnline } from '../pwa/useOnline'
 import type { TripContext } from '../trips/TripLayout'
 import { PhotoGrid } from './PhotoGrid'
 import { PhotoMap } from './PhotoMap'
@@ -14,6 +15,7 @@ import { usePhotos } from './usePhotos'
 
 export function PhotosPage() {
   const { trip, me, isOrganizer, canWrite } = useOutletContext<TripContext>()
+  const online = useOnline()
   const photos = usePhotos(trip.id)
   // le proposte di luoghi preferiscono quelli vicini alla destinazione del viaggio (D-46)
   const near = trip.latitude != null && trip.longitude != null ? { latitude: trip.latitude, longitude: trip.longitude } : undefined
@@ -37,7 +39,7 @@ export function PhotosPage() {
         ? <PhotoGrid tripId={trip.id} photos={photos.data} onOpen={setOpen} />
         : <PhotoMap tripId={trip.id} photos={photos.data} onOpen={setOpen} />)}
       {canWrite && (
-        <button type="button" className="fab" aria-label="Carica foto" onClick={() => setUploading(true)}><Icon name="add_a_photo" /></button>
+        <button type="button" className="fab" aria-label={online ? 'Carica foto' : 'Carica foto (serve la rete)'} disabled={!online} title={online ? undefined : 'Serve la rete'} onClick={() => setUploading(true)}><Icon name="add_a_photo" /></button>
       )}
       {uploading && <PhotoUploadSheet tripId={trip.id} open near={near} onClose={() => setUploading(false)} />}
       {open && (

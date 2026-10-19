@@ -44,8 +44,8 @@ export function ResetPasswordPage() {
           <PasswordField label="Nuova password" autoComplete="new-password" placeholder="Almeno 8 caratteri, una lettera e una cifra"
             error={errors.newPassword?.message} {...register('newPassword')} />
           <PasswordField label="Conferma la nuova password" autoComplete="new-password" error={errors.confirm?.message} {...register('confirm')} />
-          <FormError error={mutation.error} />
-          <Button type="submit" loading={mutation.isPending}>Cambia password</Button>
+          <FormError error={mutation.error} offlineMessage="Serve la rete per entrare" />
+          <Button type="submit" needsNetwork={false} loading={mutation.isPending}>Cambia password</Button>
         </form>
       )}
       <p className="muted" style={{ textAlign: 'center' }}><Link to="/login">Torna all'accesso</Link></p>

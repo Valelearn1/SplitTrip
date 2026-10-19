@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
+import { onlineManager } from '@tanstack/react-query'
 import { describe, expect, it } from 'vitest'
 import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
@@ -69,5 +70,16 @@ describe('LoginPage', () => {
     await user.type(screen.getByLabelText('Password'), 'sbagliata')
     await user.click(screen.getByRole('button', { name: 'Entra' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('Credenziali non valide')
+  })
+
+  it('offline il bottone resta attivo e all\'invio dice che serve la rete per entrare', async () => {
+    server.use(http.post('http://localhost/api/auth/login', () => HttpResponse.error()))
+    renderLogin()
+    const user = userEvent.setup()
+    onlineManager.setOnline(false)
+    await user.type(screen.getByLabelText('Email'), 'vale@example.com')
+    await user.type(screen.getByLabelText('Password'), 'password1')
+    await user.click(screen.getByRole('button', { name: 'Entra' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Serve la rete per entrare')
   })
 })

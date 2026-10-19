@@ -39,8 +39,8 @@ export function LoginPage() {
       <form className="card" onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
         <Field label="Email" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
         <PasswordField label="Password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
-        <FormError error={mutation.error} />
-        <Button type="submit" loading={mutation.isPending}>Entra</Button>
+        <FormError error={mutation.error} offlineMessage="Serve la rete per entrare" />
+        <Button type="submit" needsNetwork={false} loading={mutation.isPending}>Entra</Button>
         <Link to="/password-dimenticata" className="forgot-link">Password dimenticata?</Link>
       </form>
       <p className="muted" style={{ textAlign: 'center' }}>

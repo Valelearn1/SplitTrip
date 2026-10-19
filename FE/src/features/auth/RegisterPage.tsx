@@ -43,8 +43,8 @@ export function RegisterPage() {
         <Field label="Nome" autoComplete="name" placeholder="Come ti chiamano gli amici" error={errors.displayName?.message} {...register('displayName')} />
         <Field label="Email" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
         <PasswordField label="Password" autoComplete="new-password" placeholder="Almeno 8 caratteri, una lettera e una cifra" error={errors.password?.message} {...register('password')} />
-        <FormError error={mutation.error} />
-        <Button type="submit" loading={mutation.isPending}>Registrati</Button>
+        <FormError error={mutation.error} offlineMessage="Serve la rete per entrare" />
+        <Button type="submit" needsNetwork={false} loading={mutation.isPending}>Registrati</Button>
       </form>
       <p className="muted" style={{ textAlign: 'center' }}>
         Hai già un account? <Link to="/login" state={location.state}>Entra</Link>
