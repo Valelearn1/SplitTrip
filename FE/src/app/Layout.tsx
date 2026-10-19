@@ -2,6 +2,7 @@ import { Link, Outlet, useLocation, useMatch } from 'react-router'
 import { useAuth } from '../features/auth/useAuth'
 import { NetworkToast } from '../features/pwa/NetworkToast'
 import { OfflineBanner } from '../features/pwa/OfflineBanner'
+import { UpdatePrompt } from '../features/pwa/UpdatePrompt'
 import { NotificationBell } from '../features/notifications/NotificationBell'
 import { Avatar } from '../shared/ui/Avatar'
 import { BackButton } from '../shared/ui/BackButton'
@@ -43,6 +44,7 @@ export function Layout() {
           <Outlet />
         </main>
         <NetworkToast />
+        <UpdatePrompt />
       </div>
     </SeasonProvider>
   )

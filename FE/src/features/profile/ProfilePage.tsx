@@ -6,6 +6,7 @@ import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { downscale } from '../../shared/utils/image'
 import { useAuth } from '../auth/useAuth'
+import { InstallApp } from '../pwa/InstallApp'
 import { PasswordSection } from './PasswordSection'
 import { PreferencesSection } from './PreferencesSection'
 import { ProfileDataSection } from './ProfileDataSection'
@@ -56,6 +57,7 @@ export function ProfilePage() {
       <section className="card"><h2>Password</h2><PasswordSection /></section>
       <section className="card"><h2>I miei numeri</h2><StatsSection /></section>
       <section className="card"><h2>Preferenze</h2><PreferencesSection user={user} /></section>
+      <section className="card"><h2>App</h2><InstallApp /></section>
     </div>
   )
 }
