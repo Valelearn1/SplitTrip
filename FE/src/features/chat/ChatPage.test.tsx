@@ -6,6 +6,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { loginAsVale, mount, msg, push, sent } from './chatTestUtils'
+import { expectAccessible } from '../../test/a11y'
 
 beforeEach(loginAsVale)
 
@@ -20,6 +21,7 @@ it('mostra chi scrive, le righe evento con il link e i messaggi eliminati', asyn
   expect(screen.getByText('Tu')).toBeInTheDocument()
   expect(screen.getByText('Messaggio eliminato')).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Marco ha aggiunto «Cena» · 45,00 €' })).toHaveAttribute('href', '/trips/t1/expenses/x1/edit')
+  await expectAccessible()   // D-65
 })
 
 it('il mio messaggio compare una volta anche se torna dal canale', async () => {

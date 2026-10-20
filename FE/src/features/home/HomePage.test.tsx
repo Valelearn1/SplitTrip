@@ -5,6 +5,7 @@ import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { HomePage } from './HomePage'
+import { expectAccessible } from '../../test/a11y'
 
 const summary = (id: string, name: string, status: string) => ({ id, name, destination: name, startDate: '2026-11-01', endDate: '2026-11-06', currency: 'EUR', status, memberCount: 3, myRole: 'MEMBER', latitude: null, longitude: null })
 
@@ -38,6 +39,7 @@ it('viaggio in evidenza, conti, novità e azioni rapide', async () => {
   const numbers = screen.getByRole('region', { name: 'I vostri viaggi in numeri' })
   expect(within(numbers).getByRole('link', { name: /Berlino/ })).toHaveAttribute('href', '/trips/t0/riepilogo')   // solo i passati
   expect(within(numbers).queryByRole('link', { name: /Lisbona/ })).not.toBeInTheDocument()
+  await expectAccessible()   // D-65
 })
 
 it('senza viaggi: stato vuoto con i due bottoni e niente «Nuova spesa»', async () => {

@@ -8,6 +8,7 @@ import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { ExpenseFormPage } from '../expenses/ExpenseFormPage'
 import { TripLayout } from '../trips/TripLayout'
 import { NotificationsPage } from './NotificationsPage'
+import { expectAccessible } from '../../test/a11y'
 
 const trip = {
   id: 't1', name: 'Roma', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR', status: 'ONGOING',
@@ -36,6 +37,7 @@ it('apre il link della notifica e la segna come letta; una spesa cancellata non 
   await user.click(await screen.findByRole('link', { name: /Marco ha aggiunto/ }))
   expect(read).toBe('n1')
   expect(await screen.findByText('Spesa non trovata')).toBeInTheDocument()
+  await expectAccessible()   // D-65
 })
 
 it('toccando una notifica non letta la busta si apre e poi si va alla destinazione', async () => {

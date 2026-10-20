@@ -6,6 +6,7 @@ import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { ProfilePage } from './ProfilePage'
+import { expectAccessible } from '../../test/a11y'
 
 vi.mock('../photos/PointsMap', () => ({ PointsMap: ({ points }: { points: { name: string }[] }) => <p>mappa con {points.length} punti</p> }))
 
@@ -54,6 +55,7 @@ it('dati, password e preferenze si salvano; i numeri si vedono', async () => {
   expect(screen.getByText('12')).toBeInTheDocument()                // foto
   expect(screen.getByText('Lisbona')).toBeInTheDocument()
   expect(await screen.findByText('mappa con 1 punti')).toBeInTheDocument()  // solo le destinazioni con coordinate; la mappa arriva in differita
+  await expectAccessible()   // D-65
 })
 
 it('email già usata: errore sul campo', async () => {

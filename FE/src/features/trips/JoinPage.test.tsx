@@ -6,6 +6,7 @@ import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { JoinPage } from './JoinPage'
+import { expectAccessible } from '../../test/a11y'
 
 it('propone i posti liberi e manda participantId se ne scelgo uno', async () => {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u9', email: 'p@e.it', displayName: 'Giuseppina' } }))
@@ -25,4 +26,5 @@ it('propone i posti liberi e manda participantId se ne scelgo uno', async () => 
   await user.click(screen.getByRole('button', { name: 'Entra' }))
   expect(await screen.findByRole('heading', { name: 'Viaggio' })).toBeInTheDocument()
   expect(sent).toEqual({ code: 'ROMA-7K2P', participantId: 'p3' })
+  await expectAccessible()   // D-65
 })

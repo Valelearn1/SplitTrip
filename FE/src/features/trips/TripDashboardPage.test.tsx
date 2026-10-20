@@ -6,6 +6,7 @@ import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripDashboardPage } from './TripDashboardPage'
 import { TripLayout } from './TripLayout'
+import { expectAccessible } from '../../test/a11y'
 
 const trip = {
   id: 't1', name: 'Roma 2026', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR',
@@ -49,6 +50,7 @@ describe('TripDashboardPage', () => {
     expect(screen.getByRole('link', { name: 'Impostazioni del viaggio' })).toBeInTheDocument() // anche i membri: «La mia partecipazione»
     expect(screen.getByRole('link', { name: 'Liste' })).toHaveAttribute('href', '/trips/t1/lists')
     expect(screen.getByRole('link', { name: 'Foto' })).toHaveAttribute('href', '/trips/t1/photos')
+    await expectAccessible()   // D-65
   })
 
   it('card Giochi: a viaggio aperto la ruota, a viaggio chiuso il link al riepilogo', async () => {

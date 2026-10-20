@@ -7,6 +7,7 @@ import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripLayout } from './TripLayout'
 import { TripSettingsPage } from './TripSettingsPage'
+import { expectAccessible } from '../../test/a11y'
 
 const trip = {
   id: 't1', name: 'Lisbona 2026', destination: 'Lisbona', startDate: '2026-11-01', endDate: '2026-11-06', currency: 'EUR', status: 'PLANNING',
@@ -44,6 +45,7 @@ it('tre schede: la scheda nell’URL e i permessi di chi non organizza', async (
   await user.click(screen.getByRole('tab', { name: 'Io' }))
   expect(screen.getByRole('group', { name: 'Conta per' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Lascia il viaggio' })).toBeInTheDocument()
+  await expectAccessible()   // D-65
 })
 
 it('l’organizzatore modifica il viaggio e non può lasciarlo', async () => {

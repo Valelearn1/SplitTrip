@@ -7,6 +7,7 @@ import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripLayout } from './TripLayout'
 import { WelcomePage } from './WelcomePage'
+import { expectAccessible } from '../../test/a11y'
 
 const trip = {
   id: 't1', name: 'Lisbona 2026', destination: 'Lisbona', startDate: '2026-11-01', endDate: '2026-11-06', currency: 'EUR', status: 'PLANNING',
@@ -40,6 +41,7 @@ it('«Va bene così» salva conta per e date e va alla panoramica', async () => 
   await user.click(screen.getByRole('button', { name: 'Va bene così' }))
   await waitFor(() => expect(sent).toEqual({ defaultWeight: 2, arrivalDate: '2026-11-03', departureDate: '2026-11-06' }))
   expect(await screen.findByText('Pagina panoramica')).toBeInTheDocument()
+  await expectAccessible()   // D-65
 })
 
 it('«Salta» non salva niente; le date uguali al viaggio non si inviano', async () => {

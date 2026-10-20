@@ -7,6 +7,7 @@ import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripLayout } from '../trips/TripLayout'
 import { SettlementFormPage } from './SettlementFormPage'
+import { expectAccessible } from '../../test/a11y'
 
 const trip = {
   id: 't1', name: 'Roma', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR', status: 'ONGOING', inviteCode: 'X', ownerId: 'u1',
@@ -36,4 +37,5 @@ it('dopo «Conferma» si torna ai saldi sostituendo il modulo: «Indietro» non 
   expect(await screen.findByRole('heading', { name: 'Saldi' })).toBeInTheDocument()
   expect(sent).toMatchObject({ fromParticipantId: 'p2', toParticipantId: 'p1', amount: 15 })
   expect(router.state.historyAction).toBe('REPLACE')
+  await expectAccessible()   // D-65
 })

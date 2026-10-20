@@ -7,6 +7,7 @@ import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from './authContext'
 import { LoginPage } from './LoginPage'
+import { expectAccessible } from '../../test/a11y'
 
 const loginRoutes = [
   { path: '/login', element: <LoginPage /> },
@@ -44,6 +45,7 @@ describe('LoginPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Viaggio 42' })).toBeInTheDocument()
     expect(JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)!).token).toBe('tok')
+    await expectAccessible()   // D-65
   })
 
   it('?next= dalla pagina di presentazione porta dove serve (es. «Ho un codice invito»)', async () => {

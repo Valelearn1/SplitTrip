@@ -9,6 +9,7 @@ import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripLayout } from '../trips/TripLayout'
 import { formatMoney } from '../../shared/utils/format'
 import { ExpenseFormPage } from './ExpenseFormPage'
+import { expectAccessible } from '../../test/a11y'
 
 // Intl separa importo e valuta con uno spazio non separabile; Testing Library confronta il testo con spazi normali
 const money = (n: number, c: string) => formatMoney(n, c).replace(/\s/g, ' ')
@@ -58,6 +59,7 @@ describe('ExpenseFormPage', () => {
       shares: [{ participantId: 'p1' }, { participantId: 'p2' }] })
     expect(router.state.location.pathname).toBe('/trips/t1/expenses')
     expect(router.state.historyAction).toBe('REPLACE')                         // «Indietro» non riapre il modulo salvato
+    await expectAccessible()   // D-65
   })
 
   it('parti uguali con chi conta per 2: precompilato dal partecipante, spiegato e inviato come WEIGHT', async () => {

@@ -7,6 +7,7 @@ import { server } from '../../test/server'
 import { ForgotPasswordPage } from './ForgotPasswordPage'
 import { LoginPage } from './LoginPage'
 import { ResetPasswordPage } from './ResetPasswordPage'
+import { expectAccessible } from '../../test/a11y'
 
 const routes = [
   { path: '/login', element: <LoginPage /> },
@@ -29,6 +30,7 @@ it('dall\'accesso a «Password dimenticata?»: il messaggio è lo stesso per qua
   expect(await screen.findByText(SENT)).toBeInTheDocument()
   expect(sent).toEqual({ email: 'vale@example.com' })
   expect(screen.getByRole('link', { name: "Torna all'accesso" })).toHaveAttribute('href', '/login')
+  await expectAccessible()   // D-65
 })
 
 it('nuova password: le due devono coincidere, poi «Password cambiata» e «Accedi»', async () => {
@@ -50,6 +52,7 @@ it('nuova password: le due devono coincidere, poi «Password cambiata» e «Acce
   expect(await screen.findByText('Password cambiata')).toBeInTheDocument()
   expect(sent).toEqual({ token: 'abc', newPassword: 'nuova1234' })
   expect(screen.getByRole('link', { name: 'Accedi' })).toHaveAttribute('href', '/login')
+  await expectAccessible()   // D-65
 })
 
 it('link scaduto o già usato: il messaggio del server e «Chiedi un nuovo link»', async () => {

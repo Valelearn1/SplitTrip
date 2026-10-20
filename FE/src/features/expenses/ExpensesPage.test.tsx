@@ -7,6 +7,7 @@ import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripLayout } from '../trips/TripLayout'
 import { ExpensesPage } from './ExpensesPage'
+import { expectAccessible } from '../../test/a11y'
 
 const trip = {
   id: 't1', name: 'Roma', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR', status: 'ONGOING',
@@ -27,4 +28,5 @@ it('offline «Nuova spesa» non apre il modulo e dice che serve la rete', async 
   expect(await screen.findByRole('link', { name: 'Nuova spesa' })).toBeInTheDocument()
   act(() => onlineManager.setOnline(false))
   expect(screen.getByRole('link', { name: 'Nuova spesa (serve la rete)' })).toHaveAttribute('aria-disabled', 'true')
+  await expectAccessible()   // D-65
 })

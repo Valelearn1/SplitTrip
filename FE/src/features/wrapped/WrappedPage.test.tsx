@@ -7,6 +7,7 @@ import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripLayout } from '../trips/TripLayout'
 import { WrappedPage } from './WrappedPage'
+import { expectAccessible } from '../../test/a11y'
 
 vi.mock('../photos/PointsMap', () => ({ PointsMap: ({ points }: { points: unknown[] }) => <p>mappa con {points.length} punti</p> }))
 vi.mock('../../shared/ui/AuthImage', () => ({ AuthImage: ({ alt }: { alt: string }) => <img alt={alt} /> }))
@@ -64,6 +65,7 @@ it('prima scommetti, poi la rivelazione, poi i numeri, i badge e le classifiche'
   expect(screen.getByRole('heading', { name: 'Chi ha fatto più foto' })).toBeInTheDocument()
   expect(screen.getAllByText('Vale')[0]).toBeInTheDocument()
   expect(screen.getByRole('link', { name: /Mancano 1 rimborsi|Manca 1 rimborso/ })).toHaveAttribute('href', '/trips/t1/balances')
+  await expectAccessible()   // D-65
 })
 
 it('«Salta» mostra solo il totale e «2 hanno giocato»; con tutto a zero le classifiche non ci sono', async () => {

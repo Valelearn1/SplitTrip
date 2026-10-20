@@ -7,6 +7,7 @@ import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripLayout } from '../trips/TripLayout'
 import { TodoListsPage } from './TodoListsPage'
+import { expectAccessible } from '../../test/a11y'
 
 const trip = {
   id: 't1', name: 'Roma', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR', status: 'ONGOING',
@@ -53,6 +54,7 @@ it('spunta una voce, la assegna a un partecipante e filtra le mie', async () => 
   expect(patches[2]).toEqual({ iid: 'i2', body: { clearAssignee: true } })
   await user.click(screen.getByRole('checkbox', { name: 'Solo quelle per me' }))
   expect(screen.queryByText('Phon')).not.toBeInTheDocument() // assegnato a Vale, non a me
+  await expectAccessible()   // D-65
 })
 
 it('a lista Valigia completata la valigia si chiude, e lo dice anche il testo', async () => {

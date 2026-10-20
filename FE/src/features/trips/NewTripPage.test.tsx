@@ -6,6 +6,7 @@ import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { NewTripPage } from './NewTripPage'
+import { expectAccessible } from '../../test/a11y'
 
 it('la valuta si sceglie da un menu, con EUR di default', async () => {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false } }))
@@ -31,6 +32,7 @@ it('la valuta si sceglie da un menu, con EUR di default', async () => {
   await user.click(screen.getByRole('button', { name: 'Crea viaggio' }))
   expect(await screen.findByRole('heading', { name: 'Viaggio creato' })).toBeInTheDocument()
   expect(sent.currency).toBe('USD')
+  await expectAccessible()   // D-65
 })
 
 it('scegliendo una proposta si inviano anche le coordinate', async () => {

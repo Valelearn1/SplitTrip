@@ -7,6 +7,7 @@ import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { TripLayout } from '../trips/TripLayout'
 import { BalancesPage } from './BalancesPage'
+import { expectAccessible } from '../../test/a11y'
 
 const trip = {
   id: 't1', name: 'Roma', destination: 'Roma', startDate: '2026-11-01', endDate: '2026-11-05', currency: 'EUR', status: 'ONGOING',
@@ -41,6 +42,7 @@ describe('BalancesPage', () => {
     expect(await screen.findByText('Giulia → Marco')).toBeInTheDocument()
     expect(screen.getAllByText(/15,00\s€/).length).toBeGreaterThan(0)
     expect(screen.getByRole('link', { name: 'Salda' })).toHaveAttribute('href', '/trips/t1/settlements/new?from=p2&to=p1&amount=15.00')
+    await expectAccessible()   // D-65
   })
 
   it('un rimborso si espande e la nota si legge per intero', async () => {

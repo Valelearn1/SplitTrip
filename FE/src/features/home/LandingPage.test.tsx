@@ -3,6 +3,7 @@ import { expect, it } from 'vitest'
 import { renderWithProviders } from '../../test/renderWithProviders'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
 import { LandingPage } from './LandingPage'
+import { expectAccessible } from '../../test/a11y'
 
 const routes = [{ path: '/', element: <LandingPage /> }, { path: '/trips', element: <p>Home</p> }]
 
@@ -14,6 +15,7 @@ it('presenta l’app a chi non è loggato', async () => {
   expect(screen.getByRole('link', { name: 'Ho un codice invito' })).toHaveAttribute('href', '/login?next=/join')
   expect(screen.getByText('Prima: pianificate insieme')).toBeInTheDocument()
   expect(screen.getByText('Dividete le spese, non gli amici.')).toBeInTheDocument()
+  await expectAccessible()   // D-65
 })
 
 it('chi è loggato va alla Home', async () => {
