@@ -41,3 +41,18 @@ it('la barra «Aggiorna» ha bottoni da 44 px e lascia spazio al «+»; l\'avvis
 it('niente più verde acqua del vecchio tema', () => {
   expect(css).not.toContain('0, 104, 92')
 })
+
+it('sotto i 360 px il nome accanto al logo si nasconde alla vista ma resta per i lettori di schermo (D-65)', () => {
+  const narrow = css.match(/@media \(max-width: 359px\) \{([\s\S]*?)\n\}/)
+  expect(narrow?.[1]).toMatch(/\.brand-name \{[^}]*clip: rect\(0 0 0 0\)/)
+})
+
+it('a 320 px «Crea l\'immagine per le storie» va a capo invece di uscire dalla card (D-65)', () => {
+  expect(rule('.wrapped-end')).toContain('grid-template-columns: minmax(0, 1fr)')
+  expect(rule('.story-image')).toContain('grid-template-columns: minmax(0, 1fr)')
+  expect(rule('.story-image .btn')).toContain('white-space: normal')
+})
+
+it('il titolo della pagina e il suo bottone vanno a capo se non ci stanno (Notifiche a 320 px, D-65)', () => {
+  expect(rule('.page-head')).toContain('flex-wrap: wrap')
+})

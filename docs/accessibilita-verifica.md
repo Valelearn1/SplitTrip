@@ -80,7 +80,10 @@ Strumenti: Chrome con la pagina in riquadri da 320 e 430 px, testo al 200% (`fon
 
 | Schermata | Prova | Problema | Criterio | Gravità | Correzione | Stato |
 |---|---|---|---|---|---|---|
-| Intestazione, Riepilogo (storie) | 320 px (19/10) | 5 px fuori dallo schermo | 1.4.10 | bassa | dimensioni delle icone in rem (Task 4) | ✅ già risolto, verificato il 20/10 |
+| Intestazione, Riepilogo (storie) | 320 px (19/10) | 5 px fuori dallo schermo | 1.4.10 | bassa | dimensioni delle icone in rem (Task 4) | ⚠️ ricontrollato nel Task 9: non bastava (righe sotto) |
+| Intestazione | 320 px (20/10, Task 9) | logo, nome e quattro bottoni chiedono 341 px: 5 px fuori | 1.4.10 | media | sotto i 360 px il nome «SplitTrip» resta solo per il lettore di schermo, si vede il mappamondo | ✅ |
+| Riepilogo, «Crea l'immagine per le storie» | 320 px (20/10, Task 9) | il bottone non andava a capo: 4 px fuori | 1.4.10 | bassa | colonne `minmax(0, 1fr)` e testo del bottone a capo | ✅ |
+| Notifiche con non lette | 320 px (20/10, Task 9) | «Segna tutte come lette» accanto al titolo: 9 px fuori (nel Task 8 non c'erano non lette) | 1.4.10 | media | `.page-head` va a capo: il bottone scende sotto il titolo | ✅ |
 | Riepilogo «I momenti» | 430 px (20/10, segnalato dall'autrice) | miniature da 300 px allargavano la pagina a 562 px | 1.4.10 | alta | griglia `minmax(0, 1fr)` e miniature quadrate | ✅ (commit 8e60514) |
 | — | tutte le altre prove | nessun problema | — | — | — | — |
 

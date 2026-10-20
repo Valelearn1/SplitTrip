@@ -34,3 +34,10 @@ it.each(['Home:/trips', 'Landing:/', 'Accesso:/login', 'Registrazione:/register'
   expect(await screen.findByRole('heading', { name })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Indietro' })).not.toBeInTheDocument()
 })
+
+it('il logo porta alla Home e si chiama «SplitTrip»; il nome ha la sua classe per i telefoni stretti (D-65)', async () => {
+  renderWithProviders(routes, '/trips')
+  const brand = await screen.findByRole('link', { name: 'SplitTrip' })
+  expect(brand).toHaveAttribute('href', '/trips')
+  expect(brand.querySelector('.brand-name')).toHaveTextContent('SplitTrip')
+})

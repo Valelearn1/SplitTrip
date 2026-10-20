@@ -455,8 +455,8 @@ Card nella panoramica con sfumatura `accent-tint` → vetro: righe da 48 px con 
 
 ### Riepilogo di fine viaggio (v3.2, D-53…D-55)
 Tre fasi. **Scommessa**: card centrata con il dado, il campo importo grande con la valuta, «Scommetto!» (attivo solo con un importo) e «Salta e guarda i numeri». **Rivelazione**: il totale sale da 0 in 1,2 s; solo a numero fermo arrivano lo scarto, chi ha indovinato meglio (frasi neutre: «scarto di…», «Ha indovinato meglio: …») e i coriandoli. **Pagina**: copertina 220 px (ultima foto con velo scuro, o cobalto pieno fisso: il testo è sempre bianco), totale e quota a persona, «Dove sono finiti i soldi» (righe icona · nome · importo, barra cobalto 8 px e percentuale), record in `kv`, momenti in griglia con mappa, «Il gruppo» (solo se c'è almeno una foto, un messaggio o una reazione), badge, classifiche, chiusura con «Conti chiusi» o il link ai rimborsi che mancano, e l'immagine per le storie.
-- **Badge**: griglia a 2 colonne (3 da 720 px), card raggio 16 su tinte dei token (`accent-tint`, `amber-tint`, `surface-1/2`, mai il lampone); avatar e nome, l'emoji del badge accanto al nome, titolo 700 con l'articolo legato alla parola dopo, dettaglio in `ink-2` con la valuta del viaggio.
-- **Classifiche**: solo foto, messaggi e reazioni (mai soldi); il primo al centro con avatar grande, gli altri ai lati, singolare con 1 («1 messaggio»); sparisce se sono tutti a zero.
+- **Badge**: griglia a 2 colonne (3 da 720 px), card raggio 16 su tinte dei token (`accent-tint`, `amber-tint`, `surface-1/2`, mai il lampone); avatar e nome, l'emoji del badge accanto al nome, titolo 700 con l'articolo legato alla parola dopo, dettaglio in `ink-2` con la valuta del viaggio. Titoli senza genere (v3.3, D-64): 💰 Cassa del gruppo, 📸 Occhio da reporter, 💬 Voce del gruppo, 🍝 Buona forchetta, ⏱️ Conti in ordine, ❤️ Cuore del gruppo, 🧭 Giramondo, 🧳 Compagnia di viaggio.
+- **Classifiche**: solo foto, messaggi e reazioni (mai soldi); chi è in testa al centro con avatar grande, il resto del podio ai lati, singolare con 1 («1 messaggio»); sparisce se sono tutti a zero.
 
 ### Immagine per le storie (v3.2, D-56)
 PNG 1080×1920 disegnato con Canvas nel browser: foto di copertina ritagliata 9:16 e sfocata con velo scuro, o sfumatura cobalto → blu notte → viola notte; nome (accorciato con «…» se non sta), date, totale 150 px, colonne quota/foto/messaggi (quelle a zero non compaiono), fino a 4 badge, logo mappamondo e firma. Etichette in `#c9d5ff` sul fondo scuro. Anteprima 180 px, poi «Condividi» (foglio di condivisione del telefono) o «Scarica»; la nota sotto dice che non ci sono saldi personali.
@@ -478,9 +478,18 @@ Il combobox dei luoghi è obbligatorio per la destinazione del viaggio: senza un
 - **Pagina mai aperta**: al posto dello spinner, empty state con `cloud_off` e «Questa pagina non è ancora salvata sul telefono: aprila una volta con la rete».
 - **Controlli offline**: i bottoni di salvataggio e le azioni («Nuova spesa», «Salda», «Carica foto», «Chi offre?», campo della chat) restano visibili ma spenti (opacità 0.5), con `title` «Serve la rete» e `aria-describedby="offline-reason"` verso la barra; un tocco che prova a cambiare qualcosa mostra in basso «Serve la rete: non è stato salvato» per 4 s (fondo `ink`, testo `surface`).
 - **Foto e mappa**: foto mai vista → segnaposto `surface-2` con `image_not_supported` e «Serve la rete»; mappa → riquadro `surface-2` alto 160 px con «La mappa serve la rete» (la lista sotto resta).
-- **Barra «Aggiorna»**: card fissa in basso (sopra le tab su mobile), `surface` con ombra float, `system_update` + «C'è una nuova versione di SplitTrip», bottoni piccoli «Aggiorna» (primario) e «Dopo» (secondario).
+- **Barra «Aggiorna»**: card fissa in basso (sopra le tab su mobile), `surface` con ombra float, su due righe (v3.3): `system_update` + «C'è una nuova versione di SplitTrip» sopra, sotto i bottoni piccoli alti 44 px «Aggiorna» (primario, a sinistra) e «Dopo» (secondario, a destra), ai due estremi perché un tocco non prenda quello sbagliato; a destra lascia libera la colonna del «+».
 - **Profilo, sezione «App»**: installabile → testo breve + «Installa SplitTrip» (`install_mobile`); iPhone/iPad → due passi numerati con `ios_share` e `add_box`; già installata → `check_circle` cobalto + «SplitTrip è installata su questo dispositivo»; altrimenti «Puoi installarla dal menu del browser, se lo permette».
 - **Icone**: mappamondo del logo, 192/512 trasparenti, 512 maskable e 180 per iPhone su fondo `#f8f9ff` (`FE/scripts/make-pwa-icons.sh`).
+
+### Impostazioni di sistema (v3.3, D-65)
+L'app segue quello che la persona ha già scelto sul telefono o nel computer, senza preferenze proprie.
+- **Testo grande**: `:root` a `font-size: 100%` e tutte le dimensioni del testo e delle icone in `rem`, mai in `px`; su iPhone e iPad `font: -apple-system-body` (solo dove esiste `-webkit-touch-callout`: sul Mac varrebbe 13 px) segue Dynamic Type. Al 200% nessuna pagina scorre di lato a 430 px.
+- **Contrasto aumentato** (`prefers-contrast: more`), nei due temi: vetro pieno (`--surface-glass` = `--surface`), `ink-3` sale a `ink-2`, bordi più scuri, link sottolineati, focus da 4 px.
+- **Colori forzati** (`forced-colors: active`, temi a contrasto di Windows): sfondo stagionale nascosto, bordo `CanvasText` su bottoni, card, campi, pillole, chip, badge, «+» e barre; focus `Highlight`; icone `currentColor`; disattivati in `GrayText`.
+- **Movimento ridotto**: invariato da v3 (D-43), dal sistema o dal Profilo.
+- **Telefoni stretti (320–359 px)**: nell'intestazione resta il mappamondo e il nome «SplitTrip» lo legge solo il lettore di schermo; titolo di pagina e bottone accanto (`.page-head`) vanno a capo; i bottoni lunghi nelle card centrate vanno a capo invece di uscire.
+- **Verifica**: ogni pagina chiama `expectAccessible()` (axe) nel suo test; le prove a mano stanno in `docs/accessibilita-verifica.md`.
 
 ### Modale
 `<dialog>` bianco, raggio 16 px, padding 24 px, larghezza massima 420 px, ombra modale e backdrop d'inchiostro al 45%; azioni allineate a destra.

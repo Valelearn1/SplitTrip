@@ -24,7 +24,7 @@ export function Layout() {
       <SeasonBackground />
       <div className={`app ${inTrip ? 'has-tabs' : ''}`}>
         <header className="app-header">
-          <Link to="/trips" className="brand"><Logo size={26} />SplitTrip</Link>
+          <Link to="/trips" className="brand"><Logo size={26} /><span className="brand-name">SplitTrip</span></Link>
           {auth && (
             <nav aria-label="Account">
               <ThemeToggle />

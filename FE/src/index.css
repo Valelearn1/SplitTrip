@@ -196,7 +196,7 @@ fieldset.field.card { padding: var(--space-4); }
 /* gli elementi di griglia e flex non si stringono sotto il loro contenuto senza min-width: 0 */
 .grid-2 > *, .card-list > *, .row-main, .row-text { min-width: 0; }
 @media (min-width: 720px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-2 .span-2 { grid-column: span 2; } }
-.page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-4); }
+.page-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-4); }
 .row { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); padding: 10px 0; border-bottom: 1px solid var(--surface-1); }
 .row:last-child { border-bottom: none; }
 .row-main { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
@@ -636,6 +636,10 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
   .logout-btn { min-width: 44px; padding: 0 10px; }
   .app-header nav { gap: 6px; }
 }
+/* D-65: a 320 px logo, nome e quattro bottoni non ci stanno (341 px): resta il mappamondo, il nome lo legge solo il lettore di schermo */
+@media (max-width: 359px) {
+  .brand-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
 
 /* Giochi (v3.2, D-52) */
 .games-card { background: linear-gradient(135deg, var(--accent-tint), var(--surface-glass)); }
@@ -698,13 +702,14 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
 .podium li.first > span { font-weight: 800; }
 .podium-rest { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: grid; gap: 4px; }
 .podium-rest li { display: flex; justify-content: space-between; gap: var(--space-3); overflow-wrap: anywhere; }
-.wrapped-end { display: grid; justify-items: center; gap: var(--space-3); text-align: center; }
+.wrapped-end { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: var(--space-3); text-align: center; }
 
 /* «Indietro» (v3.2): sopra il contenuto di ogni pagina tranne Home, landing, accesso e registrazione */
 .back-bar { margin-bottom: var(--space-3); }
 .back-btn { min-height: 44px; }
 /* immagine per le storie (D-56) */
-.story-image { display: grid; justify-items: center; gap: var(--space-3); }
+.story-image { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: var(--space-3); }
+.story-image .btn { white-space: normal; text-align: center; padding-block: var(--space-2); }   /* a 320 px il testo va a capo dentro il bottone */
 .story-preview { width: 180px; aspect-ratio: 9 / 16; border-radius: 12px; box-shadow: var(--shadow-card); }
 
 /* Password dimenticata (D-61) */

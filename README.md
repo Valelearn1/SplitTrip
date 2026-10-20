@@ -50,7 +50,8 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 📍 **Destinazioni reali**: il viaggio si crea scegliendo un luogo dall'elenco, così meteo, mappa e stagione sono quelli giusti
 - 📲 **App installabile e offline**: si installa dal Profilo (su iPhone con «Aggiungi alla schermata Home») e, senza rete, mostra gli ultimi viaggi, spese, saldi, liste, chat e foto già visti con «Sei offline · dati delle HH:MM»; le modifiche tornano con la rete, e una barra avvisa quando c'è una versione nuova
 - ↩️ **«Indietro» su ogni pagina**; dopo un salvataggio si torna da dove si era partiti, senza rientrare nel modulo
-- ♿ Interfaccia **mobile-first e accessibile**: ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore
+- ♿ **Accessibile e verificata**: interfaccia mobile-first, ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore; controlli automatici di accessibilità (axe) in ogni pagina, verifica a mano con tastiera, lettore di schermo, zoom e filtri per il daltonismo; segue testo grande, contrasto aumentato e colori forzati del sistema
+- 🗣️ **Linguaggio senza genere**: nessun testo dà per scontato chi legge («chi organizza», «Dividete le spese, non le amicizie»)
 
 ## 📸 Screenshot
 
@@ -86,6 +87,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 | **v3 Live** | chat di gruppo e notifiche in tempo reale (WebSocket STOMP), consigli AI, «conta per», movimento | ✅ |
 | **v3.1 Rifinitura** | dai test con gli amici: proposte di luoghi, benvenuto, Impostazioni a schede, Home e presentazione, profilo con preferenze, reazioni ed emoji in chat | ✅ |
 | **v3.2 Giochi, riepilogo e tema** | «Chi offre?», riepilogo di fine viaggio con «Indovina il totale», badge e immagine per le storie, tema scuro, palette cobalto e lampone, sfondo stagionale, logo mappamondo, «Indietro» ovunque, password dimenticata, importi solo numerici, destinazioni reali | ✅ |
+| **v3.3 Inclusiva** | accessibilità verificata (WCAG 2.2 AA), linguaggio senza genere, impostazioni di sistema, ritocchi | ✅ |
 | **v3.5 App installabile e offline** | PWA installabile, consultazione offline in sola lettura, foto già viste, avviso «Aggiorna», dati cancellati all'uscita | ✅ |
 
 La visione di prodotto oltre il capstone (ospiti senza registrazione, spese in altre valute, offline, scontrino diviso per voce): [`docs/ROADMAP.md`](docs/ROADMAP.md).
@@ -141,8 +143,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 222 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 284 test
+cd BE && sh mvnw test   # 229 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 329 test
 ```
 
 Cosa coprono:
@@ -165,6 +167,8 @@ Cosa coprono:
 - 🔢 **importi**: il campo provato un tasto alla volta (punto di troppo, migliaia, decimali, settima cifra) e incollando, tetto 999.999,99 uguale nel browser e nel server
 - ↩️ **«Indietro»**: pagina madre per ogni rotta, ritorno nella cronologia, moduli salvati che non restano indietro
 - 📶 **offline**: cosa si salva e cosa no, marchio per persona, cancellazione all'uscita anche con IndexedDB bloccata, app aperta già in modalità aereo, barra con l'età dei dati, pagine mai aperte, modifiche bloccate senza coda, foto e mappa senza rete, installazione e aggiornamento
+- ♿ **accessibilità**: axe dentro i test di tutte le 22 pagine (0 violazioni), testo in `rem`, blocchi per contrasto aumentato e colori forzati, Dynamic Type su iOS
+- 🗣️ **linguaggio**: un test nel frontend e uno nel backend bloccano le forme col genere («Bentornata», «organizzatore», «sei stato/a»…) nei testi a schermo, nei messaggi del server, nelle email e nelle istruzioni all'AI
 - 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda», liste, caricamento foto col consenso alla posizione, campanella, chat, consigli AI, «conta per», busta e valigia
 
 Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il codice.
@@ -195,10 +199,11 @@ Il progetto è sviluppato con un metodo **spec-driven**: prima la specifica, poi
 
 | Documento | Contenuto |
 |---|---|
-| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifiche di design: v1 (modello dati, motore dei saldi, API, sicurezza, frontend), v1.5 (partecipanti, peso e presenza) v2 (liste, foto, notifiche, meteo), v3 (chat in tempo reale, AI, movimento), v3.1 (rifinitura dai test con gli amici) e v3.2 (giochi, riepilogo, tema e stagioni) |
+| [`docs/superpowers/specs/`](docs/superpowers/specs/) | specifiche di design: v1 (modello dati, motore dei saldi, API, sicurezza, frontend), v1.5 (partecipanti, peso e presenza) v2 (liste, foto, notifiche, meteo), v3 (chat in tempo reale, AI, movimento), v3.1 (rifinitura dai test con gli amici), v3.2 (giochi, riepilogo, tema e stagioni), v3.3 (inclusiva) e v3.5 (app installabile e offline) |
 | [`docs/superpowers/plans/`](docs/superpowers/plans/) | piani di implementazione task per task |
 | [`docs/decisioni.md`](docs/decisioni.md) | registro delle decisioni, con alternative scartate e motivazioni |
 | [`PRODUCT.md`](PRODUCT.md) · [`DESIGN.md`](DESIGN.md) | prodotto e sistema visivo |
+| [`docs/accessibilita-verifica.md`](docs/accessibilita-verifica.md) | registro della verifica di accessibilità: controlli automatici, prove a mano, problemi trovati e risolti |
 | [`docs/stitch/`](docs/stitch/) | schermate di riferimento generate con Stitch |
 | Board Trello | una card per task, con checklist |
 
