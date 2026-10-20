@@ -32,6 +32,7 @@ it('con contrasto aumentato card piene, testo secondario più scuro, link sottol
   expect(more).toContain('--ink-3: var(--ink-2)')
   expect(more).toContain(":root[data-theme='dark']")
   expect(more).toMatch(/a \{[^}]*text-decoration: underline/)
+  expect(more).toContain('--focus: 0 0 0 3px var(--bg), 0 0 0 7px var(--accent)')   // anello da 4 px anche per chip e interruttori
 })
 
 it('con i colori forzati bordi e focus di sistema e niente illustrazione', () => {

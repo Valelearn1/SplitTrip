@@ -87,6 +87,8 @@ Strumenti: Chrome con la pagina in riquadri da 320 e 430 px, testo al 200% (`fon
 | Riepilogo «I momenti» | 430 px (20/10, segnalato dall'autrice) | miniature da 300 px allargavano la pagina a 562 px | 1.4.10 | alta | griglia `minmax(0, 1fr)` e miniature quadrate | ✅ (commit 8e60514) |
 | Chip, persone scelte, interruttori | colori forzati (revisione finale, 20/10) | la scelta si vedeva solo dal fondo e il focus era un box-shadow: coi colori forzati spariscono entrambi | 1.4.1, 2.4.7 | media | `Highlight`/`HighlightText` per la scelta, contorno `Highlight` per il focus, binario e pallino dell'interruttore coi colori di sistema | ✅ |
 | Barra «Aggiorna» | testo grande a 320 px (revisione finale) | «Aggiorna» e «Dopo» non andavano a capo | 1.4.10 | bassa | la riga dei bottoni va a capo | ✅ |
+| Luogo (destinazione) | lettore di schermo (revisione v3.3) | con errore e servizio giù, `aria-describedby` puntava al messaggio nascosto | 1.3.1 | bassa | descritto dal messaggio visibile | ✅ (v3.4) |
+| Chip, interruttore, persone | «Aumenta contrasto» (revisione v3.3) | il focus restava a 3 px | 2.4.7 | bassa | `--focus` a 4 px nel blocco del contrasto | ✅ (v3.4) |
 | — | tutte le altre prove | nessun problema | — | — | — | — |
 
 ## Lista per il telefono (circa 20 minuti, dall'autrice)

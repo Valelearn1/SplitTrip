@@ -123,3 +123,12 @@ it('servizio giù e modulo già inviato: si vede «non disponibile», non «Sceg
   expect(await screen.findByText('Ricerca dei luoghi non disponibile, riprova tra poco')).toBeInTheDocument()
   expect(screen.queryByText("Scegli la destinazione dall'elenco")).not.toBeInTheDocument()
 })
+
+it('con errore e servizio giù il campo è descritto dal messaggio che si vede', async () => {
+  server.use(http.get('http://localhost/api/places', () => HttpResponse.json({ title: 'x', detail: 'x' }, { status: 503 })))
+  render(<Ctl id="d3" label="Destinazione" error="Scegli la destinazione dall'elenco" />)
+  const input = screen.getByRole('combobox', { name: 'Destinazione' })
+  await userEvent.setup().type(input, 'Lis')
+  await screen.findByText('Ricerca dei luoghi non disponibile, riprova tra poco')
+  expect(input).toHaveAccessibleDescription('Ricerca dei luoghi non disponibile, riprova tra poco')
+})

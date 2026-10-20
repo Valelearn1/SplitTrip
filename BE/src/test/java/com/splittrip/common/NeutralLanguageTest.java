@@ -29,8 +29,10 @@ class NeutralLanguageTest {
             Map.entry("te stesso/a", Pattern.compile("(?i)\\bte stess[oa]\\b")),
             Map.entry("primo a / il primo (persona)", Pattern.compile("(?i)\\bprimo a \\w+re\\b")));
 
+    /** Un commento tolto lascia i suoi a capo: il numero di riga nell'errore resta quello del file. */
     static String stripComments(String src) {
-        return src.replaceAll("(?s)/\\*.*?\\*/", "").replaceAll("(?m)(^|[^:])//.*$", "$1");
+        String noBlocks = Pattern.compile("(?s)/\\*.*?\\*/").matcher(src).replaceAll(m -> m.group().replaceAll("[^\\n]", ""));
+        return noBlocks.replaceAll("(?m)(^|[^:])//.*$", "$1");
     }
 
     @Test
@@ -47,6 +49,12 @@ class NeutralLanguageTest {
             }
         }
         assertThat(found).isEmpty();
+    }
+
+    @Test
+    void iNumeriDiRigaRestanoQuelliVeri() {
+        String src = "int a = 1;\n/* riga uno\nriga due */\nString t = \"tutti\";";
+        assertThat(stripComments(src).split("\n")[3]).contains("tutti");
     }
 
     @Test

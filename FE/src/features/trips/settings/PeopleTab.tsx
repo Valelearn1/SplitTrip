@@ -50,7 +50,7 @@ export function PeopleTab({ trip, isOrganizer, canWrite }: TripContext) {
         />
         {isOrganizer && canWrite && (
           <div className="stack" style={{ marginTop: 12 }}>
-            <Field label="Nome del nuovo partecipante" placeholder="Es. Nonna Pina" value={newName} onChange={(e) => setNewName(e.target.value)} />
+            <Field label="Nome della persona da aggiungere" placeholder="Es. Nonna Pina" value={newName} onChange={(e) => setNewName(e.target.value)} />
             <p className="muted">Per chi non usa l’app: avrà la sua quota e potrà ritrovare il suo posto se si registra.</p>
             <FormError error={add.error} />
             <Button variant="secondary" disabled={newName.trim().length < 2} loading={add.isPending}

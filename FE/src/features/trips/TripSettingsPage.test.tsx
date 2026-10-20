@@ -81,7 +81,7 @@ it('Persone: l’organizzatore vede chi conta per quanto, aggiunge chi non usa l
   expect(screen.getByText(/conta per ½/)).toBeInTheDocument()
   expect(screen.getByText(/arriva il 3 nov/)).toBeInTheDocument()
   const user = userEvent.setup()
-  await user.type(screen.getByLabelText('Nome del nuovo partecipante'), 'Zio Beppe')
+  await user.type(screen.getByLabelText('Nome della persona da aggiungere'), 'Zio Beppe')
   await user.click(screen.getByRole('button', { name: 'Aggiungi chi non usa l’app' }))
   await waitFor(() => expect(added).toEqual({ displayName: 'Zio Beppe' }))
   await user.click(screen.getByRole('button', { name: 'Scollega account di Marco' }))

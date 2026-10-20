@@ -735,7 +735,7 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
 
 /* D-65: «Aumenta contrasto» del sistema, nei due temi */
 @media (prefers-contrast: more) {
-  :root { --surface-glass: var(--surface); --ink-3: var(--ink-2); --line: #7a8799; }
+  :root { --surface-glass: var(--surface); --ink-3: var(--ink-2); --line: #7a8799; --focus: 0 0 0 3px var(--bg), 0 0 0 7px var(--accent); }
   :root[data-theme='dark'] { --surface-glass: var(--surface); --ink-3: var(--ink-2); --line: #6b7889; }
   a { text-decoration: underline; }
   :focus-visible { outline-width: 4px; }

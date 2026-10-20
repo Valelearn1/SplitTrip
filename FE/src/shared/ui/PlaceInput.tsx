@@ -67,7 +67,8 @@ export function PlaceInput({ id, label, value, onChange, near, error, placeholde
     if (e.key === 'Enter' && active >= 0) { e.preventDefault(); choose(options[active]) }
   }
 
-  const describedBy = error ? `${id}-err` : hint ? `${id}-hint` : undefined
+  // il lettore di schermo legge il messaggio che si vede: col problema della ricerca l'errore del campo è nascosto (v3.3)
+  const describedBy = problem ? `${id}-problem` : error ? `${id}-err` : hint ? `${id}-hint` : undefined
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
@@ -94,8 +95,8 @@ export function PlaceInput({ id, label, value, onChange, near, error, placeholde
       {hint && !error && <small id={`${id}-hint`} className="muted">{hint}</small>}
       {error && !problem && <p id={`${id}-err`} className="field-error">{error}</p>}
       {problem && (freeText
-        ? <small className="muted">Proposte non disponibili: puoi scrivere il luogo a mano</small>
-        : <p role="alert" className="field-error">{problem}</p>)}
+        ? <small id={`${id}-problem`} className="muted">Proposte non disponibili: puoi scrivere il luogo a mano</small>
+        : <p id={`${id}-problem`} role="alert" className="field-error">{problem}</p>)}
     </div>
   )
 }

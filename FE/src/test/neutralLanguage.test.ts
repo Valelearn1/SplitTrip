@@ -26,7 +26,8 @@ const files = (dir: string): string[] => readdirSync(dir).flatMap((name) => {
   if (statSync(path).isDirectory()) return name === 'test' ? [] : files(path)
   return /\.(ts|tsx)$/.test(name) && !/\.test\.tsx?$/.test(name) ? [path] : []
 })
-export const stripComments = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
+// un commento tolto lascia i suoi a capo: il numero di riga nell'errore resta quello del file
+export const stripComments = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, '')).replace(/(^|[^:])\/\/.*$/gm, '$1')
 
 it('nessun testo dell\'app si accorda col genere di chi legge', () => {
   const found: string[] = []
@@ -44,4 +45,9 @@ it('nessun testo dell\'app si accorda col genere di chi legge', () => {
 it('i commenti e gli URL non contano: solo il testo', () => {
   expect(stripComments("// l'organizzatore\nconst a = 'ok' /* tutti */")).not.toMatch(/organizzatore|tutti/)
   expect(stripComments("const u = 'https://tutti.example'")).toContain('tutti')
+})
+
+it('togliendo un commento su più righe i numeri di riga restano quelli veri', () => {
+  const src = 'const a = 1\n/* riga uno\nriga due */\nconst t = "tutti"'
+  expect(stripComments(src).split('\n').findIndex((l) => l.includes('tutti')) + 1).toBe(4)
 })
