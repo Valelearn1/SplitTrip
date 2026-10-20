@@ -36,7 +36,9 @@ class BadgeCalculatorTest {
         assertThat(codesOf(badges, VALE)).containsExactly(BadgeCode.BANKER, BadgeCode.PHOTOGRAPHER, BadgeCode.LOVED, BadgeCode.EXPLORER);
         assertThat(codesOf(badges, MARCO)).containsExactly(BadgeCode.VOICE, BadgeCode.FOODIE, BadgeCode.PUNCTUAL);
         assertThat(codesOf(badges, PINA)).containsExactly(BadgeCode.COMPANION);           // niente vinto: compagno di viaggio
-        assertThat(badges).extracting(Badge::detail).contains("ha anticipato 620,00 €", "14 foto", "31 messaggi", "ha offerto cibo per 96,00 €", "primo a saldare", "9 reazioni ricevute", "foto in 3 luoghi", "c'era, e tanto basta");
+        assertThat(badges).extracting(Badge::title).contains("💰 Cassa del gruppo", "📸 Occhio da reporter", "💬 Voce del gruppo",
+                "🍝 Buona forchetta", "⏱️ Conti in ordine", "❤️ Cuore del gruppo", "🧭 Giramondo", "🧳 Compagnia di viaggio");   // soprannomi neutri (D-64)
+        assertThat(badges).extracting(Badge::detail).contains("ha anticipato 620,00 €", "14 foto", "31 messaggi", "ha offerto cibo per 96,00 €", "il primo saldo del viaggio", "9 reazioni ricevute", "foto in 3 luoghi", "c'era, e tanto basta");
     }
 
     @Test

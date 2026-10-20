@@ -72,7 +72,7 @@ public class PhotoController {
     }
 
     @PatchMapping("/{photoId}/place")
-    @Operation(summary = "Luogo a mano della foto (o clear per toglierlo); chi l'ha caricata o l'organizzatore")
+    @Operation(summary = "Luogo a mano della foto (o clear per toglierlo); chi l'ha caricata o chi organizza")
     public PhotoResponse setPlace(@CurrentUserId UUID userId, @PathVariable UUID tripId, @PathVariable UUID photoId,
                                   @Valid @RequestBody PhotoPlaceRequest req) {
         return service.setPlace(tripId, userId, photoId, req);
@@ -80,7 +80,7 @@ public class PhotoController {
 
     @DeleteMapping("/{photoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Elimina una foto (autore o organizzatore)")
+    @Operation(summary = "Elimina una foto (chi l'ha caricata o chi organizza)")
     public void delete(@CurrentUserId UUID userId, @PathVariable UUID tripId, @PathVariable UUID photoId) {
         service.delete(tripId, userId, photoId);
     }

@@ -29,7 +29,7 @@ public class ChatController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Invia un messaggio (1–1000 caratteri); arriva a tutti sul canale del viaggio")
+    @Operation(summary = "Invia un messaggio (1–1000 caratteri); arriva a tutto il gruppo sul canale del viaggio")
     public MessageResponse send(@CurrentUserId UUID userId, @PathVariable UUID tripId, @RequestBody MessageRequest req) {
         return service.send(tripId, userId, req.content());
     }

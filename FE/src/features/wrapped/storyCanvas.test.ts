@@ -24,13 +24,13 @@ beforeAll(() => vi.stubGlobal('Path2D', class {}))
 afterAll(() => vi.unstubAllGlobals())
 
 const data: StoryData = { name: 'Lisbona 2026', dates: '13–18 ott 2026 · 5 notti · 4 persone', total: 1248.6, perPerson: 312.15, photos: 16, messages: 34, currency: 'EUR',
-  badges: [{ title: '💰 Il banchiere' }, { title: '📸 Il fotografo' }, { title: '💬 La voce del gruppo' }, { title: '🍝 Il buongustaio' }, { title: '⏱️ Il puntuale' }] }
+  badges: [{ title: '💰 Cassa del gruppo' }, { title: '📸 Occhio da reporter' }, { title: '💬 Voce del gruppo' }, { title: '🍝 Buona forchetta' }, { title: '⏱️ Il puntuale' }] }
 
 it('senza foto disegna il gradiente, poi titolo, totale, numeri, al massimo 4 badge e la firma', () => {   // Review Focus 4
   const { ctx, calls, texts } = fakeCtx()
   drawStory(ctx, data)
   expect(texts).toEqual(['Lisbona 2026', '13–18 ott 2026 · 5 notti · 4 persone', '1248,60 €', 'in tutto', '312,15 €', 'a persona', '16', 'foto', '34', 'messaggi',
-    '💰 Il banchiere', '📸 Il fotografo', '💬 La voce del gruppo', '🍝 Il buongustaio', 'SplitTrip · Dividete le spese, non le amicizie.'])
+    '💰 Cassa del gruppo', '📸 Occhio da reporter', '💬 Voce del gruppo', '🍝 Buona forchetta', 'SplitTrip · Dividete le spese, non le amicizie.'])
   expect(calls.some((c) => c.startsWith('drawImage'))).toBe(false)
 })
 

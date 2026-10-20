@@ -42,7 +42,7 @@ class BrevoApiPasswordResetMailer implements PasswordResetMailer {
 
                 Se non l'hai chiesto tu, ignora questa email: la password resta quella di prima.
 
-                SplitTrip · Dividete le spese, non gli amici.
+                SplitTrip · Dividete le spese, non le amicizie.
                 """.formatted(link);
     }
 }

@@ -30,7 +30,7 @@ public class TripAccessService {
     public Participant requireOrganizer(UUID tripId, UUID userId) {
         Participant m = requireMember(tripId, userId);
         if (!m.isOrganizer()) {
-            throw new ForbiddenException("Solo l'organizzatore può farlo");
+            throw new ForbiddenException("Solo chi organizza il viaggio può farlo");
         }
         return m;
     }

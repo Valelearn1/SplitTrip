@@ -28,14 +28,14 @@ public class ParticipantController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Aggiunge un partecipante senza account (solo organizzatore)")
+    @Operation(summary = "Aggiunge un partecipante senza account (solo chi organizza)")
     public ParticipantResponse add(@CurrentUserId UUID userId, @PathVariable UUID tripId,
                                    @Valid @RequestBody ParticipantRequest req) {
         return service.add(tripId, userId, req);
     }
 
     @PatchMapping("/{participantId}")
-    @Operation(summary = "Modifica nome, peso e date: ciascuno i propri, l'organizzatore di chiunque")
+    @Operation(summary = "Modifica nome, peso e date: ciascuno i propri, chi organizza quelli di chiunque")
     public ParticipantResponse update(@CurrentUserId UUID userId, @PathVariable UUID tripId,
                                       @PathVariable UUID participantId, @Valid @RequestBody ParticipantPatchRequest req) {
         return service.update(tripId, userId, participantId, req);
@@ -43,13 +43,13 @@ public class ParticipantController {
 
     @DeleteMapping("/{participantId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Lascia il viaggio (o l'organizzatore rimuove): il partecipante resta nello storico")
+    @Operation(summary = "Lascia il viaggio (o chi organizza lo rimuove): il partecipante resta nello storico")
     public void leave(@CurrentUserId UUID userId, @PathVariable UUID tripId, @PathVariable UUID participantId) {
         service.leave(tripId, userId, participantId);
     }
 
     @PostMapping("/{participantId}/unlink")
-    @Operation(summary = "Scollega l'account dal partecipante (solo organizzatore): perde l'accesso, i soldi restano")
+    @Operation(summary = "Scollega l'account dal partecipante (solo chi organizza): perde l'accesso, i soldi restano")
     public ParticipantResponse unlink(@CurrentUserId UUID userId, @PathVariable UUID tripId,
                                       @PathVariable UUID participantId) {
         return service.unlink(tripId, userId, participantId);

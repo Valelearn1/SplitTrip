@@ -15,7 +15,7 @@ public class OpenApiConfig {
     public OpenAPI splitTripOpenApi() {
         return new OpenAPI()
                 .info(new Info().title("SplitTrip API").version("1.5.0")
-                        .description("Vacanze tra amici: spese divise, conti chiari. Registrati o fai login, poi clicca Authorize e incolla il token."))
+                        .description("Vacanze in compagnia: spese divise, conti chiari. Registrati o fai login, poi clicca Authorize e incolla il token."))
                 .components(new Components().addSecuritySchemes("bearer",
                         new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
                 .addSecurityItem(new SecurityRequirement().addList("bearer"));

@@ -103,7 +103,7 @@ public class PhotoService {
         Participant me = access.requireMember(tripId, userId);
         UUID uploader = photos.findUploaderId(photoId, tripId).orElseThrow(() -> new NotFoundException("Foto non trovata"));
         if (!uploader.equals(userId) && !me.isOrganizer()) {
-            throw new ForbiddenException("Solo chi l'ha caricata o l'organizzatore può eliminarla");
+            throw new ForbiddenException("Solo chi l'ha caricata o chi organizza il viaggio può eliminarla");
         }
         photos.deleteById(photoId);
     }
@@ -115,7 +115,7 @@ public class PhotoService {
         access.requireWritable(trips.findById(tripId).orElseThrow());
         Photo photo = photos.findByIdAndTripId(photoId, tripId).orElseThrow(() -> new NotFoundException("Foto non trovata"));
         if (!photo.getUploader().getId().equals(userId) && !me.isOrganizer()) {
-            throw new ForbiddenException("Solo chi l'ha caricata o l'organizzatore può cambiare il luogo");
+            throw new ForbiddenException("Solo chi l'ha caricata o chi organizza il viaggio può cambiare il luogo");
         }
         if (Boolean.TRUE.equals(req.clear())) {
             photo.setPlaceName(null);

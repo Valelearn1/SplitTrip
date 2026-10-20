@@ -85,7 +85,7 @@ public class ParticipantService {
             throw new ForbiddenException("Puoi rimuovere solo te stesso");
         }
         if (target.isOrganizer()) {
-            throw new ConflictException("L'organizzatore non può lasciare il viaggio");
+            throw new ConflictException("Chi organizza non può lasciare il viaggio");
         }
         if (expenses.existsByTripIdAndPayerId(tripId, participantId) || shares.existsByParticipantIdAndExpenseTripId(participantId, tripId)) {
             throw new ConflictException("Il membro ha spese o quote nel viaggio: non si può rimuovere");
@@ -104,7 +104,7 @@ public class ParticipantService {
             throw new BadRequestException("Questo partecipante non ha un account");
         }
         if (target.isOrganizer()) {
-            throw new ConflictException("L'organizzatore non si può scollegare");
+            throw new ConflictException("Chi organizza non si può scollegare");
         }
         target.setUser(null); // perde l'accesso; spese, quote e rimborsi restano sul partecipante
         return response(target);

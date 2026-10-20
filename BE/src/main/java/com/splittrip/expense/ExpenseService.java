@@ -175,7 +175,7 @@ public class ExpenseService {
     private static void requireOwnerOrOrganizer(Expense expense, Participant me) {
         boolean owner = expense.getCreatedBy().getId().equals(me.userId());
         if (!owner && !me.isOrganizer()) {
-            throw new ForbiddenException("Solo chi ha creato la spesa o l'organizzatore può modificarla");
+            throw new ForbiddenException("Solo chi ha creato la spesa o chi organizza il viaggio può modificarla");
         }
     }
 
@@ -195,7 +195,7 @@ public class ExpenseService {
         }
         for (UUID id : ids) {
             if (!active.containsKey(id)) {
-                throw new BadRequestException("Tutti i partecipanti alla spesa devono far parte del viaggio");
+                throw new BadRequestException("Le persone della spesa devono far parte del viaggio");
             }
         }
         if ((req.splitType() == SplitType.DAYS) != (req.dayBasis() != null)) {

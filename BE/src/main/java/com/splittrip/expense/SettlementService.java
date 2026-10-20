@@ -72,7 +72,7 @@ public class SettlementService {
         Settlement s = settlements.findByIdAndTripId(settlementId, tripId)
                 .orElseThrow(() -> new NotFoundException("Rimborso non trovato"));
         if (!s.getCreatedBy().getId().equals(userId) && !me.isOrganizer()) {
-            throw new ForbiddenException("Solo chi ha registrato il rimborso o l'organizzatore può cancellarlo");
+            throw new ForbiddenException("Solo chi ha registrato il rimborso o chi organizza il viaggio può cancellarlo");
         }
         settlements.delete(s); // soft delete
     }
