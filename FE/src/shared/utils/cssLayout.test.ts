@@ -35,3 +35,7 @@ it('la barra «Aggiorna» ha bottoni da 44 px e lascia spazio al «+»; l\'avvis
   expect(rule('.update-banner')).toContain('right: 96px')
   expect(rule('.network-toast')).toContain('bottom: 96px')
 })
+
+it('niente più verde acqua del vecchio tema', () => {
+  expect(css).not.toContain('0, 104, 92')
+})

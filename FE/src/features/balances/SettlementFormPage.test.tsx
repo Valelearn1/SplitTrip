@@ -33,6 +33,7 @@ it('dopo «Conferma» si torna ai saldi sostituendo il modulo: «Indietro» non 
     ] }],
     '/trips/t1/settlements/new?from=p2&to=p1&amount=15.00',
   )
+  expect(await screen.findByLabelText('Importo')).toHaveClass('amount-input')   // stesso stile dell'importo grande della spesa
   await userEvent.setup().click(await screen.findByRole('button', { name: 'Conferma' }))
   expect(await screen.findByRole('heading', { name: 'Saldi' })).toBeInTheDocument()
   expect(sent).toMatchObject({ fromParticipantId: 'p2', toParticipantId: 'p1', amount: 15 })

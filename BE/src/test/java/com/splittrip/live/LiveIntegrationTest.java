@@ -151,9 +151,14 @@ class LiveIntegrationTest {
         Thread.sleep(300);
         Thread a = new Thread(() -> react(vale, tripId, id)), b = new Thread(() -> react(marco, tripId, id));
         a.start(); b.start(); a.join(); b.join();
-        String last = null, frame;
-        while ((frame = q.poll(2, TimeUnit.SECONDS)) != null) last = frame;
-        assertThat(last).contains("\"type\":\"message.reacted\"").contains("\"emoji\":\"👍\"").contains("\"count\":2");
+        // i due riepiloghi (count 1 e count 2) possono arrivare in qualsiasi ordine: si aspetta quello finale, senza
+        // dipendere dai tempi (prima si prendeva «l'ultimo frame prima di 2 s di silenzio», fragile sotto carico)
+        String found = null, frame;
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (found == null && (frame = q.poll(Math.max(1, (deadline - System.nanoTime()) / 1_000_000), TimeUnit.MILLISECONDS)) != null) {
+            if (frame.contains("\"count\":2")) found = frame;
+        }
+        assertThat(found).isNotNull().contains("\"type\":\"message.reacted\"").contains("\"emoji\":\"👍\"");
         v.disconnect();
     }
 

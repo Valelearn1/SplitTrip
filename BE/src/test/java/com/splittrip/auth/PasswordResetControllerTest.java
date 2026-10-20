@@ -173,4 +173,16 @@ class PasswordResetControllerTest extends IntegrationTest {
         assertThat(millis).isLessThan(2000);
         lastToken(email, 1);
     }
+
+    @Test
+    void dopoIlCambioScadonoAncheGliAltriLinkAperti() throws Exception {                        // v3.3, rimandato dalla revisione v3.2
+        String email = register("Vale");
+        request(email);
+        String first = lastToken(email, 1);
+        // un secondo link aperto (due richieste insieme): inserito a mano con un hash qualsiasi
+        jdbc.update("insert into password_reset_tokens (id, user_id, token_hash, expires_at, created_at) " +
+                "select gen_random_uuid(), id, ?, now() + interval '30 minutes', now() from users where email = ?", "f".repeat(64), email);
+        confirm(first, "nuova1234").andExpect(status().isNoContent());
+        assertThat(jdbc.queryForObject("select count(*) from password_reset_tokens t join users u on u.id = t.user_id where u.email = ? and t.used_at is null", Long.class, email)).isZero();
+    }
 }

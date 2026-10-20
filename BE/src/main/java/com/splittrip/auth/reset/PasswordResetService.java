@@ -86,6 +86,7 @@ public class PasswordResetService {
                 .orElseThrow(() -> new BadRequestException("Link non valido o scaduto"));
         reset.getUser().setPasswordHash(encoder.encode(newPassword));
         reset.use(now);
+        tokens.closeOpen(reset.getUser().getId(), now);   // scadono anche gli altri link aperti dello stesso account
     }
 
     private void send(String to, String link) {

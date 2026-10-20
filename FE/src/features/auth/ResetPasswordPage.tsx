@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useSearchParams } from 'react-router'
 import { ApiError } from '../../shared/api/client'
@@ -23,7 +24,9 @@ function InvalidLink() {
 
 /** Il link dell'email (D-61): nuova password scritta due volte, con l'occhiolino; il token è monouso e vale 30 minuti. */
 export function ResetPasswordPage() {
-  const token = useSearchParams()[0].get('token') ?? ''
+  const [params, setParams] = useSearchParams()
+  const [token] = useState(() => params.get('token') ?? '')   // in memoria: il link resta valido anche dopo averlo tolto dall'indirizzo
+  useEffect(() => { if (params.has('token')) setParams({}, { replace: true }) }, [params, setParams])   // non resta nella cronologia
   const { register, handleSubmit, formState: { errors } } = useForm<ResetForm>({ resolver: zodResolver(resetSchema) })
   const mutation = useMutation({ mutationFn: (v: ResetForm) => authApi.confirmReset(token, v.newPassword) })
   const expired = mutation.error instanceof ApiError && mutation.error.status === 400 && mutation.error.errors.length === 0

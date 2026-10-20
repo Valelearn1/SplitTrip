@@ -360,7 +360,7 @@ fieldset.field.card { padding: var(--space-4); }
 /* ===== Auth ===== */
 .auth-page { max-width: 420px; margin: var(--space-5) auto; }
 .auth-logo { display: grid; justify-items: center; gap: 8px; margin-bottom: var(--space-5); text-align: center; }
-.auth-logo > .logo { filter: drop-shadow(0 6px 14px rgba(0, 104, 92, 0.25)); }
+.auth-logo > .logo { filter: drop-shadow(0 6px 14px rgba(35, 71, 184, 0.25)); }
 .auth-logo > .msi { font-size: 2.5rem; color: var(--accent); background: var(--accent-tint); width: 72px; height: 72px; border-radius: 22px; display: grid; place-items: center; }
 .auth-page form { margin-bottom: var(--space-4); }
 .auth-page .btn { width: 100%; }

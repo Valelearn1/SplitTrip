@@ -75,3 +75,20 @@ it('senza token nell\'indirizzo non si prova nemmeno: link non valido', async ()
   expect(screen.queryByRole('button', { name: 'Cambia password' })).not.toBeInTheDocument()
   await waitFor(() => expect(called).toBe(false))
 })
+
+it('il token lascia la barra degli indirizzi ma il link funziona lo stesso', async () => {
+  let sent: unknown
+  server.use(http.post('http://localhost/api/auth/password-reset/confirm', async ({ request }) => {
+    sent = await request.json()
+    return new HttpResponse(null, { status: 204 })
+  }))
+  const router = renderWithProviders(routes, '/reimposta-password?token=abc')
+  await waitFor(() => expect(router.state.location.search).toBe(''))   // tolto dall'indirizzo (e dalla cronologia)
+  expect(router.state.location.pathname).toBe('/reimposta-password')
+  const user = userEvent.setup()
+  await user.type(screen.getByLabelText('Nuova password'), 'nuova1234')
+  await user.type(screen.getByLabelText('Conferma la nuova password'), 'nuova1234')
+  await user.click(screen.getByRole('button', { name: 'Cambia password' }))
+  expect(await screen.findByText('Password cambiata')).toBeInTheDocument()
+  expect(sent).toEqual({ token: 'abc', newPassword: 'nuova1234' })   // il token è rimasto in memoria
+})

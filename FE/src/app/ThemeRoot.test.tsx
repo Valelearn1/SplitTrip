@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { http, HttpResponse } from 'msw'
@@ -46,4 +46,20 @@ it('luna/sole passa tra chiaro e scuro e salva sull’account', async () => {
   expect(document.documentElement.dataset.theme).toBe('dark')
   expect(sent).toEqual({ theme: 'DARK' })
   expect(screen.getByRole('button', { name: 'Attiva il tema chiaro' })).toBeInTheDocument()
+})
+
+it('sotto «Automatico» la luna/sole cambia quando cambia il tema del sistema, senza ricaricare', async () => {
+  const listeners = new Set<() => void>()
+  vi.spyOn(window, 'matchMedia').mockImplementation((q) => ({
+    get matches() { return q.includes('dark') && systemDark }, media: q, onchange: null,
+    addEventListener: (_: string, cb: () => void) => { listeners.add(cb) }, removeEventListener: (_: string, cb: () => void) => { listeners.delete(cb) },
+    addListener: () => {}, removeListener: () => {}, dispatchEvent: () => false,
+  }) as unknown as MediaQueryList)
+  session({ ...base, theme: 'SYSTEM' })
+  mount()
+  expect(screen.getByRole('button', { name: 'Attiva il tema scuro' })).toBeInTheDocument()
+  systemDark = true
+  act(() => listeners.forEach((cb) => cb()))
+  expect(screen.getByRole('button', { name: 'Attiva il tema chiaro' })).toBeInTheDocument()
+  expect(document.documentElement.dataset.theme).toBe('dark')
 })

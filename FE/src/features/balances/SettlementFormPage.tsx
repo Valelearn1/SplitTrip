@@ -50,7 +50,7 @@ export function SettlementFormPage() {
         </select>
         {errors.toParticipantId && <p className="field-error">{errors.toParticipantId.message}</p>}
       </div>
-      <AmountField label="Importo" currency={trip.currency} error={errors.amount?.message} {...register('amount')} />
+      <AmountField label="Importo" className="amount-input" currency={trip.currency} error={errors.amount?.message} {...register('amount')} />
       <Field label="Data" type="date" error={errors.date?.message} {...register('date')} />
       <Field label="Nota (facoltativa)" error={errors.note?.message} {...register('note')} />
       <FormError error={create.error} />
