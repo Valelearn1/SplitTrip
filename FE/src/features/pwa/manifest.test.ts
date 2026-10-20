@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, it } from 'vitest'
 import { manifest } from './manifest'
@@ -19,4 +19,9 @@ it('le icone 192, 512 e maskable esistono davvero in public/', () => {
   expect(icons.some((i) => i.purpose === 'maskable')).toBe(true)
   for (const icon of icons) expect(existsSync(resolve(process.cwd(), 'public', icon.src))).toBe(true)
   expect(existsSync(resolve(process.cwd(), 'public', 'apple-touch-icon.png'))).toBe(true)
+})
+
+it('index.html dichiara l\'app anche col meta non solo-Apple', () => {
+  const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8')
+  expect(html).toContain('<meta name="mobile-web-app-capable" content="yes" />')
 })

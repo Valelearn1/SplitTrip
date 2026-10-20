@@ -28,5 +28,6 @@ it('offline «Nuova spesa» non apre il modulo e dice che serve la rete', async 
   expect(await screen.findByRole('link', { name: 'Nuova spesa' })).toBeInTheDocument()
   act(() => onlineManager.setOnline(false))
   expect(screen.getByRole('link', { name: 'Nuova spesa (serve la rete)' })).toHaveAttribute('aria-disabled', 'true')
+  expect(screen.getByRole('button', { name: /Chi offre/ })).toBeDisabled()
   await expectAccessible()   // D-65
 })

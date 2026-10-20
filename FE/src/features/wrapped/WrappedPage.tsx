@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useOutletContext } from 'react-router'
-import { ApiError } from '../../shared/api/client'
+import { ApiError, isUnreachable } from '../../shared/api/client'
 import { CATEGORY_LABELS } from '../../shared/api/types'
 import { tripSeason } from '../../shared/season/season'
 import { AuthImage } from '../../shared/ui/AuthImage'
@@ -28,7 +28,7 @@ export function WrappedPage() {
   const [phase, setPhase] = useState<'gate' | 'reveal' | 'page'>('gate')
 
   if (wrapped.isPending) return <Spinner />
-  if (wrapped.error) {
+  if (wrapped.error && !(isUnreachable(wrapped.error) && wrapped.data)) {   // D-63: il riepilogo già visto resta
     return (
       <section className="card wrapped-wait">
         <Icon name="celebration" />
@@ -37,7 +37,7 @@ export function WrappedPage() {
       </section>
     )
   }
-  const d = wrapped.data
+  const d = wrapped.data!
   const colors = wheelColors(tripSeason(trip))
   if (phase === 'gate' && d.guess.mine === null) {
     // 409 = l'ipotesi c'è già (un altro dispositivo): niente errore, si va alla rivelazione con i dati ricaricati

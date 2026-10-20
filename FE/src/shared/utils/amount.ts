@@ -77,8 +77,16 @@ export function withAmountSanitizer<P extends InputHandlers>(props: P): P {
     ...props,
     onFocus: (e) => { lastValue.set(e.target, e.target.value); props.onFocus?.(e) },
     onChange: (e) => {
-      e.target.value = nextAmount(lastValue.get(e.target) ?? '', e.target.value)
-      lastValue.set(e.target, e.target.value)
+      const raw = e.target.value
+      const caret = e.target.selectionStart
+      const next = nextAmount(lastValue.get(e.target) ?? '', raw)
+      e.target.value = next
+      // un tasto rifiutato non manda il cursore in fondo: resta dov'era (D-65)
+      if (caret !== null && next !== raw) {
+        const pos = Math.max(0, caret - (raw.length - next.length))
+        e.target.setSelectionRange(pos, pos)
+      }
+      lastValue.set(e.target, next)
       props.onChange?.(e)
     },
     onBlur: (e) => {

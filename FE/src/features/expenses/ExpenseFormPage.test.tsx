@@ -280,4 +280,20 @@ describe('ExpenseFormPage', () => {
     await new Promise((r) => setTimeout(r, 300))
     expect(calls).toBe(1)                                                    // nessun invio automatico al ritorno della rete
   })
+
+  it('un tasto rifiutato in mezzo al numero non sposta il cursore in fondo', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)))
+    renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }],
+      '/trips/t1/expenses/new',
+    )
+    const user = userEvent.setup()
+    const amount = await screen.findByLabelText('Importo') as HTMLInputElement
+    await user.type(amount, '1234')
+    await user.type(amount, 'x', { initialSelectionStart: 2, initialSelectionEnd: 2 })
+    expect(amount).toHaveValue('1234')
+    expect(amount.selectionStart).toBe(2)
+  })
 })
+

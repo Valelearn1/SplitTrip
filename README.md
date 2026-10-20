@@ -70,6 +70,10 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 |---|---|---|
 | ![Rivelazione del totale](docs/screenshots/mobile-guess.png) | ![Badge e classifiche del riepilogo](docs/screenshots/mobile-wrapped.png) | ![Home nel tema scuro](docs/screenshots/mobile-dark-home.png) |
 
+| App installata: avviso di nuova versione | | |
+|---|---|---|
+| ![La barra «C'è una nuova versione di SplitTrip» con i bottoni Aggiorna e Dopo](docs/screenshots/mobile-update-banner.png) | | |
+
 ![Dashboard desktop](docs/screenshots/desktop-dashboard.png)
 
 ## 🗺️ Roadmap

@@ -7,7 +7,7 @@ const IMAGE_CACHES = ['splittrip-foto', 'splittrip-avatar']
 /** All'uscita dall'account sul telefono non resta niente (D-63): memoria, copia in IndexedDB, immagini salvate. */
 export async function clearDeviceData(
   client: QueryClient,
-  deps: { persister: Persister; caches?: CacheStorage } = { persister: defaultPersister, caches: globalThis.caches },
+  deps: { persister: Persister; caches?: CacheStorage; indexedDB?: { deleteDatabase(name: string): unknown } } = { persister: defaultPersister, caches: globalThis.caches, indexedDB: globalThis.indexedDB },
 ): Promise<void> {
   storageGate.close()   // prima di tutto: niente salvataggi in ritardo dopo la cancellazione
   client.clear()
@@ -18,4 +18,7 @@ export async function clearDeviceData(
     console.warn('Copia offline non cancellabile su questo dispositivo')
   }
   if (deps.caches) await Promise.all(IMAGE_CACHES.map((name) => deps.caches!.delete(name).catch(() => false)))
+  try {
+    deps.indexedDB?.deleteDatabase('workbox-expiration')   // l'archivio interno di Workbox tiene gli indirizzi delle immagini
+  } catch { /* bloccata: non resta altro da fare */ }
 }

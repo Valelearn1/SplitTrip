@@ -20,7 +20,7 @@ export function Avatar({ name, me = false, size = 'md', className = '', userId, 
   if (userId && hasAvatar) {
     return (
       <span className={`${cls} avatar-photo`} aria-hidden="true">
-        <AuthImage path={avatarPath(userId)} alt="" />
+        <AuthImage path={avatarPath(userId)} alt="" fallback={initials(name)} />
       </span>
     )
   }

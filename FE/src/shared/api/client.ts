@@ -34,6 +34,8 @@ async function send(url: string, init: RequestInit): Promise<Response> {
 }
 
 export const isOfflineError = (e: unknown) => e instanceof ApiError && e.status === 0 && e.title === 'Offline'
+/** Rete assente o server irraggiungibile: i dati già caricati restano a schermo (D-63). */
+export const isUnreachable = (e: unknown) => e instanceof ApiError && e.status === 0
 
 const BASE: string = import.meta.env.VITE_API_URL ?? '/api'
 

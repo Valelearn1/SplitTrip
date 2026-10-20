@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useLocation, useParams } from 'react-router'
 import type { Participant, Trip } from '../../shared/api/types'
-import { ApiError } from '../../shared/api/client'
+import { isUnreachable } from '../../shared/api/client'
 import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
 import { Spinner } from '../../shared/ui/Spinner'
@@ -32,8 +32,7 @@ export function TripLayout() {
 
   if (isPending) return <Spinner />
   // D-63: se il server non si raggiunge (status 0) il viaggio già caricato resta; un 403/404 invece lo toglie
-  const unreachable = error instanceof ApiError && error.status === 0
-  if (!trip || (error && !unreachable)) return <FormError error={error ?? new Error('Viaggio non disponibile')} />
+  if (!trip || (error && !isUnreachable(error))) return <FormError error={error ?? new Error('Viaggio non disponibile')} />
 
   const me = trip.participants.find((p) => p.userId === auth?.user.id)
   if (!me) return <p role="alert">Non fai parte di questo viaggio.</p>

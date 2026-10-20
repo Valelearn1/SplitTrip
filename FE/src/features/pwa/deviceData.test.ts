@@ -8,8 +8,10 @@ it('svuota memoria, copia in IndexedDB e cache delle immagini', async () => {
   client.setQueryData(['trips'], [{ id: 't1' }])
   const persister = { persistClient: vi.fn(), restoreClient: vi.fn(), removeClient: vi.fn(async () => {}) }
   const caches = { delete: vi.fn(async () => true) } as unknown as CacheStorage
-  await clearDeviceData(client, { persister, caches })
+  const indexedDB = { deleteDatabase: vi.fn() }
+  await clearDeviceData(client, { persister, caches, indexedDB })
   expect(client.getQueryData(['trips'])).toBeUndefined()
+  expect(indexedDB.deleteDatabase).toHaveBeenCalledWith('workbox-expiration')   // gli indirizzi delle immagini restavano lì
   expect(persister.removeClient).toHaveBeenCalled()
   expect(caches.delete).toHaveBeenCalledWith('splittrip-foto')
   expect(caches.delete).toHaveBeenCalledWith('splittrip-avatar')

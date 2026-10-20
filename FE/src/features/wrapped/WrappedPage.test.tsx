@@ -1,4 +1,5 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
+import { focusManager } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, expect, it, vi } from 'vitest'
@@ -111,4 +112,16 @@ it('se la scommessa non parte lo dice, e se c\'era già (da un altro dispositivo
   fail = false
   await user.click(screen.getByRole('button', { name: 'Scommetto!' }))
   expect(await screen.findByText(/scarto di 16,00\s€/)).toBeInTheDocument()
+})
+
+it('se il server non si raggiunge più, il riepilogo già caricato resta invece di «Torna qui dopo» (D-63)', async () => {
+  server.use(http.get('http://localhost/api/trips/t1/wrapped', () => HttpResponse.json(wrapped({ mine: 300, played: 1, others: [] }))))
+  renderWithProviders(routes, '/trips/t1/riepilogo')
+  expect(await screen.findByText('Avete speso in tutto')).toBeInTheDocument()
+  server.use(http.get('http://localhost/api/trips/t1/wrapped', () => HttpResponse.error()))
+  act(() => { focusManager.setFocused(false); focusManager.setFocused(true) })
+  await new Promise((r) => setTimeout(r, 300))
+  expect(screen.getByText('Avete speso in tutto')).toBeInTheDocument()
+  expect(screen.queryByText(/Torna qui dopo il/)).not.toBeInTheDocument()
+  act(() => focusManager.setFocused(undefined))
 })

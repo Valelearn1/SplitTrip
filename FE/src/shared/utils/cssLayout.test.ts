@@ -29,3 +29,9 @@ it('una miniatura da 300 px nei «momenti» del riepilogo non allarga la pagina 
 it('una nota sotto un riquadro ha spazio sopra (la regola .hint si tira su per stare sotto un campo)', () => {
   expect(rule('.kv-note')).toContain('margin: var(--space-3) 0 0')
 })
+
+it('la barra «Aggiorna» ha bottoni da 44 px e lascia spazio al «+»; l\'avviso sta sopra il «+»', () => {
+  expect(rule('.update-banner .btn')).toContain('min-height: 44px')
+  expect(rule('.update-banner')).toContain('right: 96px')
+  expect(rule('.network-toast')).toContain('bottom: 96px')
+})

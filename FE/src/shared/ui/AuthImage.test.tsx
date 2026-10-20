@@ -31,3 +31,10 @@ it('offline una foto mai vista lascia un segnaposto che dice che serve la rete',
   render(<QueryClientProvider client={new QueryClient()}><AuthImage path="/trips/t1/photos/p9/image" alt="Tramonto" /></QueryClientProvider>)
   expect(await screen.findByRole('img', { name: 'Tramonto: serve la rete' })).toHaveTextContent('Serve la rete')
 })
+
+it('offline, senza copia, mostra il fallback se c\'è (le iniziali di un avatar)', async () => {
+  server.use(http.get('http://localhost/api/users/u9/avatar', () => HttpResponse.error()))
+  onlineManager.setOnline(false)
+  render(<QueryClientProvider client={new QueryClient()}><AuthImage path="/users/u9/avatar" alt="" fallback="MR" /></QueryClientProvider>)
+  expect(await screen.findByText('MR')).toBeInTheDocument()
+})

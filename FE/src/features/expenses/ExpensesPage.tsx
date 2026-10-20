@@ -29,7 +29,7 @@ export function ExpensesPage() {
     <div>
       {canWrite && (
         <div className="list-actions">
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setWheel(true)}><Icon name="casino" />Chi offre?</button>
+          <button type="button" className="btn btn-secondary btn-sm" disabled={!online} title={online ? undefined : 'Serve la rete'} onClick={() => setWheel(true)}><Icon name="casino" />Chi offre?</button>
         </div>
       )}
       <div className="chips chips-scroll" role="group" aria-label="Filtra per categoria">

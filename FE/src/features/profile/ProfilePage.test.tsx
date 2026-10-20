@@ -1,4 +1,5 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
+import { focusManager } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, expect, it, vi } from 'vitest'
@@ -65,4 +66,15 @@ it('email già usata: errore sul campo', async () => {
   await user.clear(await screen.findByLabelText('Email')); await user.type(screen.getByLabelText('Email'), 'marco@e.it')
   await user.click(screen.getByRole('button', { name: 'Salva i dati' }))
   expect(await screen.findByText('Email già usata')).toBeInTheDocument()
+})
+
+it('se il server non si raggiunge più, «I miei numeri» già caricati restano invece di un errore (D-63)', async () => {
+  renderWithProviders([{ path: '/profile', element: <ProfilePage /> }], '/profile')
+  await waitFor(() => expect(document.querySelector('.stats-grid')).not.toBeNull())
+  server.use(http.get('http://localhost/api/me/stats', () => HttpResponse.error()))
+  act(() => { focusManager.setFocused(false); focusManager.setFocused(true) })
+  await new Promise((r) => setTimeout(r, 300))
+  expect(document.querySelector('.stats-grid')).not.toBeNull()
+  expect(screen.queryByText('Il server non risponde, riprova tra poco')).not.toBeInTheDocument()
+  act(() => focusManager.setFocused(undefined))
 })

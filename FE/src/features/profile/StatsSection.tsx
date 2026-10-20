@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { lazy, Suspense } from 'react'
+import { isUnreachable } from '../../shared/api/client'
 import { FormError } from '../../shared/ui/FormError'
 import { Spinner } from '../../shared/ui/Spinner'
 import { formatMoney } from '../../shared/utils/format'
@@ -12,8 +13,8 @@ const PointsMap = lazy(() => import('../photos/PointsMap').then((m) => ({ defaul
 export function StatsSection() {
   const stats = useQuery({ queryKey: ['me', 'stats'], queryFn: profileApi.stats })
   if (stats.isPending) return <Spinner />
-  if (stats.error) return <FormError error={stats.error} />
-  const s = stats.data
+  if (stats.error && !(isUnreachable(stats.error) && stats.data)) return <FormError error={stats.error} />   // D-63: i numeri già visti restano
+  const s = stats.data!
   const points = s.destinations
     .filter((d) => d.latitude !== null && d.longitude !== null)
     .map((d) => ({ id: d.name, name: d.name, latitude: d.latitude!, longitude: d.longitude! }))
