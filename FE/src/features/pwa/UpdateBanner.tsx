@@ -8,10 +8,11 @@ export function UpdateBanner({ show, onUpdate, onLater }: Props) {
   if (!show) return null
   return (
     <div className="update-banner" role="status">
-      <Icon name="system_update" />
-      <span>C'è una nuova versione di SplitTrip</span>
-      <Button type="button" variant="primary" className="btn-sm" needsNetwork={false} onClick={onUpdate}>Aggiorna</Button>
-      <Button type="button" variant="secondary" className="btn-sm" needsNetwork={false} onClick={onLater}>Dopo</Button>
+      <div className="ub-text"><Icon name="system_update" /><span>C'è una nuova versione di SplitTrip</span></div>
+      <div className="ub-actions">
+        <Button type="button" variant="primary" className="btn-sm" needsNetwork={false} onClick={onUpdate}>Aggiorna</Button>
+        <Button type="button" variant="secondary" className="btn-sm" needsNetwork={false} onClick={onLater}>Dopo</Button>
+      </div>
     </div>
   )
 }

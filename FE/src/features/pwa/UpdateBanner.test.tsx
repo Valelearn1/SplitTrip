@@ -15,3 +15,11 @@ it('con una versione nuova: «Aggiorna» la attiva, «Dopo» la rimanda; senza, 
   expect(onUpdate).toHaveBeenCalledTimes(1)
   expect(onLater).toHaveBeenCalledTimes(1)
 })
+
+it('testo sopra e i due pulsanti in una riga sotto, ai due estremi (D-65)', () => {
+  render(<UpdateBanner show onUpdate={vi.fn()} onLater={vi.fn()} />)
+  expect(screen.getByText("C'è una nuova versione di SplitTrip").closest('.ub-text')).not.toBeNull()
+  const actions = screen.getByRole('button', { name: 'Aggiorna' }).closest('.ub-actions')
+  expect(actions).not.toBeNull()
+  expect(actions).toContainElement(screen.getByRole('button', { name: 'Dopo' }))
+})
