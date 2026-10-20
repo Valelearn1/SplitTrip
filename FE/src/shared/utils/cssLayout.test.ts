@@ -57,3 +57,8 @@ it('a 320 px «Crea l\'immagine per le storie» va a capo invece di uscire dalla
 it('il titolo della pagina e il suo bottone vanno a capo se non ci stanno (Notifiche a 320 px, D-65)', () => {
   expect(rule('.page-head')).toContain('flex-wrap: wrap')
 })
+
+it('il QR resta scuro su bianco in ogni tema e coi colori forzati; il nome lungo va a capo (D-67)', () => {
+  expect(rule('.invite-qr .qr')).toMatch(/background: #ffffff;[^}]*forced-color-adjust: none/)
+  expect(rule('.invite-qr p')).toContain('overflow-wrap: anywhere')
+})

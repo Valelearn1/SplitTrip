@@ -319,6 +319,12 @@ fieldset.field.card { padding: var(--space-4); }
 .code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 1.125rem; letter-spacing: 2px; font-weight: 600; background: var(--surface); padding: 6px 10px; border-radius: 8px; border: 1px dashed var(--surface-3); }
 .invite { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; padding: var(--space-3); background: var(--surface-1); border-radius: 12px; }
 .invite-label { display: flex; align-items: center; gap: 8px; color: var(--ink-2); font-size: 0.9375rem; flex-wrap: wrap; }
+.invite-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+/* QR dell'invito (D-67): eccezione dichiarata in DESIGN.md, sempre scuro su bianco perché la fotocamera lo legga */
+.invite-qr { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: var(--space-3); text-align: center; margin-bottom: var(--space-4); }
+.invite-qr .qr { width: 240px; max-width: 100%; height: auto; aspect-ratio: 1; border-radius: 12px; background: #ffffff; forced-color-adjust: none; }
+.invite-qr .qr-placeholder { background: var(--surface-2); }
+.invite-qr p { margin: 0; overflow-wrap: anywhere; }
 
 /* ===== Tabs / bottom bar ===== */
 .tabs { display: flex; gap: 2px; margin: var(--space-3) 0 var(--space-4); padding: 4px; background: var(--surface-2); border-radius: 14px; }
