@@ -15,6 +15,8 @@ const FORBIDDEN: [string, RegExp][] = [
   ['sei stato/a', /\bsei stat[oa]\b/i],
   ['amici', /\bamici\b/i],
   ['tutti', /\btutti\b/i],
+  ['sono nuovo/a', /\bsono nuov[oa]\b/i],
+  ['te stesso/a', /\bte stess[oa]\b/i],
 ]
 /** Eccezioni motivate: file (relativo a src), testo esatto, perché. */
 const ALLOWED: { file: string; text: string; why: string }[] = []

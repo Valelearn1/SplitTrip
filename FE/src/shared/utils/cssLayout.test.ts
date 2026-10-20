@@ -35,6 +35,7 @@ it('la barra «Aggiorna» ha bottoni da 44 px e lascia spazio al «+»; l\'avvis
   expect(rule('.update-banner')).toContain('right: 96px')
   expect(rule('.update-banner')).toContain('flex-direction: column')
   expect(rule('.update-banner .ub-actions')).toContain('justify-content: space-between')
+  expect(rule('.update-banner .ub-actions')).toContain('flex-wrap: wrap')   // testo grande a 320 px: «Dopo» va sotto invece di uscire
   expect(rule('.network-toast')).toContain('bottom: 96px')
 })
 

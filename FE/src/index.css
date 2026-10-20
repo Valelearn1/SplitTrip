@@ -721,7 +721,7 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
 .update-banner { position: fixed; left: var(--space-3); right: 96px; bottom: var(--space-3); z-index: 30; display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--surface); color: var(--ink); box-shadow: var(--shadow-float); }
 .has-tabs .update-banner { bottom: 76px; }
 .update-banner .ub-text { display: flex; align-items: center; gap: var(--space-2); }
-.update-banner .ub-actions { display: flex; justify-content: space-between; gap: var(--space-3); }   /* testo sopra, pulsanti ai due estremi: «Dopo» lontano da «Aggiorna» */
+.update-banner .ub-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); }   /* testo sopra, pulsanti ai due estremi: «Dopo» lontano da «Aggiorna» */
 .update-banner .btn { min-height: 44px; }   /* bersagli da 44 px (D-24); right: 96px lascia la colonna del «+» */
 .install-done { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--ink); }
 .install-done .msi { color: var(--accent); }
@@ -748,4 +748,11 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
   :focus-visible { outline: 3px solid Highlight; }
   .msi { color: currentColor; }
   .btn:disabled, .fab:disabled, .fab[aria-disabled='true'] { color: GrayText; border-color: GrayText; }
+  /* la scelta si vedeva solo dal fondo e il focus era un box-shadow: tutti e due spariscono coi colori forzati */
+  .chip.active, .chip:has(input:checked), .person-pick:has(input:checked) .avatar { forced-color-adjust: none; background: Highlight; color: HighlightText; border-color: Highlight; }
+  .chip:has(input:focus-visible), .person-pick:has(input:focus-visible) .avatar, .switch:focus-visible { outline: 3px solid Highlight; outline-offset: 2px; }
+  .switch-track { forced-color-adjust: none; background: Canvas; border: 1px solid CanvasText; }
+  .switch-thumb { forced-color-adjust: none; background: CanvasText; }
+  .switch[aria-checked='true'] .switch-track { background: Highlight; border-color: Highlight; }
+  .switch[aria-checked='true'] .switch-thumb { background: HighlightText; }
 }

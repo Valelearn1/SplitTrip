@@ -16,14 +16,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 /** D-64: messaggi, badge, email e descrizioni dell'API senza forme che si accordano col genere. Commenti esclusi. */
 class NeutralLanguageTest {
 
-    static final Map<String, Pattern> FORBIDDEN = Map.of(
-            "l'organizzatore / organizzatore", Pattern.compile("(?i)\\borganizzatore\\b"),
-            "gli altri", Pattern.compile("(?i)\\bgli altri\\b"),
-            "amici", Pattern.compile("(?i)\\bamici\\b"),
-            "tutti", Pattern.compile("(?i)\\btutti\\b"),
-            "Bentornata/o", Pattern.compile("\\bBentornat[oa]\\b"),
-            "sei stato/a", Pattern.compile("(?i)\\bsei stat[oa]\\b"),
-            "primo a / il primo (persona)", Pattern.compile("(?i)\\bprimo a \\w+re\\b"));
+    static final Map<String, Pattern> FORBIDDEN = Map.ofEntries(
+            Map.entry("l'organizzatore / organizzatore", Pattern.compile("(?i)\\borganizzatore\\b")),
+            Map.entry("gli altri", Pattern.compile("(?i)\\bgli altri\\b")),
+            Map.entry("amici", Pattern.compile("(?i)\\bamici\\b")),
+            Map.entry("tutti", Pattern.compile("(?i)\\btutti\\b")),
+            Map.entry("Bentornata/o", Pattern.compile("\\bBentornat[oa]\\b")),
+            Map.entry("Benvenuta/o + luogo", Pattern.compile("\\bBenvenut[oa]\\s+(su|in|a)\\b")),
+            Map.entry("sicuro/a?", Pattern.compile("(?i)\\bsicur[oa]\\?")),
+            Map.entry("sei stato/a", Pattern.compile("(?i)\\bsei stat[oa]\\b")),
+            Map.entry("sono nuovo/a", Pattern.compile("(?i)\\bsono nuov[oa]\\b")),
+            Map.entry("te stesso/a", Pattern.compile("(?i)\\bte stess[oa]\\b")),
+            Map.entry("primo a / il primo (persona)", Pattern.compile("(?i)\\bprimo a \\w+re\\b")));
 
     static String stripComments(String src) {
         return src.replaceAll("(?s)/\\*.*?\\*/", "").replaceAll("(?m)(^|[^:])//.*$", "$1");

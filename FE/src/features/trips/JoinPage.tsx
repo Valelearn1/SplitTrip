@@ -5,7 +5,7 @@ import { Avatar } from '../../shared/ui/Avatar'
 import { Button } from '../../shared/ui/Button'
 import { Field } from '../../shared/ui/Field'
 import { FormError } from '../../shared/ui/FormError'
-import { formatDateRange } from '../../shared/utils/format'
+import { countLabel, formatDateRange } from '../../shared/utils/format'
 import { tripsApi } from './tripsApi'
 import { useJoinTrip } from './useTrips'
 
@@ -36,11 +36,11 @@ export function JoinPage() {
           <h2>{preview.data.name}</h2>
           <p className="muted">{preview.data.destination}</p>
           <p>{formatDateRange(preview.data.startDate, preview.data.endDate)}</p>
-          <p className="muted">{preview.data.memberCount} partecipanti</p>
+          <p className="muted">{countLabel(preview.data.memberCount, 'partecipante', 'partecipanti')}</p>
           {preview.data.unclaimed.length > 0 && (
             <fieldset className="field" style={{ marginTop: 16 }}>
-              <legend>Qualcuno ti ha già aggiunto?</legend>
-              <label className="check"><input type="radio" name="claim" value="" checked={claim === ''} onChange={() => setClaim('')} />No, sono nuovo</label>
+              <legend>Sei già nella lista del viaggio?</legend>
+              <label className="check"><input type="radio" name="claim" value="" checked={claim === ''} onChange={() => setClaim('')} />No, non sono nella lista</label>
               {preview.data.unclaimed.map((u) => (
                 <label key={u.id} className="check">
                   <input type="radio" name="claim" value={u.id} checked={claim === u.id} onChange={() => setClaim(u.id)} />

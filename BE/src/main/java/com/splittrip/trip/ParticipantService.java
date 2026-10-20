@@ -82,7 +82,7 @@ public class ParticipantService {
         Participant actor = access.requireMember(tripId, actorId);
         Participant target = active(tripId, participantId);
         if (!actor.isOrganizer() && !actor.getId().equals(target.getId())) {
-            throw new ForbiddenException("Puoi rimuovere solo te stesso");
+            throw new ForbiddenException("Puoi togliere solo la tua partecipazione");
         }
         if (target.isOrganizer()) {
             throw new ConflictException("Chi organizza non può lasciare il viaggio");

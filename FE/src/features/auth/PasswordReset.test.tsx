@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { cleanup, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { expect, it } from 'vitest'
@@ -91,4 +91,25 @@ it('il token lascia la barra degli indirizzi ma il link funziona lo stesso', asy
   await user.click(screen.getByRole('button', { name: 'Cambia password' }))
   expect(await screen.findByText('Password cambiata')).toBeInTheDocument()
   expect(sent).toEqual({ token: 'abc', newPassword: 'nuova1234' })   // il token è rimasto in memoria
+})
+
+it('ricaricando la pagina il link vale ancora: il token passa nello stato della cronologia, mai nell\'indirizzo', async () => {
+  let sent: unknown
+  server.use(http.post('http://localhost/api/auth/password-reset/confirm', async ({ request }) => {
+    sent = await request.json()
+    return new HttpResponse(null, { status: 204 })
+  }))
+  const first = renderWithProviders(routes, '/reimposta-password?token=abc')
+  await waitFor(() => expect(first.state.location.search).toBe(''))
+  const kept = first.state.location.state
+  expect(kept).toEqual({ token: 'abc' })
+  cleanup()
+  renderWithProviders(routes, { pathname: '/reimposta-password', state: kept })   // come dopo un ricaricamento
+  expect(screen.queryByText('Link non valido o scaduto')).not.toBeInTheDocument()
+  const user = userEvent.setup()
+  await user.type(screen.getByLabelText('Nuova password'), 'nuova1234')
+  await user.type(screen.getByLabelText('Conferma la nuova password'), 'nuova1234')
+  await user.click(screen.getByRole('button', { name: 'Cambia password' }))
+  expect(await screen.findByText('Password cambiata')).toBeInTheDocument()
+  expect(sent).toEqual({ token: 'abc', newPassword: 'nuova1234' })
 })

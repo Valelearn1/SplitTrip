@@ -144,7 +144,7 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 
 ```bash
 cd BE && sh mvnw test   # 229 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 329 test
+cd FE && npm test       # 332 test
 ```
 
 Cosa coprono:

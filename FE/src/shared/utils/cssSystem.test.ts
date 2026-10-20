@@ -40,3 +40,11 @@ it('con i colori forzati bordi e focus di sistema e niente illustrazione', () =>
   expect(forced).toMatch(/\.season-bg \{ display: none; \}/)
   expect(forced).toContain('CanvasText')
 })
+
+it('con i colori forzati chip scelti, persona scelta e interruttore si vedono, e il loro focus anche (D-65)', () => {
+  const forced = block('@media (forced-colors: active)')
+  expect(forced).toMatch(/\.chip:has\(input:checked\)[^{]*\{[^}]*forced-color-adjust: none;[^}]*background: Highlight;[^}]*color: HighlightText/)
+  expect(forced).toMatch(/\.person-pick:has\(input:checked\) \.avatar[^{]*\{[^}]*background: Highlight/)
+  expect(forced).toMatch(/\.chip:has\(input:focus-visible\)[^{]*\.switch:focus-visible[^{]*\{[^}]*outline: 3px solid Highlight/)
+  expect(forced).toMatch(/\.switch\[aria-checked='true'\] \.switch-track[^{]*\{[^}]*background: Highlight/)
+})

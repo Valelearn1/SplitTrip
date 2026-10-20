@@ -85,6 +85,8 @@ Strumenti: Chrome con la pagina in riquadri da 320 e 430 px, testo al 200% (`fon
 | Riepilogo, «Crea l'immagine per le storie» | 320 px (20/10, Task 9) | il bottone non andava a capo: 4 px fuori | 1.4.10 | bassa | colonne `minmax(0, 1fr)` e testo del bottone a capo | ✅ |
 | Notifiche con non lette | 320 px (20/10, Task 9) | «Segna tutte come lette» accanto al titolo: 9 px fuori (nel Task 8 non c'erano non lette) | 1.4.10 | media | `.page-head` va a capo: il bottone scende sotto il titolo | ✅ |
 | Riepilogo «I momenti» | 430 px (20/10, segnalato dall'autrice) | miniature da 300 px allargavano la pagina a 562 px | 1.4.10 | alta | griglia `minmax(0, 1fr)` e miniature quadrate | ✅ (commit 8e60514) |
+| Chip, persone scelte, interruttori | colori forzati (revisione finale, 20/10) | la scelta si vedeva solo dal fondo e il focus era un box-shadow: coi colori forzati spariscono entrambi | 1.4.1, 2.4.7 | media | `Highlight`/`HighlightText` per la scelta, contorno `Highlight` per il focus, binario e pallino dell'interruttore coi colori di sistema | ✅ |
+| Barra «Aggiorna» | testo grande a 320 px (revisione finale) | «Aggiorna» e «Dopo» non andavano a capo | 1.4.10 | bassa | la riga dei bottoni va a capo | ✅ |
 | — | tutte le altre prove | nessun problema | — | — | — | — |
 
 ## Lista per il telefono (circa 20 minuti, dall'autrice)
