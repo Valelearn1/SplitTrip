@@ -91,7 +91,7 @@ it('si crea una lista «Da portare (insieme)» o «Da fare»: sono del gruppo', 
   )
   renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'lists', element: <TodoListsPage /> }] }], '/trips/t1/lists')
   const user = userEvent.setup()
-  expect(await screen.findByText('Le liste sono del gruppo: le vedono e le usano tutti i partecipanti.')).toBeInTheDocument()
+  expect(await screen.findByText('Le liste sono del gruppo: le vedono e le usano tutte le persone del viaggio.')).toBeInTheDocument()
   await user.type(screen.getByLabelText('Nome'), 'Prenotazioni')
   await user.click(screen.getByRole('radio', { name: 'Da fare' }))
   await user.click(screen.getByRole('button', { name: 'Crea lista' }))

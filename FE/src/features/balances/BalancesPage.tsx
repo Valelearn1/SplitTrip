@@ -72,7 +72,7 @@ export function BalancesPage() {
         {balances.data && balances.data.suggestedTransfers.length > 0 && (
           <div className="info" style={{ marginBottom: 8 }}>
             <Icon name="auto_awesome" />
-            <span>{balances.data.suggestedTransfers.length === 1 ? 'Basta un rimborso' : `Bastano ${balances.data.suggestedTransfers.length} rimborsi`} per azzerare tutti i debiti del gruppo.</span>
+            <span>{balances.data.suggestedTransfers.length === 1 ? 'Basta un rimborso' : `Bastano ${balances.data.suggestedTransfers.length} rimborsi`} per azzerare i debiti del gruppo.</span>
           </div>
         )}
         {groupByDebtor(balances.data?.suggestedTransfers ?? []).map((group) =>

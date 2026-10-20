@@ -61,7 +61,7 @@ it('l’organizzatore modifica il viaggio e non può lasciarlo', async () => {
   expect(screen.getByRole('button', { name: 'Elimina viaggio' })).toBeInTheDocument()
   await user.click(screen.getByRole('tab', { name: 'Io' }))
   expect(screen.queryByRole('button', { name: 'Lascia il viaggio' })).not.toBeInTheDocument()
-  expect(screen.getByText('L’organizzatore non può lasciare il viaggio.')).toBeInTheDocument()
+  expect(screen.getByText('Chi organizza non può lasciare il viaggio.')).toBeInTheDocument()
 })
 
 

@@ -30,7 +30,7 @@ it('senza foto disegna il gradiente, poi titolo, totale, numeri, al massimo 4 ba
   const { ctx, calls, texts } = fakeCtx()
   drawStory(ctx, data)
   expect(texts).toEqual(['Lisbona 2026', '13–18 ott 2026 · 5 notti · 4 persone', '1248,60 €', 'in tutto', '312,15 €', 'a persona', '16', 'foto', '34', 'messaggi',
-    '💰 Il banchiere', '📸 Il fotografo', '💬 La voce del gruppo', '🍝 Il buongustaio', 'SplitTrip · Dividete le spese, non gli amici.'])
+    '💰 Il banchiere', '📸 Il fotografo', '💬 La voce del gruppo', '🍝 Il buongustaio', 'SplitTrip · Dividete le spese, non le amicizie.'])
   expect(calls.some((c) => c.startsWith('drawImage'))).toBe(false)
 })
 

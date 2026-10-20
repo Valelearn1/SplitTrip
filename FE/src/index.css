@@ -393,8 +393,8 @@ fieldset.field.card { padding: var(--space-4); }
 .add-item input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid var(--surface-3); border-radius: 12px; background: var(--surface-1); font: inherit; font-size: 1rem; }
 
 /* v2: foto, mappa, upload, scontrino */
-.photo-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-@media (min-width: 720px) { .photo-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; } }
+.photo-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }   /* minmax(0): una foto larga non allarga la pagina */
+@media (min-width: 720px) { .photo-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; } }
 .photo-tile { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 10px; overflow: hidden; }
 .photo-tile img, .photo-tile .img-placeholder { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 0; }
 .photo-tile:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
@@ -678,6 +678,8 @@ ul.chips { list-style: none; margin: 0; padding: 0; }
 .cat-bars li > :nth-child(4) { grid-area: money; font-weight: 700; }
 .cat-bars li > small { grid-area: share; text-align: right; }
 .cat-bars li.top .cat-name { font-weight: 800; }
+.wrapped-moments li { min-width: 0; }
+.wrapped-moments img, .wrapped-moments .img-placeholder { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; }   /* la miniatura da 300 px allargava la pagina a 430 px */
 .wrapped-moments small { display: block; font-size: 0.75rem; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .badge-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
 @media (min-width: 720px) { .badge-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

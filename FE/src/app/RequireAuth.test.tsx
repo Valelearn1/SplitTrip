@@ -9,7 +9,7 @@ import { routes } from './routes'
 describe('RequireAuth', () => {
   it('senza login rimanda a /login ricordando la pagina richiesta', async () => {
     const router = renderWithProviders(routes, '/trips')
-    expect(await screen.findByRole('heading', { name: 'Bentornata su SplitTrip' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Ciao di nuovo' })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/login')
     expect(router.state.location.state).toEqual({ from: '/trips' })
   })

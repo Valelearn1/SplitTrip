@@ -45,7 +45,7 @@ export function HomePage() {
       {noTrips && (
         <EmptyState title="Nessun viaggio ancora" icon="flight_takeoff">
           <Suitcase size={48} />
-          <p className="muted">Crea il primo viaggio e invita gli amici con un codice.</p>
+          <p className="muted">Crea il primo viaggio e invita la tua compagnia con un codice.</p>
           <div className="actions">
             <Link to="/trips/new" className="btn btn-primary">Crea il tuo primo viaggio</Link>
             <Link to="/join" className="btn btn-soft">Ho un codice</Link>
@@ -57,7 +57,7 @@ export function HomePage() {
         <section className="card">
           <h2>I tuoi conti</h2>
           {d.balances.length === 0 ? (
-            <p className="muted"><Icon name="check_circle" className="inline-icon" /> Sei in pari con tutti</p>
+            <p className="muted"><Icon name="check_circle" className="inline-icon" /> Sei in pari con tutto il gruppo</p>
           ) : (
             <>
               {totalsCurrency && (

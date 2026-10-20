@@ -33,7 +33,7 @@ export function LoginPage() {
     <section className="auth-page">
       <div className="auth-logo">
         <Logo size={64} />
-        <h1>Bentornata su SplitTrip</h1>
+        <h1>Ciao di nuovo</h1>
         <p className="muted">Spese divise, conti chiari.</p>
       </div>
       <form className="card" onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>

@@ -20,3 +20,8 @@ it('i badge si dividono lo spazio e i nomi lunghi vanno a capo', () => {
   expect(rule('.podium li')).toMatch(/min-width: 0;.*overflow-wrap: anywhere/)
   expect(rule('.podium-rest li')).toContain('gap:')
 })
+
+it('una miniatura da 300 px nei «momenti» del riepilogo non allarga la pagina (a 430 px la pagina si zoomava)', () => {
+  expect(rule('.photo-grid')).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
+  expect(rule('.wrapped-moments img, .wrapped-moments .img-placeholder')).toMatch(/width: 100%.*aspect-ratio: 1.*object-fit: cover/)
+})

@@ -43,7 +43,7 @@ export function Reveal({ data, me, colors, onContinue }: Props) {
         {!done ? null : guess.mine !== null ? (
           <>
             <p>Hai detto {money(guess.mine)} · scarto di {money(Math.abs(guess.mine - totals.groupTotal))}</p>
-            {best && <p className="wrapped-best">{best.participantId === me ? 'Hai indovinato meglio di tutti!' : `Ha indovinato meglio: ${best.displayName}, a ${money(best.diff)}`}</p>}
+            {best && <p className="wrapped-best">{best.participantId === me ? 'Hai indovinato meglio di chiunque!' : `Ha indovinato meglio: ${best.displayName}, a ${money(best.diff)}`}</p>}
           </>
         ) : (
           <p>{guess.played === 0 ? 'Nessuno ha giocato' : guess.played === 1 ? '1 ha giocato' : `${guess.played} hanno giocato`}</p>

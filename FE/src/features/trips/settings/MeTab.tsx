@@ -18,7 +18,7 @@ export function MeTab({ trip, me, isOrganizer }: TripContext) {
       <ParticipantForm tripId={trip.id} participant={me} submitLabel="Salva la mia partecipazione" />
       <div className="settings-leave">
         {isOrganizer ? (
-          <p className="muted">L’organizzatore non può lasciare il viaggio.</p>
+          <p className="muted">Chi organizza non può lasciare il viaggio.</p>
         ) : (
           <>
             <FormError error={leave.error} />

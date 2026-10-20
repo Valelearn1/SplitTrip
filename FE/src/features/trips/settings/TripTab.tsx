@@ -29,7 +29,7 @@ export function TripTab({ trip, isOrganizer }: TripContext) {
           <div><span className="muted">Valuta</span><span>{currencyLabel(trip.currency)}</span></div>
           <div><span className="muted">Stato</span><span>{STATUS_LABELS[trip.status]}</span></div>
         </div>
-        <p className="muted hint">Solo l’organizzatore può cambiare questi dati.</p>
+        <p className="muted hint">Questi dati li cambia solo chi organizza il viaggio.</p>
       </section>
     )
   }

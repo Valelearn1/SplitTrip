@@ -27,7 +27,7 @@ export function ParticipantsList({ participants, onEdit, onUnlink, onRemove }: P
             <Avatar name={m.displayName} userId={m.userId} hasAvatar={m.hasAvatar} />
             <span className="row-text">
               <strong>{m.displayName}</strong>
-              {m.role === 'ORGANIZER' && <small>organizzatore</small>}
+              {m.role === 'ORGANIZER' && <small>organizza</small>}
               {m.userId === null && <small>senza account</small>}
               {details(m) && <small className="muted">{details(m)}</small>}
             </span>

@@ -49,7 +49,7 @@ it('senza viaggi: stato vuoto con i due bottoni e niente «Nuova spesa»', async
   expect(screen.getByRole('link', { name: 'Crea il tuo primo viaggio' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Ho un codice' })).toBeInTheDocument()
   expect(screen.queryByRole('link', { name: 'Nuova spesa' })).not.toBeInTheDocument()
-  expect(screen.getByText('Sei in pari con tutti')).toBeInTheDocument()
+  expect(screen.getByText('Sei in pari con tutto il gruppo')).toBeInTheDocument()
 })
 
 it('viaggio finito ma non chiuso: «da chiudere», e «Nuova spesa» segue lo stato calcolato dalle date', async () => {

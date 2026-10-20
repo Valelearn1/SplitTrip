@@ -13,7 +13,7 @@ export function TrashPage() {
   const { trip, isOrganizer, canWrite } = useOutletContext<TripContext>()
   const { data, isPending, error } = useTrash(trip.id)
   const restore = useRestoreExpense(trip.id)
-  if (!isOrganizer) return <p role="alert">Solo l'organizzatore vede il cestino.</p>
+  if (!isOrganizer) return <p role="alert">Il cestino lo vede solo chi organizza il viaggio.</p>
 
   return (
     <div>

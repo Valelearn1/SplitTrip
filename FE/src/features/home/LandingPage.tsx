@@ -8,7 +8,7 @@ const PILLARS = [
   { icon: 'receipt_long', title: 'Durante: spese e chat', text: 'Ogni spesa divisa come serve, anche per presenza o per chi conta per due; foto sulla mappa e chat del gruppo.' },
   { icon: 'balance', title: 'Dopo: conti chiari', text: 'Saldi sempre aggiornati e il minimo di rimborsi per tornare in pari, senza fogli di calcolo.' },
 ]
-const STEPS = ['Crea il viaggio e scegli la destinazione', 'Invita gli amici con un codice', 'Registrate le spese: i conti si fanno da soli']
+const STEPS = ['Crea il viaggio e scegli la destinazione', 'Invita il gruppo con un codice', 'Registrate le spese: i conti si fanno da soli']
 
 /** Pagina di presentazione (spec v3.1 §5): chi è loggato va dritto alla Home. */
 export function LandingPage() {
@@ -18,7 +18,7 @@ export function LandingPage() {
     <div className="landing">
       <section className="landing-hero">
         <Logo size={72} />
-        <h1>Vacanze tra amici, conti chiari</h1>
+        <h1>Vacanze in compagnia, conti chiari</h1>
         <p className="muted">Pianificate insieme prima di partire, tenete traccia di spese e cose da fare durante, e ritrovatevi con ricordi condivisi e conti a posto al ritorno.</p>
         <div className="actions">
           <Link to="/register" className="btn btn-primary">Crea un account</Link>
@@ -36,7 +36,7 @@ export function LandingPage() {
         <ol>{STEPS.map((s) => <li key={s}>{s}</li>)}</ol>
       </section>
       <footer className="landing-footer muted">
-        <strong>Dividete le spese, non gli amici.</strong>
+        <strong>Dividete le spese, non le amicizie.</strong>
         Fatto con ☕ da Valentina · <a href="https://github.com/Valelearn1/SplitTrip">codice su GitHub</a>
       </footer>
     </div>

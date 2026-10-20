@@ -9,12 +9,12 @@ const routes = [{ path: '/', element: <LandingPage /> }, { path: '/trips', eleme
 
 it('presenta l’app a chi non è loggato', async () => {
   renderWithProviders(routes, '/')
-  expect(await screen.findByRole('heading', { name: 'Vacanze tra amici, conti chiari' })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Vacanze in compagnia, conti chiari' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Crea un account' })).toHaveAttribute('href', '/register')
   expect(screen.getByRole('link', { name: 'Accedi' })).toHaveAttribute('href', '/login')
   expect(screen.getByRole('link', { name: 'Ho un codice invito' })).toHaveAttribute('href', '/login?next=/join')
   expect(screen.getByText('Prima: pianificate insieme')).toBeInTheDocument()
-  expect(screen.getByText('Dividete le spese, non gli amici.')).toBeInTheDocument()
+  expect(screen.getByText('Dividete le spese, non le amicizie.')).toBeInTheDocument()
   await expectAccessible()   // D-65
 })
 

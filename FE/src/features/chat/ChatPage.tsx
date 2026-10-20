@@ -172,7 +172,7 @@ export function ChatPage() {
           : <p className="info"><Icon name="lock" />Il viaggio è chiuso: la chat è in sola lettura</p>}
       </div>
       <Modal open={confirmId !== null} title="Eliminare il messaggio?" onClose={() => setConfirmId(null)}>
-        <p>Il testo sparirà per tutti; resterà «Messaggio eliminato».</p>
+        <p>Il testo sparirà per tutto il gruppo; resterà «Messaggio eliminato».</p>
         <div className="modal-actions">
           <Button variant="secondary" onClick={() => setConfirmId(null)}>Annulla</Button>
           <Button variant="danger" loading={remove.isPending} onClick={() => remove.mutate(confirmId!, { onSuccess: () => setConfirmId(null) })}>Elimina</Button>

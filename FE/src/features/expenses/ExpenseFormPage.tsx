@@ -172,7 +172,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
       <fieldset className="field card" style={{ marginBottom: 0 }} aria-labelledby="split-title">
         <div className="page-head" style={{ marginBottom: 8 }}>
           <h2 id="split-title">Diviso tra</h2>
-          <span className="badge badge-plain">{includedCount === trip.participants.length ? `Tutti inclusi (${includedCount})` : `${includedCount} su ${trip.participants.length}`}</span>
+          <span className="badge badge-plain">{includedCount === trip.participants.length ? `Tutto il gruppo (${includedCount})` : `${includedCount} su ${trip.participants.length}`}</span>
         </div>
         <div className="chips">
           <label className="chip"><input type="radio" value="EQUAL" {...register('splitType')} /><Icon name="pie_chart" />Parti uguali</label>
@@ -259,7 +259,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
       )}
 
       <Modal open={confirmDelete} title="Eliminare la spesa?" onClose={() => setConfirmDelete(false)}>
-        <p className="muted">L'organizzatore potrà ripristinarla dal cestino.</p>
+        <p className="muted">Chi organizza il viaggio potrà ripristinarla dal cestino.</p>
         <div className="modal-actions">
           <Button type="button" variant="secondary" onClick={() => setConfirmDelete(false)}>Annulla</Button>
           <Button type="button" variant="danger" loading={remove.isPending}

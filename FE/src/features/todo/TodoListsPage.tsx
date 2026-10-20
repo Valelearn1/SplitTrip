@@ -25,7 +25,7 @@ export function TodoListsPage() {
         <h2>Liste</h2>
         <label className="check"><input type="checkbox" checked={onlyMine} onChange={(e) => setOnlyMine(e.target.checked)} />Solo quelle per me</label>
       </div>
-      <p className="muted hint">Le liste sono del gruppo: le vedono e le usano tutti i partecipanti.</p>
+      <p className="muted hint">Le liste sono del gruppo: le vedono e le usano tutte le persone del viaggio.</p>
       {lists.isPending && <Spinner />}
       <FormError error={lists.error} />
       {lists.data?.length === 0 && <EmptyState title="Nessuna lista" icon="luggage" />}

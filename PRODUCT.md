@@ -49,3 +49,19 @@ Schermate di riferimento: `docs/stitch/*/screen.png` e `code.html` (7 schermate:
 ## Accessibility & Inclusion
 
 Decisione D-24: mai solo il colore (segno + etichetta accanto agli importi, testo nei badge, icona + testo negli errori); contrasto WCAG AA (cobalto `#2347b8` e lampone `#a3305e` per il testo, scuro `#9db4ff` e `#ff9cc4`; il lampone vivo solo per barre e riempimenti; il testo sulle card in vetro sopra l'illustrazione è verificato dal contrast test); tastiera e lettori di schermo (focus visibile, `aria-label` sulle icone, `role="alert"`, `<dialog>`); target touch ≥ 44 px e font ≥ 16 px nei campi; `prefers-reduced-motion` rispettato; notifiche sempre visive.
+
+## Voce senza genere (D-64)
+
+La regola: **si cambia la frase**, non si usano asterischi, schwa o doppie forme («organizzatore/organizzatrice»). Il problema è l'accordo, non il pronome: «nessuno deve restituire niente» e «ognuno imposta…» vanno bene perché nulla si accorda con chi legge.
+
+| Trovato | Riformulazione |
+|---|---|
+| «Bentornata su SplitTrip» | «Ciao di nuovo» |
+| «l'organizzatore», «organizzatore» | «chi organizza (il viaggio)»; etichetta del ruolo «organizza» |
+| «tutti», «Tutti inclusi» | «tutto il gruppo», «tutte le persone del viaggio» |
+| «gli altri» | «il resto del gruppo» |
+| «amici», «Vacanze tra amici» | «gruppo», «compagnia»; slogan **«Dividete le spese, non le amicizie»** |
+| participi accordati («sei stato aggiunto», «sicuro?») | «Ora fai parte di …», «Vuoi davvero …?» |
+| badge «Il banchiere», «Compagno di viaggio»… | soprannomi neutri: Cassa del gruppo, Occhio da reporter, Voce del gruppo, Buona forchetta, Conti in ordine, Cuore del gruppo, Giramondo, Compagnia di viaggio |
+
+Vale per i testi a schermo, i messaggi del server, l'email di ripristino e le istruzioni al modello AI. I nomi nel codice (`ORGANIZER`, `isOrganizer`) non cambiano. Il test `FE/src/test/neutralLanguage.test.ts` e `NeutralLanguageTest` nel backend bloccano le forme vietate; un'eccezione (es. «tutti i giorni», riferito ai giorni) si motiva nella lista `ALLOWED` del test.

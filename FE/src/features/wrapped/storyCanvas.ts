@@ -57,5 +57,5 @@ export function drawStory(ctx: CanvasRenderingContext2D, d: StoryData, cover?: C
   })
   d.badges.slice(0, 4).forEach((b, i) => text(b.title, 1240 + i * 90, '700 48px', WHITE))
   drawLogo(ctx, cx - 30, 1700, 60)
-  text('SplitTrip · Dividete le spese, non gli amici.', 1830, '600 36px', WHITE)
+  text('SplitTrip · Dividete le spese, non le amicizie.', 1830, '600 36px', WHITE)
 }
