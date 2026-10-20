@@ -58,3 +58,10 @@ it('le colonne a zero (foto, messaggi) non compaiono: resta la quota a persona',
   expect(texts).not.toContain('foto')
   expect(texts).not.toContain('messaggi')
 })
+
+it('un badge ripetuto si disegna una volta sola', () => {
+  const { ctx, texts } = fakeCtx()
+  drawStory(ctx, { ...data, badges: [{ title: '🧳 Compagnia di viaggio' }, { title: '🧳 Compagnia di viaggio' }, { title: '💰 Cassa del gruppo' }] })
+  expect(texts.filter((t) => t === '🧳 Compagnia di viaggio')).toHaveLength(1)
+  expect(texts).toContain('💰 Cassa del gruppo')
+})

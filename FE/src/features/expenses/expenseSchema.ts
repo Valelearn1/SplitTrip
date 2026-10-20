@@ -11,6 +11,9 @@ function centsOf(raw: string | undefined): number | null {
   return Math.round(Number(normalized) * 100)
 }
 
+/** Oltre il tetto del server: il modulo lo dice invece di spegnere solo il bottone. */
+export const isOverMax = (raw: string) => (centsOf(raw) ?? 0) > MAX_AMOUNT_CENTS
+
 /** Come `centsOf`, ma null anche oltre il tetto del server (999.999,99). */
 export function parseCents(raw: string | undefined): number | null {
   const cents = centsOf(raw)

@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { ApiError } from '../api/client'
 import { placesApi } from '../api/placesApi'
 import type { Place, PlaceValue } from '../api/types'
 
@@ -7,6 +8,8 @@ export type { PlaceValue }
 type Props = {
   id: string; label: string; value: PlaceValue; onChange: (v: PlaceValue) => void
   near?: { latitude: number; longitude: number }; error?: string; placeholder?: string; hint?: string
+  /** il testo scritto a mano vale (foto): un servizio giù è un suggerimento, non un errore */
+  freeText?: boolean
 }
 
 /**
@@ -17,11 +20,11 @@ type Props = {
  */
 export const SEARCH_DELAY_MS = 150   // abbastanza per non cercare a ogni lettera, poco da non sentirlo
 
-export function PlaceInput({ id, label, value, onChange, near, error, placeholder, hint }: Props) {
+export function PlaceInput({ id, label, value, onChange, near, error, placeholder, hint, freeText = false }: Props) {
   const [options, setOptions] = useState<Place[]>([])
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(-1)
-  const [unavailable, setUnavailable] = useState(false)
+  const [problem, setProblem] = useState<string | null>(null)   // «troppe ricerche» o servizio giù
   const [searching, setSearching] = useState(false)
   const listId = useId()
   const timer = useRef<number | null>(null)
@@ -34,16 +37,17 @@ export function PlaceInput({ id, label, value, onChange, near, error, placeholde
     if (timer.current) window.clearTimeout(timer.current)
     const q = text.trim()
     lastQuery.current = q
-    if (q.length < 3) { setOptions([]); setOpen(false); setSearching(false); return }
+    if (q.length < 3) { setOptions([]); setOpen(false); setSearching(false); setProblem(null); return }
     setSearching(true)
     timer.current = window.setTimeout(async () => {
       try {
         const found = await placesApi.search(q, near)
         if (lastQuery.current !== q) return // nel frattempo si è scritto ancora
-        setOptions(found); setOpen(found.length > 0); setActive(-1); setUnavailable(false); setSearching(false)
-      } catch {
+        setOptions(found); setOpen(found.length > 0); setActive(-1); setProblem(null); setSearching(false)
+      } catch (e) {
         if (lastQuery.current !== q) return
-        setOptions([]); setOpen(false); setUnavailable(true); setSearching(false)
+        setOptions([]); setOpen(false); setSearching(false)
+        setProblem(e instanceof ApiError && e.status === 429 ? 'Troppe ricerche, riprova tra poco' : 'Ricerca dei luoghi non disponibile, riprova tra poco')
       }
     }, SEARCH_DELAY_MS)
   }
@@ -88,8 +92,10 @@ export function PlaceInput({ id, label, value, onChange, near, error, placeholde
         {searching ? 'Cerco luoghi…' : open ? `${options.length} ${options.length === 1 ? 'proposta' : 'proposte'}` : ''}
       </span>
       {hint && !error && <small id={`${id}-hint`} className="muted">{hint}</small>}
-      {error && <p id={`${id}-err`} className="field-error">{error}</p>}
-      {unavailable && !error && <p role="alert" className="field-error">Ricerca dei luoghi non disponibile, riprova tra poco</p>}
+      {error && !problem && <p id={`${id}-err`} className="field-error">{error}</p>}
+      {problem && (freeText
+        ? <small className="muted">Proposte non disponibili: puoi scrivere il luogo a mano</small>
+        : <p role="alert" className="field-error">{problem}</p>)}
     </div>
   )
 }

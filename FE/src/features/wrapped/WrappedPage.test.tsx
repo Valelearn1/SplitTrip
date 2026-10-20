@@ -2,7 +2,7 @@ import { act, screen, waitFor } from '@testing-library/react'
 import { focusManager } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { beforeEach, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
 import { AUTH_STORAGE_KEY } from '../auth/authContext'
@@ -29,8 +29,10 @@ const wrapped = (guess: object) => ({
   badges: [{ participantId: 'p1', code: 'BANKER', title: '💰 Il banchiere', detail: 'ha anticipato 620,00' }, { participantId: 'p2', code: 'VOICE', title: '💬 La voce del gruppo', detail: '31 messaggi' }],
   settlement: { settled: false, openTransfers: 1 }, guess,
 })
+afterEach(() => vi.restoreAllMocks())
 const routes = [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'riepilogo', element: <WrappedPage /> }, { path: 'balances', element: <p>Saldi</p> }] }]
 beforeEach(() => {
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => setTimeout(() => { if (typeof cb === 'function') cb(performance.now() + 2000) }, 0) as unknown as number)   // rivelazione subito
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale', hasAvatar: false, preferredCurrency: 'EUR', chatSound: true, reduceMotion: true, theme: 'SYSTEM' } }))
   server.use(
     http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
@@ -124,4 +126,29 @@ it('se il server non si raggiunge più, il riepilogo già caricato resta invece 
   expect(screen.getByText('Avete speso in tutto')).toBeInTheDocument()
   expect(screen.queryByText(/Torna qui dopo il/)).not.toBeInTheDocument()
   act(() => focusManager.setFocused(undefined))
+})
+
+it('con 1 notte, 1 persona e 1 spesa i testi sono al singolare', async () => {
+  const one = wrapped({ mine: 300, played: 1, others: [] })
+  server.use(http.get('http://localhost/api/trips/t1/wrapped', () => HttpResponse.json({ ...one, trip: { ...one.trip, nights: 1, people: 1 }, totals: { ...one.totals, expenseCount: 1 } })))
+  renderWithProviders(routes, '/trips/t1/riepilogo')
+  await userEvent.setup().click(await screen.findByRole('button', { name: 'Guarda i numeri' }))
+  expect(await screen.findByText(/1 notte · 1 persona/)).toBeInTheDocument()
+  expect(screen.getByText(/a persona · 1 spesa/)).toBeInTheDocument()
+})
+
+it('un errore qualsiasi dice «Riprova tra poco», non «Torna qui dopo» (che vale solo per il 409)', async () => {
+  server.use(http.get('http://localhost/api/trips/t1/wrapped', () => HttpResponse.json({ status: 500, title: 'Errore', detail: 'Errore interno' }, { status: 500 })))
+  renderWithProviders(routes, '/trips/t1/riepilogo')
+  expect(await screen.findByText('Riprova tra poco.')).toBeInTheDocument()
+  expect(screen.queryByText(/Torna qui dopo il/)).not.toBeInTheDocument()
+})
+
+it('«Indovina il totale» oltre il tetto lo dice, invece di spegnere solo il bottone', async () => {
+  server.use(http.get('http://localhost/api/trips/t1/wrapped', () => HttpResponse.json(wrapped({ mine: null, played: 0, others: null }))))
+  renderWithProviders(routes, '/trips/t1/riepilogo')
+  const user = userEvent.setup()
+  await user.click(await screen.findByLabelText('Quanto pensate di aver speso in tutto?'))
+  await user.paste('1000000')   // scrivendo, la settima cifra viene rifiutata: il tetto si supera solo incollando
+  expect(await screen.findByText('Al massimo 999.999,99')).toBeInTheDocument()
 })

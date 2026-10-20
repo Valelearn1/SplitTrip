@@ -96,7 +96,7 @@ export function PhotoUploadSheet({ tripId, open, onClose, near }: Props) {
                     <Icon name="my_location" />Usa la mia posizione attuale
                   </button>
                   {i.status !== 'done' && (
-                    <PlaceInput id={`place-${i.key}`} label="Cerca un luogo" placeholder="Es. Alfama, Trastevere" near={near}
+                    <PlaceInput id={`place-${i.key}`} label="Cerca un luogo" freeText placeholder="Es. Alfama, Trastevere" near={near}
                       value={i.place ?? { name: '' }} onChange={(v) => update(i.key, { place: v, share: v.latitude !== undefined })} />
                   )}
                 </>

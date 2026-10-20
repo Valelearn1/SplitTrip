@@ -4,7 +4,7 @@ import { BalancePill } from '../../shared/ui/BalancePill'
 import { CategoryIcon } from '../../shared/ui/CategoryIcon'
 import { Icon } from '../../shared/ui/Icon'
 import { MoneyText } from '../../shared/ui/MoneyText'
-import { formatDate, localToday } from '../../shared/utils/format'
+import { formatDate, serverToday } from '../../shared/utils/format'
 import { useBalances, useSummary } from '../balances/useBalances'
 import { useExpenses } from '../expenses/useExpenses'
 import { WeatherCard } from '../weather/WeatherCard'
@@ -41,7 +41,7 @@ export function TripDashboardPage() {
 
       <WeatherCard tripId={trip.id} />
       <AiTipsCard tripId={trip.id} destination={trip.destination} canWrite={canWrite} />
-      <GamesCard trip={trip} me={me} canWrite={canWrite} over={trip.status === 'CLOSED' || trip.endDate < localToday()} />
+      <GamesCard trip={trip} me={me} canWrite={canWrite} over={trip.status === 'CLOSED' || trip.endDate < serverToday()} />
 
       <div className="card">
         <div className="page-head" style={{ marginBottom: 8 }}>

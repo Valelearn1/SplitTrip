@@ -55,7 +55,8 @@ export function drawStory(ctx: CanvasRenderingContext2D, d: StoryData, cover?: C
     ctx.fillStyle = WHITE; ctx.font = `800 64px ${FONT}`; ctx.fillText(fit(ctx, value, 300), x, 1010)
     ctx.fillStyle = SOFT; ctx.font = `500 36px ${FONT}`; ctx.fillText(label, x, 1060)
   })
-  d.badges.slice(0, 4).forEach((b, i) => text(b.title, 1240 + i * 90, '700 48px', WHITE))
+  const uniqueBadges = [...new Map(d.badges.map((b) => [b.title, b])).values()]   // titoli senza ripetizioni
+  uniqueBadges.slice(0, 4).forEach((b, i) => text(b.title, 1240 + i * 90, '700 48px', WHITE))
   drawLogo(ctx, cx - 30, 1700, 60)
   text('SplitTrip · Dividete le spese, non le amicizie.', 1830, '600 36px', WHITE)
 }

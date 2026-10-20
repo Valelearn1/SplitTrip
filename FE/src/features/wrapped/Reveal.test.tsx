@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { afterEach, expect, it } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import type { Wrapped } from '../../shared/api/types'
 import { Podium } from './Podium'
 import { Reveal } from './Reveal'
@@ -9,7 +9,9 @@ const data = {
   totals: { groupTotal: 336, perPerson: 168, expenseCount: 4, photos: 0, messages: 2, reactions: 1 },
   guess: { mine: 300, played: 2, others: [{ participantId: 'p2', displayName: 'Marco', amount: 350, diff: 14 }, { participantId: 'p1', displayName: 'Vale', amount: 300, diff: 36 }] },
 } as Wrapped
-afterEach(() => { delete document.documentElement.dataset.reduceMotion })
+// l'animazione del totale finisce al primo fotogramma: i test non dipendono dal carico della suite
+beforeEach(() => vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => setTimeout(() => { if (typeof cb === 'function') cb(performance.now() + 2000) }, 0) as unknown as number))
+afterEach(() => { delete document.documentElement.dataset.reduceMotion; vi.restoreAllMocks() })
 
 it('com\'è andata la scommessa compare solo quando il numero si è fermato', async () => {
   render(<Reveal data={data} me="p1" colors={['#ffcf9f']} onContinue={() => {}} />)

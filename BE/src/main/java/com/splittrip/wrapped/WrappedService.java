@@ -77,11 +77,10 @@ public class WrappedService {
             e.getShares().forEach(s -> withShare.add(s.getParticipant().getId()));
             if (biggest == null || e.getAmount().compareTo(biggest.getAmount()) > 0) biggest = e;
         }
-        List<Category> categories = byCat.entrySet().stream()
-                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
-                .map(en -> new Category(en.getKey(), money(en.getValue()), groupTotal.signum() == 0 ? 0
-                        : en.getValue().multiply(BigDecimal.valueOf(100)).divide(groupTotal, 0, RoundingMode.HALF_UP).intValue()))
-                .toList();
+        List<Map.Entry<String, BigDecimal>> ordered = byCat.entrySet().stream().sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed()).toList();
+        List<Integer> shares = percentages(ordered.stream().map(Map.Entry::getValue).toList(), groupTotal);
+        List<Category> categories = new ArrayList<>();
+        for (int i = 0; i < ordered.size(); i++) categories.add(new Category(ordered.get(i).getKey(), money(ordered.get(i).getValue()), shares.get(i)));
         Day priciest = byDay.entrySet().stream().max(Map.Entry.comparingByValue()).map(en -> new Day(en.getKey(), money(en.getValue()))).orElse(null);
         Biggest record = biggest == null ? null : new Biggest(biggest.getDescription(), money(biggest.getAmount()), biggest.getPayer().getDisplayName());
 
@@ -150,6 +149,18 @@ public class WrappedService {
                 .sorted(Comparator.comparing(GuessEntry::diff))
                 .toList();
         return new Guess(mine, rows.size(), others);
+    }
+
+    /** Percentuali intere che sommano 100 (resto maggiore, come le quote): a parità vince l'ordine. */
+    static List<Integer> percentages(List<BigDecimal> amounts, BigDecimal total) {
+        if (total.signum() == 0) return amounts.stream().map(a -> 0).toList();
+        List<BigDecimal> exact = amounts.stream().map(a -> a.multiply(BigDecimal.valueOf(100)).divide(total, 6, RoundingMode.DOWN)).toList();
+        int[] floor = exact.stream().mapToInt(BigDecimal::intValue).toArray();
+        int missing = 100 - Arrays.stream(floor).sum();
+        List<Integer> order = java.util.stream.IntStream.range(0, exact.size()).boxed()
+                .sorted((i, j) -> exact.get(j).remainder(BigDecimal.ONE).compareTo(exact.get(i).remainder(BigDecimal.ONE))).toList();
+        for (int k = 0; k < missing && k < order.size(); k++) floor[order.get(k)]++;
+        return Arrays.stream(floor).boxed().toList();
     }
 
     private static BigDecimal money(BigDecimal v) { return v.setScale(2, RoundingMode.HALF_UP); }

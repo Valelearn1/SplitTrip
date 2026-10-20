@@ -8,7 +8,7 @@ import { CategoryIcon } from '../../shared/ui/CategoryIcon'
 import { Icon } from '../../shared/ui/Icon'
 import { MoneyText } from '../../shared/ui/MoneyText'
 import { Spinner } from '../../shared/ui/Spinner'
-import { formatDate, formatDateRange, formatMoney } from '../../shared/utils/format'
+import { countLabel, formatDate, formatDateRange, formatMoney } from '../../shared/utils/format'
 import { wheelColors } from '../games/wheel'
 import { photoPath } from '../photos/photosApi'
 import { PointsMap } from '../photos/PointsMap'
@@ -33,7 +33,7 @@ export function WrappedPage() {
       <section className="card wrapped-wait">
         <Icon name="celebration" />
         <h2>{wrapped.error instanceof ApiError ? wrapped.error.detail : 'Riepilogo non disponibile'}</h2>
-        <p className="muted">Torna qui dopo il {formatDate(trip.endDate)}.</p>
+        <p className="muted">{wrapped.error instanceof ApiError && wrapped.error.status === 409 ? `Torna qui dopo il ${formatDate(trip.endDate)}.` : 'Riprova tra poco.'}</p>
       </section>
     )
   }
@@ -57,14 +57,14 @@ export function WrappedPage() {
         <div className="wrapped-cover-text">
           <p className="label">Il vostro viaggio in numeri</p>
           <h1>{d.trip.name}</h1>
-          <p>{d.trip.destination} · {formatDateRange(d.trip.startDate, d.trip.endDate)} · {d.trip.nights} notti · {d.trip.people} persone</p>
+          <p>{d.trip.destination} · {formatDateRange(d.trip.startDate, d.trip.endDate)} · {countLabel(d.trip.nights, 'notte', 'notti')} · {countLabel(d.trip.people, 'persona', 'persone')}</p>
         </div>
       </section>
 
       <section className="card wrapped-total">
         <strong className="amount-xl">{money(d.totals.groupTotal)}</strong>
         <span>in tutto</span>
-        <small className="muted">{money(d.totals.perPerson)} a persona · {d.totals.expenseCount} spese</small>
+        <small className="muted">{money(d.totals.perPerson)} a persona · {countLabel(d.totals.expenseCount, 'spesa', 'spese')}</small>
       </section>
 
       {d.byCategory.length > 0 && (
@@ -136,7 +136,7 @@ export function WrappedPage() {
           ? <p><Icon name="check_circle" className="inline-icon" /> Conti chiusi: siete in pari</p>
           : <Link to={`/trips/${trip.id}/balances`} className="btn btn-secondary"><Icon name="sync_alt" />{d.settlement.openTransfers === 1 ? 'Manca 1 rimborso' : `Mancano ${d.settlement.openTransfers} rimborsi`}</Link>}
         <StoryImage
-          data={{ name: d.trip.name, dates: `${formatDateRange(d.trip.startDate, d.trip.endDate)} · ${d.trip.nights} notti · ${d.trip.people} persone`,
+          data={{ name: d.trip.name, dates: `${formatDateRange(d.trip.startDate, d.trip.endDate)} · ${countLabel(d.trip.nights, 'notte', 'notti')} · ${countLabel(d.trip.people, 'persona', 'persone')}`,
             total: d.totals.groupTotal, perPerson: d.totals.perPerson, photos: d.totals.photos, messages: d.totals.messages, currency: d.trip.currency,
             badges: d.badges.map((b) => ({ title: b.title })) }}
           coverPath={d.trip.coverPhotoId ? photoPath(trip.id, d.trip.coverPhotoId, 'image') : null} />

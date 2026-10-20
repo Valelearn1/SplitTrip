@@ -42,7 +42,7 @@ export function PhotoViewer({ tripId, photo, canDelete, canEditPlace, onClose, n
       )}
       {editing && (
         <div className="stack">
-          <PlaceInput id={`viewer-place-${photo.id}`} label="Luogo" placeholder="Città o quartiere" near={near} value={draft} onChange={setDraft}
+          <PlaceInput id={`viewer-place-${photo.id}`} label="Luogo" freeText placeholder="Città o quartiere" near={near} value={draft} onChange={setDraft}
             hint="Scegli una delle proposte: serve per mettere la foto sulla mappa" />
           <div className="row-actions">
             <Button className="btn-sm" disabled={draft.latitude === undefined} loading={setPlace.isPending}

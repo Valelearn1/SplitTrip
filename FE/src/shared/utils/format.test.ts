@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatDateRange, formatMoney } from './format'
+import { countLabel, formatDate, formatDateRange, formatMoney, serverToday } from './format'
 
 describe('format', () => {
   it('formatta i soldi in euro italiano', () => {
@@ -12,4 +12,15 @@ describe('format', () => {
     expect(formatDateRange('2026-11-01', '2026-11-05')).toBe('1 – 5 nov 2026')
     expect(formatDateRange('2026-10-30', '2026-11-02')).toBe('30 ott – 2 nov 2026')
   })
+})
+
+it('countLabel: singolare con 1, plurale altrimenti', () => {
+  expect(countLabel(1, 'persona', 'persone')).toBe('1 persona')
+  expect(countLabel(3, 'notte', 'notti')).toBe('3 notti')
+  expect(countLabel(0, 'spesa', 'spese')).toBe('0 spese')
+})
+
+it('serverToday: la data del server (UTC), non quella locale, per non mostrare il riepilogo prima del server', () => {
+  expect(serverToday(new Date('2026-10-20T23:30:00+02:00'))).toBe('2026-10-20')
+  expect(serverToday(new Date('2026-10-21T01:30:00+02:00'))).toBe('2026-10-20')
 })

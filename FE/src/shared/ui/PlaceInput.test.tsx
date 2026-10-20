@@ -90,3 +90,36 @@ it('la ricerca parte 150 ms dopo l\'ultima lettera e intanto dice «Cerco luoghi
   }
 })
 
+/** Come Harness, ma con qualsiasi prop in più (freeText, error…). */
+function Ctl(props: Omit<Parameters<typeof PlaceInput>[0], 'value' | 'onChange'>) {
+  const [v, setV] = useState<PlaceValue>({ name: '' })
+  return <PlaceInput {...props} value={v} onChange={setV} />
+}
+
+it('troppe ricerche (429) lo dice com\'è; sotto le 3 lettere l\'avviso sparisce', async () => {
+  server.use(http.get('http://localhost/api/places', () => HttpResponse.json({ title: 'Troppe ricerche', detail: 'Troppe ricerche, riprova tra poco' }, { status: 429 })))
+  render(<Ctl id="d" label="Destinazione" />)
+  const user = userEvent.setup()
+  const input = screen.getByRole('combobox', { name: 'Destinazione' })
+  await user.type(input, 'Lis')
+  expect(await screen.findByText('Troppe ricerche, riprova tra poco')).toBeInTheDocument()
+  await user.clear(input)
+  await user.type(input, 'Li')
+  expect(screen.queryByText('Troppe ricerche, riprova tra poco')).not.toBeInTheDocument()
+})
+
+it('con il testo libero valido (foto) il servizio giù è un suggerimento, non un errore', async () => {
+  server.use(http.get('http://localhost/api/places', () => HttpResponse.json({ title: 'x', detail: 'x' }, { status: 503 })))
+  render(<Ctl id="p" label="Luogo" freeText />)
+  await userEvent.setup().type(screen.getByRole('combobox', { name: 'Luogo' }), 'Lis')
+  expect(await screen.findByText('Proposte non disponibili: puoi scrivere il luogo a mano')).toBeInTheDocument()
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+})
+
+it('servizio giù e modulo già inviato: si vede «non disponibile», non «Scegli dall\'elenco»', async () => {
+  server.use(http.get('http://localhost/api/places', () => HttpResponse.json({ title: 'x', detail: 'x' }, { status: 503 })))
+  render(<Ctl id="d2" label="Destinazione" error="Scegli la destinazione dall'elenco" />)
+  await userEvent.setup().type(screen.getByRole('combobox', { name: 'Destinazione' }), 'Lis')
+  expect(await screen.findByText('Ricerca dei luoghi non disponibile, riprova tra poco')).toBeInTheDocument()
+  expect(screen.queryByText("Scegli la destinazione dall'elenco")).not.toBeInTheDocument()
+})

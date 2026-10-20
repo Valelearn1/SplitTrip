@@ -3,7 +3,7 @@ import { Button } from '../../shared/ui/Button'
 import { AmountField } from '../../shared/ui/AmountField'
 import { FormError } from '../../shared/ui/FormError'
 import { Icon } from '../../shared/ui/Icon'
-import { parseCents } from '../expenses/expenseSchema'
+import { isOverMax, parseCents } from '../expenses/expenseSchema'
 
 type Props = { currency: string; pending: boolean; error: unknown; onGuess: (amount: number) => void; onSkip: () => void }
 
@@ -18,7 +18,8 @@ export function GuessGate({ currency, pending, error, onGuess, onSkip }: Props) 
       <h1>Indovina il totale</h1>
       <p className="muted">Prima di vedere i numeri: quanto avete speso? Chi ci va più vicino vince la gloria.</p>
       <form onSubmit={(e) => { e.preventDefault(); if (valid) onGuess(cents / 100) }}>
-        <AmountField label="Quanto pensate di aver speso in tutto?" className="amount-input" currency={currency} value={raw} onChange={(e) => setRaw(e.target.value)} />
+        <AmountField label="Quanto pensate di aver speso in tutto?" className="amount-input" currency={currency} value={raw} onChange={(e) => setRaw(e.target.value)}
+          error={isOverMax(raw) ? 'Al massimo 999.999,99' : undefined} />
         <FormError error={error} />
         <div className="actions">
           <Button type="submit" disabled={!valid} loading={pending}>Scommetto!</Button>

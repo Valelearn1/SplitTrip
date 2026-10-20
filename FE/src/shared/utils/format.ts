@@ -32,3 +32,9 @@ export function localToday(): string {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
+
+/** «1 persona», «3 notti»: il singolare con 1. */
+export const countLabel = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`
+
+/** La data di oggi come la vede il server (UTC): il riepilogo si apre quando lo dice il server, non prima. */
+export const serverToday = (now: Date = new Date()) => now.toISOString().slice(0, 10)
