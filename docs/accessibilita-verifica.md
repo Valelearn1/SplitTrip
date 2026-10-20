@@ -16,6 +16,14 @@ Obiettivo: WCAG 2.2 livello AA. Due parti: controlli automatici dentro i test (r
 |---|---|---|---|
 | — | — | — | nessuna violazione al primo controllo |
 
+## Impostazioni di sistema (Task 4)
+
+| Prova | Risultato (2026-10-20, localhost a 430 px) |
+|---|---|
+| Testo normale | invariato: testo 16 px, titoli 24, icone 22 |
+| Browser con carattere al 125% | tutto cresce insieme (20 / 30 / 28 px), il testo va a capo, nessuno scorrimento orizzontale |
+| Dynamic Type su iPhone, «Aumenta contrasto» su Mac, colori forzati | regole in `index.css` verificate da `cssSystem.test.ts`; prova dal dispositivo nella lista per il telefono |
+
 ## Verifica a mano
 
 (compilata nel Task 8 del piano, dopo le correzioni)
