@@ -25,3 +25,7 @@ it('una miniatura da 300 px nei «momenti» del riepilogo non allarga la pagina 
   expect(rule('.photo-grid')).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
   expect(rule('.wrapped-moments img, .wrapped-moments .img-placeholder')).toMatch(/width: 100%.*aspect-ratio: 1.*object-fit: cover/)
 })
+
+it('una nota sotto un riquadro ha spazio sopra (la regola .hint si tira su per stare sotto un campo)', () => {
+  expect(rule('.kv-note')).toContain('margin: var(--space-3) 0 0')
+})

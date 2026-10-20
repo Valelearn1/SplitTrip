@@ -15,7 +15,7 @@ export function MeTab({ trip, me, isOrganizer }: TripContext) {
   return (
     <section className="card">
       <h2>La mia partecipazione</h2>
-      <ParticipantForm tripId={trip.id} participant={me} submitLabel="Salva la mia partecipazione" />
+      <ParticipantForm tripId={trip.id} participant={me} submitLabel="Salva la mia partecipazione" nameLabel="Il tuo nome in questo viaggio" />
       <div className="settings-leave">
         {isOrganizer ? (
           <p className="muted">Chi organizza non può lasciare il viaggio.</p>

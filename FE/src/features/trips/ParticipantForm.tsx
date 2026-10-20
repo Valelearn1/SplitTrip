@@ -12,14 +12,16 @@ import { useUpdateParticipant } from './useTrips'
 
 type Props = {
   tripId: string; participant: Participant; submitLabel: string; onSaved?: () => void
-  /** Benvenuto (D-50): senza «Nome nel viaggio», con «Salta» */
+  /** etichetta del nome: «Il tuo nome in questo viaggio» per sé, «Nome della persona» quando chi organizza modifica qualcun altro */
+  nameLabel?: string
+  /** Benvenuto (D-50): senza il campo del nome, con «Salta» */
   compact?: boolean; skipLabel?: string; onSkip?: () => void
   /** date del viaggio: proposte se il partecipante non ne ha; se quelle scelte coincidono vale «tutto il viaggio» (date vuote) */
   tripStart?: string; tripEnd?: string
 }
 
 /** Nome nel viaggio, «conta per» e date di presenza: il viaggio li propone, ogni spesa può correggerli (D-33, D-44). */
-export function ParticipantForm({ tripId, participant, submitLabel, onSaved, compact = false, skipLabel, onSkip, tripStart, tripEnd }: Props) {
+export function ParticipantForm({ tripId, participant, submitLabel, onSaved, nameLabel = 'Nome della persona', compact = false, skipLabel, onSkip, tripStart, tripEnd }: Props) {
   const update = useUpdateParticipant(tripId, participant.id)
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(participantSchema),
@@ -49,7 +51,7 @@ export function ParticipantForm({ tripId, participant, submitLabel, onSaved, com
 
   return (
     <form noValidate onSubmit={onSubmit}>
-      {!compact && <Field label="Nome nel viaggio" error={errors.displayName?.message} {...register('displayName')} />}
+      {!compact && <Field label={nameLabel} error={errors.displayName?.message} {...register('displayName')} />}
       <CountsFor legend="Conta per" showLegend value={defaultWeight} error={errors.defaultWeight?.message}
         onChange={(v) => setValue('defaultWeight', v, { shouldDirty: true, shouldValidate: true })} />
       <p className="muted hint">1 = una persona · 2 = una coppia con un solo account · ½ = un bambino · con «altro» si sommano: 2,5 = una coppia con un bambino. Vale per le spese in parti uguali; si può cambiare spesa per spesa.</p>

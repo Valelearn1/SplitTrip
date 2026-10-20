@@ -274,6 +274,7 @@ fieldset.field.card { padding: var(--space-4); }
 .kv { display: grid; gap: 6px; padding: var(--space-3) var(--space-4); background: var(--surface-1); border-radius: 12px; }
 .kv > div { display: flex; justify-content: space-between; gap: var(--space-3); }
 .kv .money { font-weight: 600; }
+.kv-note { margin: var(--space-3) 0 0; font-size: 0.875rem; }   /* nota sotto un riquadro: .hint si tira su per stare sotto un campo */
 .label { font-size: 0.875rem; font-weight: 600; color: var(--ink-3); }
 .head-balance { display: grid; justify-items: end; gap: 4px; }
 .head-balance .pill { padding: 2px 8px 2px 6px; font-size: 0.8125rem; }

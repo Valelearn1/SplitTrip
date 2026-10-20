@@ -42,7 +42,9 @@ it('tre schede: la scheda nell’URL e i permessi di chi non organizza', async (
   expect(router.state.location.search).toBe('?tab=viaggio')
   expect(screen.getByText('Lisbona')).toBeInTheDocument()                                              // sola lettura
   expect(screen.queryByRole('button', { name: 'Salva' })).not.toBeInTheDocument()
+  expect(screen.getByText('Questi dati li cambia solo chi organizza il viaggio.')).toHaveClass('kv-note')   // staccato dal riquadro
   await user.click(screen.getByRole('tab', { name: 'Io' }))
+  expect(screen.getByLabelText('Il tuo nome in questo viaggio')).toHaveValue('Marco')   // non «Nome nel viaggio», che si legge «del viaggio»
   expect(screen.getByRole('group', { name: 'Conta per' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Lascia il viaggio' })).toBeInTheDocument()
   await expectAccessible()   // D-65
