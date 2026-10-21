@@ -112,3 +112,6 @@ Segna ok oppure il problema (con uno screenshot) accanto a ogni riga.
 **Mac, Chrome → Impostazioni → Aspetto → Dimensione carattere «Molto grande»**
 9. Il testo cresce ovunque e nulla esce dallo schermo a 430 px (device toolbar, iPhone 14 Pro Max).
 
+**QR dell'invito (v3.4)**
+10. Panoramica → «QR»: la fotocamera di un altro telefono lo legge e apre il viaggio, anche col tema scuro.
+

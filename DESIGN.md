@@ -491,6 +491,11 @@ L'app segue quello che la persona ha già scelto sul telefono o nel computer, se
 - **Telefoni stretti (320–359 px)**: nell'intestazione resta il mappamondo e il nome «SplitTrip» lo legge solo il lettore di schermo; titolo di pagina e bottone accanto (`.page-head`) vanno a capo; i bottoni lunghi nelle card centrate vanno a capo invece di uscire.
 - **Verifica**: ogni pagina chiama `expectAccessible()` (axe) nel suo test; le prove a mano stanno in `docs/accessibilita-verifica.md`.
 
+### QR dell'invito (v3.4, D-67)
+- **Bottone «QR»** (`qr_code_2`, `btn-soft btn-sm`) accanto a «Condividi» nel riquadro del codice invito (Panoramica e Impostazioni → Persone).
+- **Finestra «Entra nel viaggio»**: QR 240 px (al massimo la larghezza della finestra), sotto il codice nello stile `.code` e «Inquadra per entrare in «nome»» in `muted`, che va a capo; «Chiudi» secondario. La finestra esiste solo mentre è aperta.
+- **Eccezione di colore dichiarata**: moduli `#141c26` su `#ffffff` in tutti e due i temi e con i colori forzati (`forced-color-adjust: none`), perché molte fotocamere non leggono un QR chiaro su scuro. Durante il caricamento un riquadro `surface-2` della stessa misura; se non si carica, «Usa il codice qui sotto».
+
 ### Modale
 `<dialog>` bianco, raggio 16 px, padding 24 px, larghezza massima 420 px, ombra modale e backdrop d'inchiostro al 45%; azioni allineate a destra.
 

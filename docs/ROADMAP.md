@@ -141,6 +141,8 @@ Ognuna diventa una nuova riga in `decisioni.md` quando la approvi.
 
 ### 4.1 Capstone (fino al 26 ottobre) — proposta di aggiustamento minimo
 
+> **Aggiornamento 21 ottobre:** fatte v3.3 Inclusiva, v3.4 Qualità e demo (CI, giro e2e, QR) e v3.5 App installabile e offline; Valute è la v3.6 (D-68). Le migliorie valutate il 20 ottobre e rimandate sono in §4.5.
+
 | Cosa | Perché | Compl. | Costo stimato |
 |---|---|---|---|
 | Chiudere v1 come da piano (FE-07, DOC-01) | consegna solida | — | 1 giorno |
@@ -206,6 +208,19 @@ Dipendenze: 1 ← S1 · 3 ← S2 · 8 ← S1 · 6-manuale ← S4 · 12-link ← 
 | Offline con sync (2) | S3 | A |
 | Pass viaggio ed entitlement (13) | Wrapped e OCR come contenuti premium | M–A |
 | App native (wrapper) | offline | A |
+
+### 4.5 Migliorie valutate il 20 ottobre (rimandate)
+
+| # | Miglioria | Costo | Perché dopo | Dipende da |
+|---|---|---|---|---|
+| 4 | Esporta le spese in CSV | 2 h | utile ma non cambia la demo | — |
+| 5 | Lighthouse (prestazioni, accessibilità, installabilità) con i punteggi nel README | 1 h + correzioni | si fa sul sito pubblicato a lavori fermi | — |
+| 7 | Dividere `index.css` (oltre 750 righe) per area | 1–2 h | tocca tutta la grafica a ridosso della consegna | test sul CSS (già presenti) |
+| 8 | Notifiche push | 1–2 giorni | su iPhone solo con l'app installata; chiavi VAPID e backend nuovo | PWA (v3.5) |
+| 9 | Eliminare l'account ed esportare i propri dati (GDPR) | 1 giorno | va deciso cosa resta dei soldi nei viaggi condivisi (D-30) | — |
+| 10 | Ordine delle reazioni in chat | 2–3 h | il conteggio può mostrare 1 per un attimo dopo il 2 | versione sul messaggio |
+| 11 | Risposte dell'AI senza genere | da valutare | l'uscita del modello non si controlla in modo deterministico | — |
+| 12 | Spese e saldi dal vivo (WebSocket) | 0,5 giorni | oggi si rileggono all'apertura della pagina (D-66); dal vivo servirebbe un evento per spesa e rimborso | D-39 |
 
 ---
 
