@@ -18,5 +18,6 @@ class MoneyFormatTest {
     void rispettaIDecimaliDellaValuta() {
         assertThat(MoneyFormat.format(new BigDecimal("2000.00"), "JPY")).isEqualTo("2.000 JPY");
         assertThat(MoneyFormat.format(new BigDecimal("22.499"), "EUR")).isEqualTo("22,50 €");
+        assertThat(MoneyFormat.format(new BigDecimal("2000"), "HUF")).isEqualTo("2.000 HUF");   // D-70: come nel browser
     }
 }

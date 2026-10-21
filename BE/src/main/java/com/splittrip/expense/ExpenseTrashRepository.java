@@ -19,7 +19,7 @@ public class ExpenseTrashRepository {
 
     public List<TrashedExpenseResponse> findTrashed(UUID tripId) {
         return jdbc.sql("""
-                select id, description, amount, date, deleted_at from expenses
+                select id, description, amount_base, date, deleted_at from expenses
                 where trip_id = :tripId and deleted_at is not null
                 order by deleted_at desc
                 """)
@@ -27,7 +27,7 @@ public class ExpenseTrashRepository {
                 .query((rs, i) -> new TrashedExpenseResponse(
                         rs.getObject("id", UUID.class),
                         rs.getString("description"),
-                        rs.getBigDecimal("amount"),
+                        rs.getBigDecimal("amount_base"),
                         rs.getObject("date", LocalDate.class),
                         rs.getObject("deleted_at", OffsetDateTime.class).toInstant()))
                 .list();

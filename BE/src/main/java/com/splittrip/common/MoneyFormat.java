@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Currency;
 import java.util.Locale;
 
 /** Importi nei testi scritti dal server (chat, notifiche): all'italiana, nella valuta del viaggio, coi suoi decimali. */
@@ -21,10 +20,6 @@ public final class MoneyFormat {
     }
 
     private static int fractionDigits(String currency) {
-        try {
-            return Math.max(0, Currency.getInstance(currency).getDefaultFractionDigits());
-        } catch (IllegalArgumentException e) {
-            return 2;
-        }
+        return Currencies.fractionDigits(currency);   // D-70: stesso elenco del browser (HUF senza decimali)
     }
 }

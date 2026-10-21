@@ -1,7 +1,9 @@
 package com.splittrip.expense;
 
+import com.splittrip.common.AmountRules;
 import com.splittrip.common.BadRequestException;
 import com.splittrip.common.ConflictException;
+import com.splittrip.common.Currencies;
 import com.splittrip.common.FieldException;
 import com.splittrip.common.ForbiddenException;
 import com.splittrip.common.NotFoundException;
@@ -83,11 +85,12 @@ public class ExpenseService {
         Participant me = access.requireMember(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
         access.requireWritable(trip);
+        Money money = money(req, trip);
         Map<UUID, Participant> active = activeParticipants(tripId);
-        List<ComputedShare> computed = computeShares(req, active);
+        List<ComputedShare> computed = computeShares(req, active, AmountRules.convert(req.amount(), money.fxRate()), money.currency());
 
         Expense expense = new Expense(trip, active.get(req.payerId()), req.description().strip(), req.amount(),
-                req.date(), req.category(), req.splitType(), req.dayBasis(), me.getUser(), clock.instant());
+                money.currency(), money.fxRate(), req.date(), req.category(), req.splitType(), req.dayBasis(), me.getUser(), clock.instant());
         for (ComputedShare s : computed) {
             expense.getShares().add(new ExpenseShare(expense, active.get(s.participantId()), s.amount(), s.weight()));
         }
@@ -98,7 +101,7 @@ public class ExpenseService {
             if (s.getParticipant().hasAccount()) shareByUserId.put(s.getParticipant().userId(), s.getAmount());
         }
         events.publishEvent(new ExpenseCreated(tripId, expense.getId(), userId, me.getDisplayName(), expense.getDescription(),
-                shareByUserId, expense.getAmount(), expense.getCurrency()));
+                shareByUserId, expense.getAmount(), expense.getCurrency(), expense.getAmountBase(), trip.getCurrency()));
         return get(tripId, userId, expense.getId());
     }
 
@@ -109,12 +112,13 @@ public class ExpenseService {
         access.requireWritable(trip);
         Expense expense = require(tripId, expenseId);
         requireOwnerOrOrganizer(expense, me);
+        Money money = money(req, trip);
         Map<UUID, Participant> active = activeParticipants(tripId);
-        List<ComputedShare> computed = computeShares(req, active);
+        List<ComputedShare> computed = computeShares(req, active, AmountRules.convert(req.amount(), money.fxRate()), money.currency());
 
         expense.setPayer(active.get(req.payerId()));
         expense.setDescription(req.description().strip());
-        expense.setAmount(req.amount());
+        expense.setMoney(req.amount(), money.currency(), money.fxRate());
         expense.setDate(req.date());
         expense.setCategory(req.category());
         expense.setSplitType(req.splitType());
@@ -184,8 +188,31 @@ public class ExpenseService {
                 .collect(Collectors.toMap(Participant::getId, Function.identity(), (a, b) -> a, LinkedHashMap::new));
     }
 
-    /** Valida pagante e partecipanti e produce le quote da salvare (anche per EQUAL). */
-    static List<ComputedShare> computeShares(ExpenseRequest req, Map<UUID, Participant> active) {
+    /** D-69: valuta e cambio della richiesta, con la valuta del viaggio come base; controlli per valuta (D-70). */
+    record Money(String currency, BigDecimal fxRate) {}
+
+    static Money money(ExpenseRequest req, Trip trip) {
+        String currency = req.currency() == null ? trip.getCurrency() : req.currency();
+        BigDecimal fxRate = req.fxRate();
+        if (currency.equals(trip.getCurrency())) {
+            fxRate = BigDecimal.ONE;
+        } else if (fxRate == null) {
+            throw new FieldException("fxRate", "Scrivi quanto vale 1 " + currency + " in " + trip.getCurrency());
+        }
+        AmountRules.check("amount", req.amount(), currency);
+        AmountRules.check("amount", AmountRules.convert(req.amount(), fxRate), trip.getCurrency());
+        for (int i = 0; i < req.shares().size(); i++) {
+            ShareRequest s = req.shares().get(i);
+            if (s.amount() != null) AmountRules.check("shares[" + i + "].amount", s.amount(), currency);
+        }
+        return new Money(currency, fxRate);
+    }
+
+    /**
+     * Valida pagante e partecipanti e produce le quote da salvare (anche per EQUAL), nella valuta del viaggio:
+     * `base` è il totale convertito; con CUSTOM le quote scritte nella valuta dello scontrino lo dividono in proporzione.
+     */
+    static List<ComputedShare> computeShares(ExpenseRequest req, Map<UUID, Participant> active, BigDecimal base, String currency) {
         if (!active.containsKey(req.payerId())) {
             throw new BadRequestException("Chi ha pagato deve far parte del viaggio");
         }
@@ -211,7 +238,7 @@ public class ExpenseService {
                 }
                 weights.put(s.participantId(), s.weight().setScale(2, RoundingMode.HALF_UP));
             }
-            return WeightedSplitter.split(req.amount(), weights).stream()
+            return WeightedSplitter.split(base, weights).stream()
                     .map(sh -> new ComputedShare(sh.participantId(), sh.amount(), weights.get(sh.participantId())))
                     .toList();
         }
@@ -221,7 +248,7 @@ public class ExpenseService {
             }
         }
         if (req.splitType() == SplitType.EQUAL) {
-            return EqualSplitter.split(req.amount(), ids).stream()
+            return EqualSplitter.split(base, ids).stream()
                     .map(s -> new ComputedShare(s.participantId(), s.amount(), null))
                     .toList();
         }
@@ -234,10 +261,17 @@ public class ExpenseService {
             sum = sum.add(s.amount());
             result.add(new ComputedShare(s.participantId(), s.amount().setScale(2, RoundingMode.HALF_UP), null));
         }
+        int digits = Currencies.fractionDigits(currency);
         if (sum.compareTo(req.amount()) != 0) {
-            throw new BadRequestException("La somma delle quote (" + sum.setScale(2, RoundingMode.HALF_UP)
-                    + ") non corrisponde al totale (" + req.amount().setScale(2, RoundingMode.HALF_UP) + ")");
+            throw new BadRequestException("La somma delle quote (" + sum.setScale(digits, RoundingMode.HALF_UP).toPlainString()
+                    + ") non corrisponde al totale (" + req.amount().setScale(digits, RoundingMode.HALF_UP).toPlainString() + ")");
         }
-        return result;
+        if (base.compareTo(req.amount()) == 0) return result;
+        // quote scritte nella valuta dello scontrino: il convertito si divide in proporzione (resto maggiore), somma esatta
+        Map<UUID, BigDecimal> weights = new LinkedHashMap<>();
+        for (ComputedShare c : result) weights.put(c.participantId(), c.amount());
+        return WeightedSplitter.split(base, weights).stream()
+                .map(sh -> new ComputedShare(sh.participantId(), sh.amount(), null))
+                .toList();
     }
 }

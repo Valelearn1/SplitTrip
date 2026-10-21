@@ -2,6 +2,7 @@ package com.splittrip.wrapped;
 
 import com.splittrip.chat.ChatMessageRepository;
 import com.splittrip.chat.MessageReactionRepository;
+import com.splittrip.common.AmountRules;
 import com.splittrip.common.ConflictException;
 import com.splittrip.expense.BalanceService;
 import com.splittrip.expense.Expense;
@@ -63,26 +64,26 @@ public class WrappedService {
 
         // spese attive (la query esclude il cestino)
         List<Expense> active = expenses.findAllByTripIdWithShares(tripId);
-        BigDecimal groupTotal = active.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal groupTotal = active.stream().map(Expense::getAmountBase).reduce(BigDecimal.ZERO, BigDecimal::add);
         Map<String, BigDecimal> byCat = new LinkedHashMap<>();
         Map<LocalDate, BigDecimal> byDay = new HashMap<>();
         Map<UUID, BigDecimal> paid = new HashMap<>(), foodPaid = new HashMap<>();
         Set<UUID> withShare = new HashSet<>();
         Expense biggest = null;
         for (Expense e : active) {
-            byCat.merge(e.getCategory().name(), e.getAmount(), BigDecimal::add);
-            byDay.merge(e.getDate(), e.getAmount(), BigDecimal::add);
-            paid.merge(e.getPayer().getId(), e.getAmount(), BigDecimal::add);
-            if (e.getCategory().name().equals("FOOD")) foodPaid.merge(e.getPayer().getId(), e.getAmount(), BigDecimal::add);
+            byCat.merge(e.getCategory().name(), e.getAmountBase(), BigDecimal::add);
+            byDay.merge(e.getDate(), e.getAmountBase(), BigDecimal::add);
+            paid.merge(e.getPayer().getId(), e.getAmountBase(), BigDecimal::add);
+            if (e.getCategory().name().equals("FOOD")) foodPaid.merge(e.getPayer().getId(), e.getAmountBase(), BigDecimal::add);
             e.getShares().forEach(s -> withShare.add(s.getParticipant().getId()));
-            if (biggest == null || e.getAmount().compareTo(biggest.getAmount()) > 0) biggest = e;
+            if (biggest == null || e.getAmountBase().compareTo(biggest.getAmountBase()) > 0) biggest = e;
         }
         List<Map.Entry<String, BigDecimal>> ordered = byCat.entrySet().stream().sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed()).toList();
         List<Integer> shares = percentages(ordered.stream().map(Map.Entry::getValue).toList(), groupTotal);
         List<Category> categories = new ArrayList<>();
         for (int i = 0; i < ordered.size(); i++) categories.add(new Category(ordered.get(i).getKey(), money(ordered.get(i).getValue()), shares.get(i)));
         Day priciest = byDay.entrySet().stream().max(Map.Entry.comparingByValue()).map(en -> new Day(en.getKey(), money(en.getValue()))).orElse(null);
-        Biggest record = biggest == null ? null : new Biggest(biggest.getDescription(), money(biggest.getAmount()), biggest.getPayer().getDisplayName());
+        Biggest record = biggest == null ? null : new Biggest(biggest.getDescription(), money(biggest.getAmountBase()), biggest.getPayer().getDisplayName());
 
         // foto: momenti (prima quelle con luogo), conteggi e luoghi per persona
         List<Object[]> photoRows = photos.findWrappedRows(tripId);
@@ -127,7 +128,8 @@ public class WrappedService {
     @Transactional
     public void guess(UUID tripId, UUID userId, BigDecimal amount) {
         Participant me = access.requireMember(tripId, userId);
-        requireOpen(tripId);
+        Trip trip = requireOpen(tripId);
+        AmountRules.check("amount", amount, trip.getCurrency());   // D-70: il tetto della valuta del viaggio
         if (guesses.insertIfAbsent(tripId, me.getId(), amount.setScale(2, RoundingMode.HALF_UP), clock.instant()) == 0) {
             throw new ConflictException("Hai già dato la tua ipotesi");
         }

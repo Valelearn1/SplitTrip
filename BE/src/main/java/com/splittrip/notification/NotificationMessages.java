@@ -9,8 +9,12 @@ final class NotificationMessages {
     private static final int MAX = 200;
     private NotificationMessages() {}
 
-    static String expense(String actorName, String description, BigDecimal share, String currency) {
-        String tail = "» (tua quota " + MoneyFormat.format(share, currency) + ")";
+    /** La quota è nella valuta del viaggio; con uno scontrino in un'altra valuta si vede anche quanto è stato pagato (D-69). */
+    static String expense(String actorName, String description, BigDecimal share, String tripCurrency,
+                          BigDecimal amount, String currency, BigDecimal amountBase) {
+        String paid = currency.equals(tripCurrency) ? ""
+                : ", pagata " + MoneyFormat.format(amount, currency) + " = " + MoneyFormat.format(amountBase, tripCurrency);
+        String tail = "» (tua quota " + MoneyFormat.format(share, tripCurrency) + paid + ")";
         String head = actorName + " ha aggiunto «";
         return head + clip(description, MAX - head.length() - tail.length()) + tail;
     }

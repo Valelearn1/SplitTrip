@@ -54,7 +54,7 @@ public class BalanceService {
         Map<UUID, Participant> all = allParticipants(tripId);
         List<UUID> activeIds = all.values().stream().filter(p -> !p.hasLeft()).map(Participant::getId).toList();
         List<ExpenseInput> expenseInputs = expenses.findAllByTripIdWithShares(tripId).stream()
-                .map(e -> new ExpenseInput(e.getPayer().getId(), e.getAmount(),
+                .map(e -> new ExpenseInput(e.getPayer().getId(), e.getAmountBase(),
                         e.getShares().stream().map(s -> new ShareInput(s.getParticipant().getId(), s.getAmount())).toList()))
                 .toList();
         List<SettlementInput> settlementInputs = settlements.findAllByTripIdWithParticipants(tripId).stream()
@@ -80,12 +80,12 @@ public class BalanceService {
         access.requireMember(tripId, userId);
         List<Expense> all = expenses.findAllByTripIdWithShares(tripId);
         Map<UUID, Participant> people = allParticipants(tripId);
-        BigDecimal total = all.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2);
+        BigDecimal total = all.stream().map(Expense::getAmountBase).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2);
         Map<String, BigDecimal> byCategory = new TreeMap<>();
         Map<UUID, BigDecimal> payerTotals = new LinkedHashMap<>();
         for (Expense e : all) {
-            byCategory.merge(e.getCategory().name(), e.getAmount(), BigDecimal::add);
-            payerTotals.merge(e.getPayer().getId(), e.getAmount(), BigDecimal::add);
+            byCategory.merge(e.getCategory().name(), e.getAmountBase(), BigDecimal::add);
+            payerTotals.merge(e.getPayer().getId(), e.getAmountBase(), BigDecimal::add);
         }
         List<SummaryResponse.PayerTotal> byPayer = payerTotals.entrySet().stream()
                 .sorted(Map.Entry.<UUID, BigDecimal>comparingByValue().reversed())

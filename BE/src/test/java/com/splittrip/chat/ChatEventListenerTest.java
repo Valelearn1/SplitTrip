@@ -50,7 +50,7 @@ class ChatEventListenerTest extends IntegrationTest {
         UUID valeId = TestUsers.idOf(mvc, vale);
         UUID tripId = TestTrips.create(mvc, vale, "Roma");
         tx.executeWithoutResult(status -> {
-            events.publishEvent(new ExpenseCreated(tripId, UUID.randomUUID(), valeId, "Vale", "Fantasma", Map.of(), new BigDecimal("1.00"), "EUR"));
+            events.publishEvent(new ExpenseCreated(tripId, UUID.randomUUID(), valeId, "Vale", "Fantasma", Map.of(), new BigDecimal("1.00"), "EUR", new BigDecimal("1.00"), "EUR"));
             status.setRollbackOnly();
         });
         assertThat(jdbc.sql("select count(*) from chat_messages where trip_id = ?").param(tripId).query(Long.class).single()).isZero();

@@ -12,12 +12,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-public record ExpenseResponse(UUID id, String description, BigDecimal amount, String currency, LocalDate date,
+public record ExpenseResponse(UUID id, String description, BigDecimal amount, String currency, BigDecimal fxRate,
+                              BigDecimal amountBase, LocalDate date,
                               ExpenseCategory category, SplitType splitType, DayBasis dayBasis, UUID payerId,
                               String payerName, UUID createdBy, List<ShareResponse> shares, Instant createdAt,
                               UUID receiptPhotoId) {
     public static ExpenseResponse from(Expense e, UUID receiptPhotoId) {
-        return new ExpenseResponse(e.getId(), e.getDescription(), e.getAmount(), e.getCurrency(), e.getDate(),
+        return new ExpenseResponse(e.getId(), e.getDescription(), e.getAmount(), e.getCurrency(), e.getFxRate(), e.getAmountBase(), e.getDate(),
                 e.getCategory(), e.getSplitType(), e.getDayBasis(), e.getPayer().getId(), e.getPayer().getDisplayName(),
                 e.getCreatedBy().getId(),
                 e.getShares().stream().map(ShareResponse::from)

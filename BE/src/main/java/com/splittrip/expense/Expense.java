@@ -1,5 +1,6 @@
 package com.splittrip.expense;
 
+import com.splittrip.common.AmountRules;
 import com.splittrip.trip.Participant;
 import com.splittrip.trip.Trip;
 import com.splittrip.user.User;
@@ -45,7 +46,7 @@ public class Expense {
     @Setter @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "payer_participant_id") private Participant payer;
     @Setter @Column(nullable = false, length = 120) private String description;
     @Column(nullable = false, precision = 12, scale = 2) private BigDecimal amount;
-    // S2: per ora sempre la valuta del viaggio con tasso 1 (D-28)
+    // D-69: valuta dello scontrino, cambio salvato, importo nella valuta del viaggio (l'unico che entra nei conti)
     @Column(nullable = false, length = 3) private String currency;
     @Column(name = "fx_rate", nullable = false, precision = 18, scale = 8) private BigDecimal fxRate;
     @Column(name = "amount_base", nullable = false, precision = 12, scale = 2) private BigDecimal amountBase;
@@ -61,14 +62,12 @@ public class Expense {
     @OneToMany(mappedBy = "expense", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ExpenseShare> shares = new ArrayList<>();
 
-    public Expense(Trip trip, Participant payer, String description, BigDecimal amount, LocalDate date,
+    public Expense(Trip trip, Participant payer, String description, BigDecimal amount, String currency, BigDecimal fxRate, LocalDate date,
                    ExpenseCategory category, SplitType splitType, DayBasis dayBasis, User createdBy, Instant now) {
         this.trip = trip;
         this.payer = payer;
         this.description = description;
-        this.currency = trip.getCurrency();
-        this.fxRate = BigDecimal.ONE;
-        setAmount(amount);
+        setMoney(amount, currency, fxRate);
         this.date = date;
         this.category = category;
         this.splitType = splitType;
@@ -78,9 +77,11 @@ public class Expense {
         this.updatedAt = now;
     }
 
-    /** S2: con tasso 1 l'importo base coincide con l'importo. */
-    public void setAmount(BigDecimal amount) {
+    /** D-69: scontrino, cambio e importo convertito (l'unico che entra nei conti). */
+    public void setMoney(BigDecimal amount, String currency, BigDecimal fxRate) {
         this.amount = amount;
-        this.amountBase = amount;
+        this.currency = currency;
+        this.fxRate = fxRate;
+        this.amountBase = AmountRules.convert(amount, fxRate);
     }
 }

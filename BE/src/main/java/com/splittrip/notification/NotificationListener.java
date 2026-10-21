@@ -50,7 +50,7 @@ public class NotificationListener {
         e.shareByUserId().forEach((userId, share) -> {
             if (!userId.equals(e.actorUserId())) {
                 save(userId, e.tripId(), NotificationType.EXPENSE_ADDED,
-                        NotificationMessages.expense(e.actorName(), e.description(), share, e.currency()), link);
+                        NotificationMessages.expense(e.actorName(), e.description(), share, e.tripCurrency(), e.amount(), e.currency(), e.amountBase()), link);
             }
         });
     }
