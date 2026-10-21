@@ -1,5 +1,6 @@
 package com.splittrip.rates;
 
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
@@ -26,7 +27,12 @@ public class FrankfurterRatesClient implements RatesClient {
     @Override
     public Optional<Quote> rate(LocalDate date, String from, String to) {
         URI uri = URI.create("https://api.frankfurter.dev/v1/" + date + "?base=EUR&symbols=" + from + "," + to);
-        Response r = rest.get().uri(uri).retrieve().body(Response.class);
+        Response r;
+        try {
+            r = rest.get().uri(uri).retrieve().body(Response.class);
+        } catch (HttpClientErrorException.NotFound e) {
+            return Optional.empty();   // revisione v3.6: per una valuta fuori lista il servizio risponde 404, non 200 senza la valuta
+        }
         if (r == null || r.rates() == null) return Optional.empty();
         BigDecimal fromRate = "EUR".equals(from) ? BigDecimal.ONE : r.rates().get(from);
         BigDecimal toRate = "EUR".equals(to) ? BigDecimal.ONE : r.rates().get(to);

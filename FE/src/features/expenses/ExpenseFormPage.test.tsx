@@ -458,5 +458,20 @@ describe('ExpenseFormPage', () => {
     expect(await screen.findByLabelText('Quota di Vale')).toHaveValue('1200')
     expect(screen.getByLabelText('Quota di Marco')).toHaveValue('800')
   })
+
+  it('«Quota a testa» in yen è già convertita nella valuta del viaggio (revisione v3.6)', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/rates', () => HttpResponse.json({ rate: 0.00562366, date: '2026-10-16' })),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }], '/trips/t1/expenses/new')
+    const user = userEvent.setup()
+    await user.selectOptions(await screen.findByLabelText('Valuta'), 'JPY')
+    await screen.findByText('Cambio del 16 ott (BCE): 1 € = 177,82 JPY')
+    await user.type(screen.getByLabelText('Importo'), '2000')
+    expect(screen.getByText(/Quota a testa/)).toHaveTextContent(/5,62\s€/)
+    expect(screen.queryByText(/1\.000,00\s€/)).not.toBeInTheDocument()
+  })
 })
 

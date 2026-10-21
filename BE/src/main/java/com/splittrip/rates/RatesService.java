@@ -41,7 +41,8 @@ public class RatesService {
         if (from == null || !ISO.matcher(from).matches()) throw new FieldException("from", "Valuta in formato ISO a 3 lettere");
         if (to == null || !ISO.matcher(to).matches()) throw new FieldException("to", "Valuta in formato ISO a 3 lettere");
         if (date == null) throw new FieldException("date", "Scegli una data");
-        if (date.isAfter(LocalDate.now(clock))) throw new FieldException("date", "Il cambio di una data futura non esiste ancora");
+        // la data arriva dal telefono, il server è in UTC: a Tokyo «oggi» è già domani (revisione v3.6)
+        if (date.isAfter(LocalDate.now(clock).plusDays(1))) throw new FieldException("date", "Il cambio di una data futura non esiste ancora");
         if (from.equals(to)) return new RateResponse(BigDecimal.ONE, date);
         String key = date + "|" + from + "|" + to;
         RateResponse hit = cache.get(key);

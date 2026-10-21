@@ -38,12 +38,17 @@ public final class AmountRules {
             throw new FieldException("fxRate", "Scrivi quanto vale 1 " + currency + " in " + tripCurrency);
         }
         check("amount", amount, currency);
-        check("amount", convert(amount, fxRate), tripCurrency);
+        check("amount", convert(amount, fxRate, tripCurrency), tripCurrency);
         return new Money(currency, fxRate);
     }
 
     public static BigDecimal convert(BigDecimal amount, BigDecimal fxRate) {
         return amount.multiply(fxRate).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /** Convertito nei decimali della valuta del viaggio (in yen 1778,20 → 1778), salvato sempre a 2 decimali (revisione v3.6). */
+    public static BigDecimal convert(BigDecimal amount, BigDecimal fxRate, String tripCurrency) {
+        return amount.multiply(fxRate).setScale(Currencies.fractionDigits(tripCurrency), RoundingMode.HALF_UP).setScale(2, RoundingMode.UNNECESSARY);
     }
 
     /** «Lo yen giapponese», «Il fiorino ungherese», «La corona islandese», «Il won sudcoreano»: l'articolo dal nome italiano. */

@@ -2,7 +2,7 @@ import { z } from 'zod'
 import type { ExpenseInput } from '../../shared/api/types'
 import { normalizeSeparators } from '../../shared/utils/amount'
 import { fractionDigits, maxCents, noCentsMessage } from '../../shared/utils/currencies'
-import { toFxRate } from './useRate'
+import { convertCents, toFxRate } from './useRate'
 import { formatMoney } from '../../shared/utils/format'
 
 /** "12,50", "12.50" o "1.234,56" → centesimi, senza tetto; null se non è un numero con al massimo 2 decimali. */
@@ -55,7 +55,7 @@ export function checkMoney(ctx: z.RefinementCtx, v: { amount: string; currency: 
     ctx.addIssue({ code: 'custom', path: ['perUnit'], message: `Scrivi quanti ${v.currency} vale 1 ${symbol}` })
   } else if (!amountIssue) {
     // il convertito deve stare nel tetto della valuta del viaggio (D-70)
-    const converted = Math.round((centsOf(v.amount) ?? 0) * toFxRate(v.perUnit ?? ''))
+    const converted = convertCents(centsOf(v.amount) ?? 0, toFxRate(v.perUnit ?? ''))
     if (converted > maxCents(tripCurrency)) {
       ctx.addIssue({ code: 'custom', path: ['amount'], message: `Convertito supera ${maxMessage(tripCurrency).replace('Al massimo ', '')} ${tripCurrency}` })
     }

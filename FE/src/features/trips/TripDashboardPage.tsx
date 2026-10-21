@@ -4,7 +4,7 @@ import { BalancePill } from '../../shared/ui/BalancePill'
 import { CategoryIcon } from '../../shared/ui/CategoryIcon'
 import { Icon } from '../../shared/ui/Icon'
 import { MoneyText } from '../../shared/ui/MoneyText'
-import { formatDate, serverToday } from '../../shared/utils/format'
+import { formatDate, serverToday, formatMoney } from '../../shared/utils/format'
 import { useBalances, useSummary } from '../balances/useBalances'
 import { useExpenses } from '../expenses/useExpenses'
 import { WeatherCard } from '../weather/WeatherCard'
@@ -77,7 +77,10 @@ export function TripDashboardPage() {
                 <small>{formatDate(e.date)} · pagato da {e.payerId === me.id ? 'te' : e.payerName}</small>
               </span>
             </span>
-            <MoneyText amount={e.amount} currency={trip.currency} />
+            <span className="row-side">
+              <MoneyText amount={e.amount} currency={e.currency} />
+              {e.currency !== trip.currency && <small className="muted">≈ {formatMoney(e.amountBase, trip.currency)}</small>}
+            </span>
           </Link>
         ))}
       </div>

@@ -56,7 +56,7 @@ public class Settlement {
         this.amount = amount;
         this.currency = currency;
         this.fxRate = fxRate;
-        this.amountBase = AmountRules.convert(amount, fxRate);
+        this.amountBase = AmountRules.convert(amount, fxRate, trip.getCurrency());
         this.date = date;
         this.note = note;
         this.createdBy = createdBy;

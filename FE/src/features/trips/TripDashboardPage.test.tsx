@@ -75,4 +75,25 @@ describe('TripDashboardPage', () => {
     expect(await screen.findByRole('link', { name: 'Il vostro viaggio in numeri' })).toHaveAttribute('href', '/trips/t1/riepilogo')
     expect(screen.queryByRole('button', { name: /Chi offre\?/ })).not.toBeInTheDocument()   // chiuso: niente spese nuove
   })
+
+  it('tra le ultime spese una in yen mostra lo scontrino e, sotto, l\'equivalente (revisione v3.6)', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/trips/t1/summary', () => HttpResponse.json({ total: 11.25, byCategory: { FOOD: 11.25 }, byPayer: [] })),
+      http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
+      http.get('http://localhost/api/trips/t1/ai/tips', () => HttpResponse.json({ available: false, remainingToday: 5, tips: [], generatedAt: null })),
+      http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+      http.get('http://localhost/api/trips/t1/expenses', () => HttpResponse.json([{
+        id: 'e1', description: 'Sushi', amount: 2000, currency: 'JPY', fxRate: 0.00562366, amountBase: 11.25, date: '2026-11-02', category: 'FOOD',
+        splitType: 'EQUAL', dayBasis: null, payerId: 'p1', payerName: 'Vale', createdBy: 'u1', createdAt: '2026-11-02T10:00:00Z', receiptPhotoId: null,
+        shares: [{ participantId: 'p1', displayName: 'Vale', amount: 5.63, weight: null }, { participantId: 'p2', displayName: 'Marco', amount: 5.62, weight: null }],
+      }])),
+      http.get('http://localhost/api/trips/t1/weather', () => HttpResponse.json({ days: [] })),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ index: true, element: <TripDashboardPage /> }] }], '/trips/t1')
+    expect(await screen.findByText(/2\.000\sJPY/)).toBeInTheDocument()
+    expect(screen.queryByText(/2\.000,00\s€/)).not.toBeInTheDocument()
+    expect(screen.getByText(/≈ 11,25\s€/)).toBeInTheDocument()
+  })
 })

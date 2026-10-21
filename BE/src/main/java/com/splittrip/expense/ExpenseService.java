@@ -87,7 +87,7 @@ public class ExpenseService {
         access.requireWritable(trip);
         AmountRules.Money money = money(req, trip);
         Map<UUID, Participant> active = activeParticipants(tripId);
-        List<ComputedShare> computed = computeShares(req, active, AmountRules.convert(req.amount(), money.fxRate()), money.currency());
+        List<ComputedShare> computed = computeShares(req, active, AmountRules.convert(req.amount(), money.fxRate(), trip.getCurrency()), money.currency());
 
         Expense expense = new Expense(trip, active.get(req.payerId()), req.description().strip(), req.amount(),
                 money.currency(), money.fxRate(), req.date(), req.category(), req.splitType(), req.dayBasis(), me.getUser(), clock.instant());
@@ -114,7 +114,7 @@ public class ExpenseService {
         requireOwnerOrOrganizer(expense, me);
         AmountRules.Money money = money(req, trip);
         Map<UUID, Participant> active = activeParticipants(tripId);
-        List<ComputedShare> computed = computeShares(req, active, AmountRules.convert(req.amount(), money.fxRate()), money.currency());
+        List<ComputedShare> computed = computeShares(req, active, AmountRules.convert(req.amount(), money.fxRate(), trip.getCurrency()), money.currency());
 
         expense.setPayer(active.get(req.payerId()));
         expense.setDescription(req.description().strip());

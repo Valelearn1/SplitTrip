@@ -82,6 +82,6 @@ public class Expense {
         this.amount = amount;
         this.currency = currency;
         this.fxRate = fxRate;
-        this.amountBase = AmountRules.convert(amount, fxRate);
+        this.amountBase = AmountRules.convert(amount, fxRate, trip.getCurrency());
     }
 }

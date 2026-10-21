@@ -53,6 +53,7 @@ class RatesServiceTest {
     void codiceNonIsoODataFuturaDa400() {
         RatesService s = new RatesService(ok, clock);
         assertThatThrownBy(() -> s.rate(D, "yen", "EUR")).isInstanceOf(FieldException.class);
-        assertThatThrownBy(() -> s.rate(D.plusDays(1), "JPY", "EUR")).isInstanceOf(FieldException.class);   // il cambio di domani non esiste
+        assertThat(s.rate(D.plusDays(1), "JPY", "EUR").rate()).isEqualByComparingTo("0.00562366");   // revisione v3.6: a Tokyo è già domani rispetto a UTC
+        assertThatThrownBy(() -> s.rate(D.plusDays(2), "JPY", "EUR")).isInstanceOf(FieldException.class);   // il cambio di dopodomani non esiste
     }
 }

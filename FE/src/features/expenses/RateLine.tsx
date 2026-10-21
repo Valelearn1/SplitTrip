@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { ApiError } from '../../shared/api/client'
 import { Icon } from '../../shared/ui/Icon'
 import { formatDayMonth } from '../../shared/utils/format'
@@ -13,6 +13,7 @@ type Props = { from: string; to: string; date: string; value: string; onChange: 
  */
 export function RateLine({ from, to, date, value, onChange, error, saved }: Props) {
   const online = useOnline()
+  const errorId = useId()
   const [manual, setManual] = useState(saved !== undefined)
   const rate = useRate(from, to, date, online && saved === undefined)
   const symbol = to === 'EUR' ? '€' : to
@@ -34,11 +35,12 @@ export function RateLine({ from, to, date, value, onChange, error, saved }: Prop
         <label className="rate-field">
           <span>1 {symbol} = </span>
           <input aria-label={`1 ${symbol} = … ${from}`} inputMode="decimal" className="share-input" value={value}
-            onChange={(e) => onChange(e.target.value.replace(/[^\d.,]/g, ''))} aria-invalid={error ? true : undefined} />
+            onChange={(e) => onChange(e.target.value.replace(/[^\d.,]/g, ''))} aria-invalid={error ? true : undefined}
+            aria-describedby={error ? errorId : undefined} />
           <span>{from}</span>
         </label>
       )}
-      {error && <p className="field-error"><Icon name="error" /><span>{error}</span></p>}
+      {error && <p id={errorId} className="field-error"><Icon name="error" /><span>{error}</span></p>}
     </div>
   )
 }

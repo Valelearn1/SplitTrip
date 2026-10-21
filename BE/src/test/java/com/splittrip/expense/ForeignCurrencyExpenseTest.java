@@ -119,4 +119,19 @@ class ForeignCurrencyExpenseTest extends IntegrationTest {
                 .andExpect(jsonPath("$.amountBase").value(16.87))
                 .andExpect(jsonPath("$.shares[*].amount", containsInAnyOrder(8.44, 8.43)));
     }
+
+    @Test
+    void inUnViaggioInYenUnaSpesaInEuroSiConverteSenzaCentesimi() throws Exception {   // revisione v3.6
+        String body = mvc.perform(post("/api/trips").header("Authorization", "Bearer " + ada).contentType(APPLICATION_JSON).content("""
+                {"name":"Kyoto","destination":"Kyoto","startDate":"2026-11-01","endDate":"2026-11-05","currency":"JPY","latitude":35.0,"longitude":135.7}
+                """)).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        UUID kyoto = UUID.fromString(TestUsers.extract(body, "\"id\":\"([^\"]+)\""));
+        UUID me = TestTrips.participantOf(mvc, ada, kyoto);
+        mvc.perform(post("/api/trips/" + kyoto + "/expenses").header("Authorization", "Bearer " + ada).contentType(APPLICATION_JSON).content("""
+                {"description":"Treno","amount":10.00,"currency":"EUR","fxRate":177.82,"date":"2026-11-02","category":"TRANSPORT",
+                 "payerId":"%s","splitType":"EQUAL","shares":[{"participantId":"%s"}]}
+                """.formatted(me, me)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.amountBase").value(1778));                   // 1778,20 → 1778 yen, senza centesimi
+    }
 }

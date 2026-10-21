@@ -12,7 +12,7 @@ import { formatMoney, localToday } from '../../shared/utils/format'
 import { CurrencySelect } from '../expenses/CurrencySelect'
 import { parseCents } from '../expenses/expenseSchema'
 import { RateLine } from '../expenses/RateLine'
-import { toFxRate } from '../expenses/useRate'
+import { convertCents, receiptFor, toFxRate } from '../expenses/useRate'
 import type { TripContext } from '../trips/TripLayout'
 import { settlementSchema, type SettlementForm } from './settlementSchema'
 import { useCreateSettlement } from './useBalances'
@@ -56,11 +56,12 @@ export function SettlementFormPage() {
   useEffect(() => {
     if (amountTouched || !(proposed > 0)) return
     if (!foreign) setValue('amount', toInput(proposed, currency))
-    else if (toFxRate(perUnit) > 0) setValue('amount', toInput(proposed / toFxRate(perUnit), currency))
+    // l'importo che, convertito, salda esattamente (o lascia al massimo 1 centesimo): revisione v3.6
+    else if (toFxRate(perUnit) > 0) setValue('amount', toInput(receiptFor(Math.round(proposed * 100), toFxRate(perUnit), fractionDigits(currency)) / 100, currency))
   }, [amountTouched, proposed, foreign, perUnit, currency, setValue])
 
   const totalCents = parseCents(amount, currency) ?? 0
-  const baseCents = foreign ? Math.round(totalCents * toFxRate(perUnit)) : totalCents
+  const baseCents = foreign ? convertCents(totalCents, toFxRate(perUnit)) : totalCents
 
   return (
     <form noValidate className="card" onSubmit={handleSubmit((v) => {

@@ -26,7 +26,7 @@ import { lastCurrency, rememberCurrency } from './lastCurrency'
 import { RateLine } from './RateLine'
 import { ReceiptSection } from './ReceiptSection'
 import { useCreateExpense, useDeleteExpense, useExpense, useUpdateExpense } from './useExpenses'
-import { fromFxRate, toFxRate } from './useRate'
+import { convertCents, fromFxRate, toFxRate } from './useRate'
 
 /** 12.5 → "12,50"; in yen 2000 → "2000" (D-70: niente centesimi). */
 function toInputAmount(n: number, currency: string) {
@@ -167,8 +167,9 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
   const includedCount = shares.filter((s) => s.included).length
   const totalCents = parseCents(amount, currency) ?? 0
   // nella valuta del viaggio: le quote in parti uguali, per presenza o «conta per» si mostrano già convertite
-  const baseCents = foreign ? Math.round(totalCents * toFxRate(perUnit)) : totalCents
-  const perHead = includedCount > 0 ? Math.floor(totalCents / includedCount) / 100 : 0
+  const baseCents = foreign ? convertCents(totalCents, toFxRate(perUnit)) : totalCents
+  // nella valuta del viaggio (revisione v3.6: con uno scontrino in yen era l'importo in yen con il simbolo dell'euro)
+  const perHead = includedCount > 0 ? Math.floor(baseCents / includedCount) / 100 : 0
   const assigned = shares.filter((s) => s.included).reduce((sum, s) => sum + (parseCents(s.amount, currency) ?? 0), 0)
   const remaining = (totalCents - assigned) / 100
   const preview = splitByWeight(baseCents, shares.flatMap((s) => (s.included ? [{ id: s.participantId, weight: (parseCents(s.weight) ?? 0) / 100 }] : [])))

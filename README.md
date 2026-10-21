@@ -149,8 +149,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 249 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 362 test
+cd BE && sh mvnw test   # 251 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 367 test
 docker compose up -d db-e2e && cd FE && npm run e2e   # giro completo in un browser vero (Playwright)
 ```
 

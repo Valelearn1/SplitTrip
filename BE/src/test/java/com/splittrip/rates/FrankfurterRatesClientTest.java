@@ -15,6 +15,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.queryParam;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /** D-69: tassi BCE contro l'euro e rapporto calcolato da noi, 8 decimali; la data è quella del tasso usato. */
@@ -65,5 +66,12 @@ class FrankfurterRatesClientTest {
     void servizioGiuLanciaUnEccezione() {
         server.expect(requestTo(startsWith("https://api.frankfurter.dev/v1/2026-10-20"))).andRespond(withServerError());
         assertThatThrownBy(() -> client.rate(LocalDate.of(2026, 10, 20), "JPY", "EUR")).isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void ilServizioRispondeNotFoundPerUnaValutaFuoriLista() {                  // revisione v3.6: così risponde davvero per MAD
+        server.expect(requestTo(startsWith("https://api.frankfurter.dev/v1/2026-10-20")))
+                .andRespond(withStatus(org.springframework.http.HttpStatus.NOT_FOUND).body("{\"message\":\"not found\"}").contentType(APPLICATION_JSON));
+        assertThat(client.rate(LocalDate.of(2026, 10, 20), "MAD", "EUR")).isEmpty();
     }
 }
