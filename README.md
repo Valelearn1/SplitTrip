@@ -1,5 +1,7 @@
 # 🧳 SplitTrip
 
+[![CI](https://github.com/Valelearn1/SplitTrip/actions/workflows/ci.yml/badge.svg)](https://github.com/Valelearn1/SplitTrip/actions/workflows/ci.yml)
+
 > **Accompagnare i gruppi di amici in ogni fase della vacanza:** pianificare insieme prima di partire, tenere traccia di spese e cose da fare durante, e ritrovarsi con ricordi condivisi e conti chiari al ritorno.
 
 🔗 **Demo:** https://splittrip-750q.onrender.com
