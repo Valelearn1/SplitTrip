@@ -80,7 +80,7 @@ Legenda: ✅ presente · 🟡 parziale · ❌ assente · Complessità: **B** bas
 |---|---|---|---|---|---|
 | 1 | Accesso ospite via link, poi conversione in utente | 🟡 | link/codice d'invito, ma richiede account | partecipanti senza account (vedi 3.1), token ospite legato al viaggio, flusso di "rivendicazione" del partecipante alla registrazione | M |
 | 2 | Offline con sync | ❌ | TanStack Query (cache solo in memoria) | id generati dal client, coda di mutazioni persistente, endpoint idempotenti, versione per i conflitti, service worker | A |
-| 3 | Multi-valuta con tasso del giorno salvato | ❌ | una valuta per viaggio (D-04) | valuta + tasso + importo convertito sulla spesa, servizio tassi, conversione delle quote | M |
+| 3 | Multi-valuta con tasso del giorno salvato | ✅ fatta in v3.6 (D-69) | una valuta per viaggio (D-04) | valuta + tasso + importo convertito sulla spesa, servizio tassi, conversione delle quote | M |
 | 4 | Nessun limite di spese | ✅ | nessun limite | paginazione della lista (oggi carica tutto) | B |
 | 5 | Divisione per giorni di presenza | ❌ | — | date arrivo/partenza per partecipante, nuovo `split_type = DAYS`, calcolo quote pesate per notti/giorni | B–M |
 | 6 | Scontrino diviso per voce (OCR) | ❌ | — | righe di spesa, assegnazione righe → partecipanti, upload foto (v2), servizio OCR | A |
@@ -141,7 +141,7 @@ Ognuna diventa una nuova riga in `decisioni.md` quando la approvi.
 
 ### 4.1 Capstone (fino al 26 ottobre) — proposta di aggiustamento minimo
 
-> **Aggiornamento 21 ottobre:** fatte v3.3 Inclusiva, v3.4 Qualità e demo (CI, giro e2e, QR) e v3.5 App installabile e offline; Valute è la v3.6 (D-68). Le migliorie valutate il 20 ottobre e rimandate sono in §4.5.
+> **Aggiornamento 21 ottobre:** fatte v3.3 Inclusiva, v3.4 Qualità e demo (CI, giro e2e, QR), v3.5 App installabile e offline e v3.6 Valute (D-68, D-69). Le migliorie valutate il 20 ottobre e rimandate sono in §4.5.
 
 | Cosa | Perché | Compl. | Costo stimato |
 |---|---|---|---|
@@ -184,7 +184,7 @@ Il tuo candidato era: **giorni di presenza, scontrino per voce, riepilogo condiv
 
 **MVP proposto** (complessità complessiva M–A):
 
-1. Basi A: ospiti via link (1), multi-valuta (3), paginazione (4). L'offline (2) **no** nell'MVP: è la funzione più costosa e rischiosa, e su viaggi in città la rete c'è quasi sempre.
+1. Basi A: ospiti via link (1), paginazione (4) (la multi-valuta è fatta in v3.6). L'offline (2) **no** nell'MVP: è la funzione più costosa e rischiosa, e su viaggi in città la rete c'è quasi sempre.
 2. Distintive: giorni di presenza + pesi (già fatti), **cassa comune (8)**, scontrino per voce **manuale**.
 3. Dopo: link di pagamento PayPal.me/IBAN (12, parte economica).
 

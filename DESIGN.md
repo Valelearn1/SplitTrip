@@ -496,6 +496,12 @@ L'app segue quello che la persona ha già scelto sul telefono o nel computer, se
 - **Finestra «Entra nel viaggio»**: QR 240 px (al massimo la larghezza della finestra), sotto il codice nello stile `.code` e «Inquadra per entrare in «nome»» in `muted`, che va a capo; «Chiudi» secondario. La finestra esiste solo mentre è aperta.
 - **Eccezione di colore dichiarata**: moduli `#141c26` su `#ffffff` in tutti e due i temi e con i colori forzati (`forced-color-adjust: none`), perché molte fotocamere non leggono un QR chiaro su scuro. Durante il caricamento un riquadro `surface-2` della stessa misura; se non si carica, «Usa il codice qui sotto».
 
+### Valute (v3.6, D-69)
+- **Menu «Valuta»** sotto l'importo, nei moduli di spesa e di rimborso (`select` standard): prima la valuta del viaggio, poi le altre 14; nella spesa parte dall'ultima usata nel viaggio.
+- **Riga del cambio** in `muted`: «Cambio del 16 ott (BCE): 1 € = 177,82 JPY» con «Modifica» come link (`btn-link`, 44 px); il campo a mano «1 € = … JPY» è stretto (7rem); se il cambio manca, il messaggio in `field-error` e il campo. Sotto, l'anteprima «≈ 11,25 €» in `muted`; sul bottone «Salva» l'eco «· 2.000 JPY ≈ 11,25 €».
+- **Negli elenchi** (spese e rimborsi) l'importo dello scontrino grande, «≈ …» nella valuta del viaggio piccolo sotto; saldi, riepilogo e «Salda» proposto solo nella valuta del viaggio.
+- **Valute senza centesimi** (JPY, HUF, ISK, KRW): campo senza virgola, segnaposto «0», importi senza decimali; il punto delle migliaia sempre.
+
 ### Modale
 `<dialog>` bianco, raggio 16 px, padding 24 px, larghezza massima 420 px, ombra modale e backdrop d'inchiostro al 45%; azioni allineate a destra.
 

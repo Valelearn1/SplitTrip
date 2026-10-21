@@ -53,6 +53,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 📲 **App installabile e offline**: si installa dal Profilo (su iPhone con «Aggiungi alla schermata Home») e, senza rete, mostra gli ultimi viaggi, spese, saldi, liste, chat e foto già visti con «Sei offline · dati delle HH:MM»; le modifiche tornano con la rete, e una barra avvisa quando c'è una versione nuova
 - ↩️ **«Indietro» su ogni pagina**; dopo un salvataggio si torna da dove si era partiti, senza rientrare nel modulo
 - ♿ **Accessibile e verificata**: interfaccia mobile-first, ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore; controlli automatici di accessibilità (axe) in ogni pagina, verifica a mano con tastiera, lettore di schermo, zoom e filtri per il daltonismo; segue testo grande, contrasto aumentato e colori forzati del sistema
+- 💱 **Spese e rimborsi in altre valute**: scegli la valuta dello scontrino, il cambio BCE del giorno arriva precompilato (o lo scrivi tu) e i conti restano nella valuta del viaggio («2.000 JPY ≈ 11,25 €»)
 - 📱 **QR dell'invito**: il codice del viaggio anche come QR, da inquadrare col telefono (funziona anche offline)
 - 🗣️ **Linguaggio senza genere**: nessun testo dà per scontato chi legge («chi organizza», «Dividete le spese, non le amicizie»)
 
@@ -93,7 +94,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 | **v3.3 Inclusiva** | accessibilità verificata (WCAG 2.2 AA), linguaggio senza genere, impostazioni di sistema, ritocchi | ✅ |
 | **v3.4 Qualità e demo** | CI su GitHub Actions, giro end-to-end con Playwright, QR dell'invito, ultimi ritocchi di accessibilità | ✅ |
 | **v3.5 App installabile e offline** | PWA installabile, consultazione offline in sola lettura, foto già viste, avviso «Aggiorna», dati cancellati all'uscita | ✅ |
-| **v3.6 Valute** | spese in valute diverse col cambio del giorno | 🔜 |
+| **v3.6 Valute** | spese e rimborsi in altre valute col cambio del giorno salvato, valute senza centesimi, tetti per valuta | ✅ |
 
 La visione di prodotto oltre il capstone (ospiti senza registrazione, spese in altre valute, offline, scontrino diviso per voce): [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
@@ -148,8 +149,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 230 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 345 test
+cd BE && sh mvnw test   # 249 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 362 test
 docker compose up -d db-e2e && cd FE && npm run e2e   # giro completo in un browser vero (Playwright)
 ```
 
@@ -175,7 +176,8 @@ Cosa coprono:
 - 📶 **offline**: cosa si salva e cosa no, marchio per persona, cancellazione all'uscita anche con IndexedDB bloccata, app aperta già in modalità aereo, barra con l'età dei dati, pagine mai aperte, modifiche bloccate senza coda, foto e mappa senza rete, installazione e aggiornamento
 - ♿ **accessibilità**: axe dentro i test di tutte le 22 pagine (0 violazioni), testo in `rem`, blocchi per contrasto aumentato e colori forzati, Dynamic Type su iOS
 - 🗣️ **linguaggio**: un test nel frontend e uno nel backend bloccano le forme col genere («Bentornata», «organizzatore», «sei stato/a»…) nei testi a schermo, nei messaggi del server, nelle email e nelle istruzioni all'AI
-- 🧭 **giro completo** (Playwright, in CI a ogni push): due persone si registrano, viaggio, invito col QR, spesa, saldo e «Salda»; alla prima esecuzione ha trovato due errori sui soldi (D-66)
+- 💱 **valute**: conversione a 2 decimali, quote in yen che sommano al centesimo in euro, cambio zero o con troppi decimali rifiutato, servizio dei cambi finto (fine settimana → venerdì, valuta sconosciuta → 404, giù → 503), rimborso parziale in yen nei saldi, rimborsi vecchi invariati (V10)
+- 🧭 **giro completo** (Playwright, in CI a ogni push): due persone si registrano, viaggio, invito col QR, spesa, saldo e «Salda», poi una spesa in yen; alla prima esecuzione ha trovato due errori sui soldi (D-66)
 - 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda», liste, caricamento foto col consenso alla posizione, campanella, chat, consigli AI, «conta per», busta e valigia
 
 Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il codice.
