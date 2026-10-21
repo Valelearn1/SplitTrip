@@ -15,7 +15,7 @@ function useInvalidateTrip(tripId: string) {
 }
 
 export function useExpenses(tripId: string, category?: ExpenseCategory) {
-  return useQuery({ queryKey: expenseKeys.list(tripId, category), queryFn: () => expensesApi.list(tripId, category) })
+  return useQuery({ queryKey: expenseKeys.list(tripId, category), queryFn: () => expensesApi.list(tripId, category), refetchOnMount: 'always' })   // come i saldi (D-66)
 }
 
 export function useExpense(tripId: string, expenseId: string) {

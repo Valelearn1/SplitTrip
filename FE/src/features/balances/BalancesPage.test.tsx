@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
@@ -43,6 +43,39 @@ describe('BalancesPage', () => {
     expect(screen.getAllByText(/15,00\s€/).length).toBeGreaterThan(0)
     expect(screen.getByRole('link', { name: 'Salda' })).toHaveAttribute('href', '/trips/t1/settlements/new?from=p2&to=p1&amount=15.00')
     await expectAccessible()   // D-65
+  })
+
+  it('riaperti subito dopo una spesa di un altro, i saldi si rileggono (trovato dalla CI, D-66)', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'g@e.it', displayName: 'Giulia' } }))
+    const even = { balances: [
+      { participantId: 'p1', displayName: 'Marco', left: false, paid: 0, owed: 0, net: 0 },
+      { participantId: 'p2', displayName: 'Giulia', left: false, paid: 0, owed: 0, net: 0 },
+    ], suggestedTransfers: [] }
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
+      http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json(even)),
+      http.get('http://localhost/api/trips/t1/settlements', () => HttpResponse.json([])),
+    )
+    const router = renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [
+        { path: 'expenses', element: <h2>Lista spese</h2> },
+        { path: 'balances', element: <BalancesPage /> },
+      ] }],
+      '/trips/t1/balances',
+      { staleTime: 10_000 },   // come nell'app: i dati appena letti restano «freschi» per 10 s
+    )
+    expect(await screen.findByText('Siete in pari')).toBeInTheDocument()
+    await act(() => router.navigate('/trips/t1/expenses'))
+    server.use(http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({   // intanto Marco paga 30 € per tutti e due
+      balances: [
+        { participantId: 'p1', displayName: 'Marco', left: false, paid: 30, owed: 15, net: 15 },
+        { participantId: 'p2', displayName: 'Giulia', left: false, paid: 0, owed: 15, net: -15 },
+      ],
+      suggestedTransfers: [{ fromParticipantId: 'p2', fromName: 'Giulia', toParticipantId: 'p1', toName: 'Marco', amount: 15 }],
+    })))
+    await act(() => router.navigate('/trips/t1/balances'))
+    expect(await screen.findByText('Giulia → Marco')).toBeInTheDocument()
   })
 
   it('un rimborso si espande e la nota si legge per intero', async () => {

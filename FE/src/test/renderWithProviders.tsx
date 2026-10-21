@@ -6,8 +6,9 @@ import { AuthProvider } from '../features/auth/AuthProvider'
 type Entry = string | { pathname: string; state?: unknown }
 
 /** Con un array la cronologia parte da lì e si è sull'ultima voce (per i test di «Indietro»). */
-export function renderWithProviders(routes: RouteObject[], initialEntry: Entry | Entry[]) {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false, networkMode: 'always' } } })
+/** `staleTime` come nell'app (10 s) per provare cosa succede ai dati ancora «freschi» in memoria. */
+export function renderWithProviders(routes: RouteObject[], initialEntry: Entry | Entry[], options: { staleTime?: number } = {}) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: options.staleTime ?? 0 }, mutations: { retry: false, networkMode: 'always' } } })
   const entries = Array.isArray(initialEntry) ? initialEntry : [initialEntry]
   const router = createMemoryRouter(routes, { initialEntries: entries, initialIndex: entries.length - 1 })
   render(
