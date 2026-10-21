@@ -99,4 +99,20 @@ describe('BalancesPage', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByText(`Nota: ${note}`)).toBeInTheDocument()
   })
+
+  it('un rimborso in yen mostra quello che è passato di mano e, sotto, l\'equivalente nella valuta del viaggio (D-69)', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'g@e.it', displayName: 'Giulia' } }))
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/trips/t1/messages/unread-count', () => HttpResponse.json({ count: 0 })),
+      http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
+      http.get('http://localhost/api/trips/t1/settlements', () => HttpResponse.json([
+        { id: 's1', fromParticipantId: 'p2', fromName: 'Giulia', toParticipantId: 'p1', toName: 'Marco', amount: 5000, currency: 'JPY', fxRate: 0.00562366, amountBase: 28.12,
+          date: '2026-11-04', note: null, createdBy: 'u2', createdAt: '2026-11-04T10:00:00Z' },
+      ])),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'balances', element: <BalancesPage /> }] }], '/trips/t1/balances')
+    expect(await screen.findByText(/5\.000\sJPY/)).toBeInTheDocument()
+    expect(screen.getByText(/≈ 28,12\s€/)).toBeInTheDocument()
+  })
 })

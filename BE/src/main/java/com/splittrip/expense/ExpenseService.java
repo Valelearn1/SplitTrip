@@ -85,7 +85,7 @@ public class ExpenseService {
         Participant me = access.requireMember(tripId, userId);
         Trip trip = trips.findById(tripId).orElseThrow();
         access.requireWritable(trip);
-        Money money = money(req, trip);
+        AmountRules.Money money = money(req, trip);
         Map<UUID, Participant> active = activeParticipants(tripId);
         List<ComputedShare> computed = computeShares(req, active, AmountRules.convert(req.amount(), money.fxRate()), money.currency());
 
@@ -112,7 +112,7 @@ public class ExpenseService {
         access.requireWritable(trip);
         Expense expense = require(tripId, expenseId);
         requireOwnerOrOrganizer(expense, me);
-        Money money = money(req, trip);
+        AmountRules.Money money = money(req, trip);
         Map<UUID, Participant> active = activeParticipants(tripId);
         List<ComputedShare> computed = computeShares(req, active, AmountRules.convert(req.amount(), money.fxRate()), money.currency());
 
@@ -188,24 +188,14 @@ public class ExpenseService {
                 .collect(Collectors.toMap(Participant::getId, Function.identity(), (a, b) -> a, LinkedHashMap::new));
     }
 
-    /** D-69: valuta e cambio della richiesta, con la valuta del viaggio come base; controlli per valuta (D-70). */
-    record Money(String currency, BigDecimal fxRate) {}
-
-    static Money money(ExpenseRequest req, Trip trip) {
-        String currency = req.currency() == null ? trip.getCurrency() : req.currency();
-        BigDecimal fxRate = req.fxRate();
-        if (currency.equals(trip.getCurrency())) {
-            fxRate = BigDecimal.ONE;
-        } else if (fxRate == null) {
-            throw new FieldException("fxRate", "Scrivi quanto vale 1 " + currency + " in " + trip.getCurrency());
-        }
-        AmountRules.check("amount", req.amount(), currency);
-        AmountRules.check("amount", AmountRules.convert(req.amount(), fxRate), trip.getCurrency());
+    /** D-69: valuta e cambio (regola condivisa coi rimborsi) più i tetti delle quote personalizzate nella valuta dello scontrino. */
+    static AmountRules.Money money(ExpenseRequest req, Trip trip) {
+        AmountRules.Money money = AmountRules.money(req.currency(), req.fxRate(), req.amount(), trip.getCurrency());
         for (int i = 0; i < req.shares().size(); i++) {
             ShareRequest s = req.shares().get(i);
-            if (s.amount() != null) AmountRules.check("shares[" + i + "].amount", s.amount(), currency);
+            if (s.amount() != null) AmountRules.check("shares[" + i + "].amount", s.amount(), money.currency());
         }
-        return new Money(currency, fxRate);
+        return money;
     }
 
     /**

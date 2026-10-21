@@ -58,7 +58,7 @@ public class BalanceService {
                         e.getShares().stream().map(s -> new ShareInput(s.getParticipant().getId(), s.getAmount())).toList()))
                 .toList();
         List<SettlementInput> settlementInputs = settlements.findAllByTripIdWithParticipants(tripId).stream()
-                .map(s -> new SettlementInput(s.getFromParticipant().getId(), s.getToParticipant().getId(), s.getAmount()))
+                .map(s -> new SettlementInput(s.getFromParticipant().getId(), s.getToParticipant().getId(), s.getAmountBase()))
                 .toList();
 
         Result result = calculator.compute(activeIds, expenseInputs, settlementInputs);

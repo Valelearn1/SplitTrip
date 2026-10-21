@@ -22,6 +22,26 @@ public final class AmountRules {
         }
     }
 
+    /** Valuta e cambio di una spesa o di un rimborso (D-69): vuota = valuta del viaggio, cambio 1. */
+    public record Money(String currency, BigDecimal fxRate) {}
+
+    /**
+     * Valuta e cambio della richiesta con la valuta del viaggio come base: cambio obbligatorio se la valuta è diversa,
+     * tetti per valuta sull'importo e sul convertito (D-70).
+     */
+    public static Money money(String reqCurrency, BigDecimal reqFxRate, BigDecimal amount, String tripCurrency) {
+        String currency = reqCurrency == null ? tripCurrency : reqCurrency;
+        BigDecimal fxRate = reqFxRate;
+        if (currency.equals(tripCurrency)) {
+            fxRate = BigDecimal.ONE;
+        } else if (fxRate == null) {
+            throw new FieldException("fxRate", "Scrivi quanto vale 1 " + currency + " in " + tripCurrency);
+        }
+        check("amount", amount, currency);
+        check("amount", convert(amount, fxRate), tripCurrency);
+        return new Money(currency, fxRate);
+    }
+
     public static BigDecimal convert(BigDecimal amount, BigDecimal fxRate) {
         return amount.multiply(fxRate).setScale(2, RoundingMode.HALF_UP);
     }

@@ -1,5 +1,6 @@
 package com.splittrip.expense;
 
+import com.splittrip.common.AmountRules;
 import com.splittrip.common.BadRequestException;
 import com.splittrip.common.ForbiddenException;
 import com.splittrip.common.NotFoundException;
@@ -58,10 +59,11 @@ public class SettlementService {
         Participant to = participants.findByIdAndTripId(req.toParticipantId(), tripId).filter(p -> !p.hasLeft())
                 .orElseThrow(() -> new BadRequestException("Chi riceve deve far parte del viaggio"));
         String note = req.note() == null || req.note().isBlank() ? null : req.note().strip();
-        Settlement s = settlements.save(new Settlement(trip, from, to, req.amount(), req.date(),
+        AmountRules.Money money = AmountRules.money(req.currency(), req.fxRate(), req.amount(), trip.getCurrency());
+        Settlement s = settlements.save(new Settlement(trip, from, to, req.amount(), money.currency(), money.fxRate(), req.date(),
                 note, me.getUser(), clock.instant()));
         events.publishEvent(new SettlementCreated(tripId, userId, me.getDisplayName(), from.userId(), from.getDisplayName(),
-                to.userId(), to.getDisplayName(), req.amount()));
+                to.userId(), to.getDisplayName(), s.getAmount(), s.getCurrency(), s.getAmountBase(), trip.getCurrency()));
         return SettlementResponse.from(s);
     }
 

@@ -5,7 +5,6 @@ import com.splittrip.common.events.ParticipantJoined;
 import com.splittrip.common.events.SettlementCreated;
 import com.splittrip.trip.Participant;
 import com.splittrip.trip.ParticipantRepository;
-import com.splittrip.trip.Trip;
 import com.splittrip.trip.TripRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -43,9 +42,9 @@ public class ChatEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void on(SettlementCreated e) {
-        Trip trip = trips.findById(e.tripId()).orElseThrow();
+        // come per le spese: l'importo e la valuta di quello che è passato di mano (D-69)
         save(e.tripId(), e.actorUserId(), ChatEventType.SETTLEMENT_CREATED,
-                ChatMessages.settlement(e.actorName(), e.fromName(), e.toName(), e.amount(), trip.getCurrency()), null);
+                ChatMessages.settlement(e.actorName(), e.fromName(), e.toName(), e.amount(), e.currency()), null);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

@@ -43,6 +43,26 @@ const shareSchema = z.object({
 })
 
 /**
+ * Importo, valuta e cambio di una spesa o di un rimborso (D-69, D-70): decimali e tetto nella valuta dello scontrino;
+ * con un'altra valuta, il cambio scritto e il convertito entro il tetto della valuta del viaggio.
+ */
+export function checkMoney(ctx: z.RefinementCtx, v: { amount: string; currency: string; perUnit?: string }, tripCurrency: string) {
+  const symbol = tripCurrency === 'EUR' ? '€' : tripCurrency
+  const amountIssue = amountSchema(v.currency).safeParse(v.amount).error?.issues[0]?.message
+  if (amountIssue) ctx.addIssue({ code: 'custom', path: ['amount'], message: amountIssue })
+  if (v.currency === tripCurrency) return
+  if (toFxRate(v.perUnit ?? '') <= 0) {
+    ctx.addIssue({ code: 'custom', path: ['perUnit'], message: `Scrivi quanti ${v.currency} vale 1 ${symbol}` })
+  } else if (!amountIssue) {
+    // il convertito deve stare nel tetto della valuta del viaggio (D-70)
+    const converted = Math.round((centsOf(v.amount) ?? 0) * toFxRate(v.perUnit ?? ''))
+    if (converted > maxCents(tripCurrency)) {
+      ctx.addIssue({ code: 'custom', path: ['amount'], message: `Convertito supera ${maxMessage(tripCurrency).replace('Al massimo ', '')} ${tripCurrency}` })
+    }
+  }
+}
+
+/**
  * Il modulo spesa (D-69): `tripCurrency` è la valuta del viaggio; `currency` quella dello scontrino (di base la stessa) e
  * `perUnit` quanti `currency` vale 1 unità del viaggio («177,82»). Importo e quote si controllano nella valuta dello scontrino.
  */
@@ -61,19 +81,7 @@ export const expenseSchema = (tripCurrency: string) => z
   })
   .superRefine((v, ctx) => {
     const currency = v.currency ?? tripCurrency
-    const symbol = tripCurrency === 'EUR' ? '€' : tripCurrency
-    const amountIssue = amountSchema(currency).safeParse(v.amount).error?.issues[0]?.message
-    if (amountIssue) ctx.addIssue({ code: 'custom', path: ['amount'], message: amountIssue })
-    const foreign = currency !== tripCurrency
-    if (foreign && toFxRate(v.perUnit ?? '') <= 0) {
-      ctx.addIssue({ code: 'custom', path: ['perUnit'], message: `Scrivi quanti ${currency} vale 1 ${symbol}` })
-    } else if (foreign && !amountIssue) {
-      // il convertito deve stare nel tetto della valuta del viaggio (D-70)
-      const converted = Math.round((centsOf(v.amount) ?? 0) * toFxRate(v.perUnit ?? ''))
-      if (converted > maxCents(tripCurrency)) {
-        ctx.addIssue({ code: 'custom', path: ['amount'], message: `Convertito supera ${maxMessage(tripCurrency).replace('Al massimo ', '')} ${tripCurrency}` })
-      }
-    }
+    checkMoney(ctx, { amount: v.amount, currency, perUnit: v.perUnit }, tripCurrency)
     const included = v.shares.filter((s) => s.included)
     if (included.length === 0) {
       ctx.addIssue({ code: 'custom', path: ['shares'], message: 'Seleziona almeno un partecipante' })

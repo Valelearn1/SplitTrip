@@ -19,8 +19,11 @@ final class NotificationMessages {
         return head + clip(description, MAX - head.length() - tail.length()) + tail;
     }
 
-    static String settlement(String actorName, BigDecimal amount, String currency, boolean youReceive, String otherName) {
-        String money = MoneyFormat.format(amount, currency);
+    /** L'importo nella valuta del viaggio; se è passato di mano in un'altra valuta, anche quello tra parentesi (D-69). */
+    static String settlement(String actorName, BigDecimal amountBase, String tripCurrency, boolean youReceive, String otherName,
+                             BigDecimal amount, String currency) {
+        String money = MoneyFormat.format(amountBase, tripCurrency)
+                + (currency.equals(tripCurrency) ? "" : " (" + MoneyFormat.format(amount, currency) + ")");
         return youReceive
                 ? actorName + " ha registrato un rimborso di " + money + " a te"
                 : actorName + " ha registrato un tuo rimborso di " + money + " a " + otherName;

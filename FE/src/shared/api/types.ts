@@ -49,9 +49,9 @@ export type TrashedExpense = { id: string; description: string; amount: number; 
 
 export type Settlement = {
   id: string; fromParticipantId: string; fromName: string; toParticipantId: string; toName: string
-  amount: number; date: string; note: string | null; createdBy: string; createdAt: string
+  amount: number; currency: string; fxRate: number; amountBase: number; date: string; note: string | null; createdBy: string; createdAt: string
 }
-export type SettlementInput = { fromParticipantId: string; toParticipantId: string; amount: number; date: string; note?: string }
+export type SettlementInput = { fromParticipantId: string; toParticipantId: string; amount: number; currency: string; fxRate?: number; date: string; note?: string }
 
 export type MemberBalance = { participantId: string; displayName: string; left: boolean; paid: number; owed: number; net: number }
 export type Transfer = { fromParticipantId: string; fromName: string; toParticipantId: string; toName: string; amount: number }

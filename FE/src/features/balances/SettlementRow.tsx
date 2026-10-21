@@ -3,7 +3,7 @@ import type { Settlement } from '../../shared/api/types'
 import { Button } from '../../shared/ui/Button'
 import { Icon } from '../../shared/ui/Icon'
 import { MoneyText } from '../../shared/ui/MoneyText'
-import { formatDate } from '../../shared/utils/format'
+import { formatDate, formatMoney } from '../../shared/utils/format'
 
 type Props = { settlement: Settlement; currency: string; canCancel: boolean; cancelling: boolean; onCancel: () => void }
 
@@ -20,7 +20,10 @@ export function SettlementRow({ settlement: s, currency, canCancel, cancelling, 
         </span>
       </span>
       <span className="row-main">
-        <MoneyText amount={s.amount} currency={currency} />
+        <span className="row-side">
+          <MoneyText amount={s.amount} currency={s.currency} />
+          {s.currency !== currency && <small className="muted">≈ {formatMoney(s.amountBase, currency)}</small>}
+        </span>
         {canCancel && <Button variant="secondary" className="btn-sm" loading={cancelling} onClick={onCancel}>Annulla</Button>}
         <button type="button" className="row-toggle" aria-expanded={open} aria-label={`Dettagli del rimborso ${s.fromName} → ${s.toName}`} onClick={() => setOpen((o) => !o)}>
           <Icon name={open ? 'expand_less' : 'expand_more'} />
