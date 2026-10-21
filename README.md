@@ -212,7 +212,7 @@ Il progetto è sviluppato con un metodo **spec-driven**: prima la specifica, poi
 | [`PRODUCT.md`](PRODUCT.md) · [`DESIGN.md`](DESIGN.md) | prodotto e sistema visivo |
 | [`docs/accessibilita-verifica.md`](docs/accessibilita-verifica.md) | registro della verifica di accessibilità: controlli automatici, prove a mano, problemi trovati e risolti |
 | [`docs/stitch/`](docs/stitch/) | schermate di riferimento generate con Stitch |
-| Board Trello | una card per task, con checklist |
+| [Board Trello](https://trello.com/b/rel5oKVP/splittrip) | una card per task, con obiettivo, riferimenti a spec e piano, dipendenze, «fatto quando» e messaggio di commit; una lista per versione |
 
 ## 📂 Struttura del repository
 
