@@ -184,6 +184,12 @@ small { font-size: 0.875rem; }
 fieldset.field { border: none; padding: 0; margin-inline: 0; }
 fieldset.field.card { padding: var(--space-4); }
 .amount-input { font-size: 2.5rem !important; font-weight: 800; text-align: center; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; min-height: 72px !important; }
+/* D-69: valuta e cambio accanto all'importo */
+.currency-select { margin-top: calc(-1 * var(--space-2)); }
+.rate-line { display: grid; gap: var(--space-2); margin: calc(-1 * var(--space-2)) 0 var(--space-3); font-size: 0.9375rem; }
+.rate-field { display: flex; align-items: center; gap: var(--space-2); }
+.rate-field input { width: 7rem; }
+.btn-link { background: none; border: 0; padding: 0 0 0 8px; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; min-height: 44px; }
 .share-input { width: 120px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--surface-3); border-radius: 10px; font: inherit; font-size: 1rem; text-align: right; background: var(--surface-1); font-variant-numeric: tabular-nums; }
 .check { display: flex; align-items: center; gap: var(--space-3); cursor: pointer; min-height: 44px; }
 .check input { width: 22px; height: 22px; margin: 0; }
