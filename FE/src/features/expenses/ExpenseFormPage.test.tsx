@@ -1,7 +1,7 @@
 import { act, screen, within } from '@testing-library/react'
 import { focusManager, onlineManager } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { http, HttpResponse } from 'msw'
+import { delay, http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
 import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
@@ -99,6 +99,39 @@ describe('ExpenseFormPage', () => {
     expect(screen.getByLabelText('Importo')).toHaveValue('60')
     act(() => focusManager.setFocused(undefined))
   })
+
+  const fromOverview = () => renderWithProviders(
+    [{ path: '/trips/:tripId', element: <TripLayout />, children: [
+      { index: true, element: <h2>Panoramica</h2> },
+      { path: 'expenses/new', element: <ExpenseFormPage /> },
+    ] }],
+    '/trips/t1',
+  )
+
+  it('aperto senza rete: quando la rete torna, quello che si è scritto resta (revisione v3.4)', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)))
+    const router = fromOverview()
+    expect(await screen.findByRole('heading', { name: 'Panoramica' })).toBeInTheDocument()
+    act(() => onlineManager.setOnline(false))
+    await act(() => router.navigate('/trips/t1/expenses/new'))
+    const user = userEvent.setup()
+    await user.type(await screen.findByLabelText('Importo'), '60')
+    server.use(http.get('http://localhost/api/trips/t1', async () => { await delay(150); return HttpResponse.json(trip) }))   // una rete vera non è istantanea
+    act(() => onlineManager.setOnline(true))   // la rilettura in pausa riparte
+    await act(() => new Promise((r) => setTimeout(r, 400)))
+    expect(screen.getByLabelText('Importo')).toHaveValue('60')
+  })
+
+  it('con una rete che non risponde il modulo si apre lo stesso dopo pochi secondi (revisione v3.4)', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)))
+    const router = fromOverview()
+    expect(await screen.findByRole('heading', { name: 'Panoramica' })).toBeInTheDocument()
+    server.use(http.get('http://localhost/api/trips/t1', async () => { await delay('infinite'); return HttpResponse.json(trip) }))
+    await act(() => router.navigate('/trips/t1/expenses/new'))
+    expect(await screen.findByLabelText('Importo', {}, { timeout: 4500 })).toBeInTheDocument()
+  }, 8000)
 
   it('parti uguali con chi conta per 2: precompilato dal partecipante, spiegato e inviato come WEIGHT', async () => {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))

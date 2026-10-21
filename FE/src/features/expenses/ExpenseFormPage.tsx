@@ -45,11 +45,19 @@ export function ExpenseFormPage() {
   // nuova spesa: la divisione nasce dalle persone del viaggio, quindi si rileggono sempre (trovato dal giro e2e, D-66);
   // senza rete la richiesta resta in pausa e si usa la copia salvata (tanto offline non si salva)
   const fresh = useFreshTrip(ctx.trip.id, !expenseId)
+  // si aspetta la rilettura solo se è partita all'apertura (con la rete) e al massimo 3 s: dopo, il modulo resta montato,
+  // anche se la rete torna o la rilettura finisce tardi (revisione v3.4: quello che si è scritto non si perde)
+  const [waitOnOpen] = useState(() => !expenseId && fresh.fetchStatus === 'fetching')
+  const [gaveUp, setGaveUp] = useState(false)
+  useEffect(() => {
+    if (!waitOnOpen) return
+    const t = window.setTimeout(() => setGaveUp(true), 3000)
+    return () => window.clearTimeout(t)
+  }, [waitOnOpen])
   const prefill = (useLocation().state as { prefill?: ExpensePrefill } | null)?.prefill
   if (expenseId && existing.isPending) return <Spinner />
   if (expenseId && !existing.data) return <FormError error={existing.error ?? new Error('Spesa non trovata')} />
-  // solo la prima rilettura: un aggiornamento dopo (dal vivo, dopo il salvataggio) non deve smontare il modulo
-  if (!expenseId && fresh.isFetching && !fresh.isFetchedAfterMount) return <Spinner />
+  if (waitOnOpen && !gaveUp && !fresh.isFetchedAfterMount) return <Spinner />
   const trip = expenseId ? ctx.trip : fresh.data ?? ctx.trip
   return <ExpenseFormInner ctx={{ ...ctx, trip }} expense={existing.data} prefill={expenseId ? undefined : prefill} />
 }
