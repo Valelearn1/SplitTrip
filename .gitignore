@@ -3,3 +3,6 @@
 .impeccable/review/
 .impeccable/mocks/
 .vscode/
+
+# dati di esempio per la presentazione: password degli account di prova (scripts/demo-seed.mjs)
+docs/demo/.account-demo.json

@@ -221,6 +221,7 @@ Dipendenze: 1 ← S1 · 3 ← S2 · 8 ← S1 · 6-manuale ← S4 · 12-link ← 
 | 10 | Ordine delle reazioni in chat | 2–3 h | il conteggio può mostrare 1 per un attimo dopo il 2 | versione sul messaggio |
 | 11 | Risposte dell'AI senza genere | da valutare | l'uscita del modello non si controlla in modo deterministico | — |
 | 12 | Spese e saldi dal vivo (WebSocket) | 0,5 giorni | oggi si rileggono all'apertura della pagina (D-66); dal vivo servirebbe un evento per spesa e rimborso | D-39 |
+| 13 | Email oltre al ripristino della password: invito al viaggio (chi organizza scrive l'email di chi invitare), riepilogo pronto a fine viaggio, promemoria di un debito aperto | 2–3 h l'invito, di più le altre | ognuna vuole modello, invio dopo il commit (come D-61), preferenza per spegnerla e test; il promemoria anche un'attività pianificata | Brevo (D-61) |
 
 ---
 

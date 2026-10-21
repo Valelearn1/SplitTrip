@@ -213,6 +213,7 @@ Il progetto è sviluppato con un metodo **spec-driven**: prima la specifica, poi
 | [`docs/decisioni.md`](docs/decisioni.md) | registro delle decisioni, con alternative scartate e motivazioni |
 | [`PRODUCT.md`](PRODUCT.md) · [`DESIGN.md`](DESIGN.md) | prodotto e sistema visivo |
 | [`docs/accessibilita-verifica.md`](docs/accessibilita-verifica.md) | registro della verifica di accessibilità: controlli automatici, prove a mano, problemi trovati e risolti |
+| [`docs/costi-operativi.md`](docs/costi-operativi.md) | costi operativi: servizi usati, costi unitari, tre scenari (oggi, uso piccolo, lancio), rischi e modello di business (Pass viaggio) |
 | [`docs/stitch/`](docs/stitch/) | schermate di riferimento generate con Stitch |
 | [Board Trello](https://trello.com/b/rel5oKVP/splittrip) | una card per task, con obiettivo, riferimenti a spec e piano, dipendenze, «fatto quando» e messaggio di commit; una lista per versione |
 
