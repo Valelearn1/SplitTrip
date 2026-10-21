@@ -266,7 +266,7 @@ describe('ExpenseFormPage', () => {
     await userEvent.setup().type(await screen.findByLabelText('Importo'), '2000')
     expect(screen.getByText(money(1000, 'JPY'))).toBeInTheDocument()                       // quota a testa, in due
     expect(screen.getByRole('button', { name: /Salva/ })).toHaveTextContent(money(2000, 'JPY'))
-    expect(screen.queryByText(/€/)).not.toBeInTheDocument()
+    expect(screen.queryAllByText(/€/).filter((el) => el.tagName !== 'OPTION')).toHaveLength(0)   // l'euro c'è solo fra le valute del menu (D-69)
   })
 
   it('salvata, si torna da dove si era partiti (qui la panoramica), senza voci doppie', async () => {
@@ -365,6 +365,98 @@ describe('ExpenseFormPage', () => {
     await user.type(amount, 'x', { initialSelectionStart: 2, initialSelectionEnd: 2 })
     expect(amount).toHaveValue('1234')
     expect(amount.selectionStart).toBe(2)
+  })
+
+  it('spesa in yen: cambio proposto, anteprima «≈ 11,25 €», invio con currency e fxRate; la valuta resta per la prossima', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    let sent: unknown
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/rates', () => HttpResponse.json({ rate: 0.00562366, date: '2026-10-16' })),
+      http.post('http://localhost/api/trips/t1/expenses', async ({ request }) => { sent = await request.json(); return HttpResponse.json({ id: 'e1' }, { status: 201 }) }),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }, { path: 'expenses', element: <h2>Lista spese</h2> }] }], '/trips/t1/expenses/new')
+    const user = userEvent.setup()
+    await user.selectOptions(await screen.findByLabelText('Valuta'), 'JPY')
+    expect(await screen.findByText('Cambio del 16 ott (BCE): 1 € = 177,82 JPY')).toBeInTheDocument()
+    await user.type(screen.getByLabelText('Importo'), '2000')
+    expect(screen.getByText('≈ 11,25 €')).toBeInTheDocument()
+    await user.type(screen.getByLabelText('Descrizione'), 'Cena')
+    await user.click(screen.getByRole('button', { name: /^Salva/ }))
+    expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
+    expect(sent).toMatchObject({ amount: 2000, currency: 'JPY', fxRate: 0.00562366 })
+    expect(localStorage.getItem('splittrip:currency:t1')).toBe('JPY')
+    await expectAccessible()
+  })
+
+  it('cambio scritto a mano «0»: non si salva e lo dice', async () => {                       // Review Focus 1
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/rates', () => HttpResponse.json({ title: 'x', detail: 'Cambio non disponibile per MAD: scrivilo a mano' }, { status: 404 })),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }], '/trips/t1/expenses/new')
+    const user = userEvent.setup()
+    await user.selectOptions(await screen.findByLabelText('Valuta'), 'MAD')
+    await user.type(await screen.findByLabelText('1 € = … MAD'), '0')
+    await user.type(screen.getByLabelText('Importo'), '100')
+    await user.type(screen.getByLabelText('Descrizione'), 'Tè')
+    await user.click(screen.getByRole('button', { name: /^Salva/ }))
+    expect(await screen.findByText('Scrivi quanti MAD vale 1 €')).toBeInTheDocument()
+  })
+
+  it('modifica di una spesa in euro: nessuna riga del cambio, invio con fxRate 1', async () => {   // Review Focus 3
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    let sent: unknown
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/trips/t1/expenses/e1', () => HttpResponse.json({
+        id: 'e1', description: 'Taxi', amount: 30, currency: 'EUR', fxRate: 1, amountBase: 30, date: '2026-11-02', category: 'TRANSPORT',
+        splitType: 'EQUAL', dayBasis: null, payerId: 'p1', payerName: 'Vale', createdBy: 'u1', createdAt: '2026-11-02T10:00:00Z', receiptPhotoId: null,
+        shares: [{ participantId: 'p1', displayName: 'Vale', amount: 15, weight: null }, { participantId: 'p2', displayName: 'Marco', amount: 15, weight: null }],
+      })),
+      http.put('http://localhost/api/trips/t1/expenses/e1', async ({ request }) => { sent = await request.json(); return HttpResponse.json({ id: 'e1' }) }),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> }, { path: 'expenses', element: <h2>Lista spese</h2> }] }], '/trips/t1/expenses/e1/edit')
+    expect(await screen.findByLabelText('Importo')).toHaveValue('30,00')
+    expect(screen.queryByText(/Cambio del/)).not.toBeInTheDocument()
+    await userEvent.setup().click(screen.getByRole('button', { name: /^Salva/ }))
+    expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
+    expect(sent).toMatchObject({ amount: 30, currency: 'EUR', fxRate: 1 })
+  })
+
+  it('modifica di una spesa in yen: il cambio salvato resta, senza chiamare il servizio', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    let rateCalls = 0
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/rates', () => { rateCalls++; return HttpResponse.json({ rate: 0.009, date: '2026-10-16' }) }),
+      http.get('http://localhost/api/trips/t1/expenses/e1', () => HttpResponse.json({
+        id: 'e1', description: 'Cena', amount: 2000, currency: 'JPY', fxRate: 0.00562366, amountBase: 11.25, date: '2026-11-02', category: 'FOOD',
+        splitType: 'EQUAL', dayBasis: null, payerId: 'p1', payerName: 'Vale', createdBy: 'u1', createdAt: '2026-11-02T10:00:00Z', receiptPhotoId: null,
+        shares: [{ participantId: 'p1', displayName: 'Vale', amount: 5.63, weight: null }, { participantId: 'p2', displayName: 'Marco', amount: 5.62, weight: null }],
+      })),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> }] }], '/trips/t1/expenses/e1/edit')
+    expect(await screen.findByLabelText('Importo')).toHaveValue('2000')
+    expect(screen.getByLabelText('1 € = … JPY')).toHaveValue('177,82')
+    expect(screen.getByText('≈ 11,25 €')).toBeInTheDocument()
+    expect(rateCalls).toBe(0)
+  })
+
+  it('modifica di una spesa in yen con quote personalizzate: le quote tornano in yen come sullo scontrino', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.get('http://localhost/api/trips/t1/expenses/e1', () => HttpResponse.json({
+        id: 'e1', description: 'Cena', amount: 2000, currency: 'JPY', fxRate: 0.00562366, amountBase: 11.25, date: '2026-11-02', category: 'FOOD',
+        splitType: 'CUSTOM', dayBasis: null, payerId: 'p1', payerName: 'Vale', createdBy: 'u1', createdAt: '2026-11-02T10:00:00Z', receiptPhotoId: null,
+        shares: [{ participantId: 'p1', displayName: 'Vale', amount: 6.75, weight: null }, { participantId: 'p2', displayName: 'Marco', amount: 4.5, weight: null }],
+      })),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> }] }], '/trips/t1/expenses/e1/edit')
+    expect(await screen.findByLabelText('Quota di Vale')).toHaveValue('1200')
+    expect(screen.getByLabelText('Quota di Marco')).toHaveValue('800')
   })
 })
 

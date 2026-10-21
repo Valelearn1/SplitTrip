@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useOutletContext, useParams } from 'react-router'
 import { useGoBack } from '../../shared/navigation/useGoBack'
@@ -20,17 +20,39 @@ import { defaultBasis, presence, splitByWeight } from '../../shared/utils/split'
 import type { TripContext } from '../trips/TripLayout'
 import { useFreshTrip } from '../trips/useTrips'
 import { CountsFor } from './CountsFor'
+import { CurrencySelect } from './CurrencySelect'
 import { expenseSchema, parseCents, toExpenseInput, type ExpenseForm } from './expenseSchema'
+import { lastCurrency, rememberCurrency } from './lastCurrency'
+import { RateLine } from './RateLine'
 import { ReceiptSection } from './ReceiptSection'
 import { useCreateExpense, useDeleteExpense, useExpense, useUpdateExpense } from './useExpenses'
+import { fromFxRate, toFxRate } from './useRate'
 
-function toInputAmount(n: number) {
-  return n.toFixed(2).replace('.', ',')
+/** 12.5 → "12,50"; in yen 2000 → "2000" (D-70: niente centesimi). */
+function toInputAmount(n: number, currency: string) {
+  return fractionDigits(currency) === 0 ? String(Math.round(n)) : n.toFixed(2).replace('.', ',')
 }
 
 /** 2 → "2", 0.5 → "0,5": come lo scriverebbe una persona. */
 function toInputNumber(n: number) {
   return String(n).replace('.', ',')
+}
+
+/**
+ * Quote personalizzate di una spesa in un'altra valuta: salvate convertite (nella valuta del viaggio), tornano nella
+ * valuta dello scontrino in proporzione, col resto all'ultima così la somma fa il totale (1200 + 800 = 2000).
+ */
+function receiptShares(expense: Expense): Map<string, number> {
+  const out = new Map<string, number>()
+  if (expense.amountBase <= 0) return out
+  const unit = fractionDigits(expense.currency) === 0 ? 1 : 0.01
+  let left = expense.amount
+  expense.shares.forEach((sh, i) => {
+    const v = i === expense.shares.length - 1 ? left : Math.round((sh.amount / expense.amountBase) * expense.amount / unit) * unit
+    out.set(sh.participantId, Number(v.toFixed(2)))
+    left -= v
+  })
+  return out
 }
 
 const DAYS_LABEL = { NIGHTS: 'Notti', DAYS: 'Giorni' } as const
@@ -91,19 +113,21 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
     resolver: zodResolver(expenseSchema(trip.currency)),
     defaultValues: expense
       ? {
-          description: expense.description, amount: toInputAmount(expense.amount), date: expense.date,
+          description: expense.description, amount: toInputAmount(expense.amount, expense.currency), date: expense.date,
+          currency: expense.currency, perUnit: expense.currency === trip.currency ? '' : fromFxRate(expense.fxRate),
           category: expense.category, payerId: expense.payerId, splitType: initialMode,
           dayBasis: expense.dayBasis ?? defaultBasis(expense.category),
           shares: trip.participants.map((p) => {
             const s = expense.shares.find((x) => x.participantId === p.id)
             // una spesa in parti uguali già salvata è stata divisa contando tutti per 1
             const saved = expense.splitType === 'EQUAL' ? 1 : s?.weight
-            return { participantId: p.id, included: !!s, amount: s ? toInputAmount(s.amount) : '',
+            return { participantId: p.id, included: !!s, amount: s ? toInputAmount(expense.currency === trip.currency ? s.amount : receiptShares(expense).get(p.id) ?? 0, expense.currency) : '',
               weight: toInputNumber(saved ?? p.defaultWeight) }
           }),
         }
       : {
-          description: prefill?.description ?? '', amount: '', date: prefill?.date ?? localToday(), category: prefill?.category ?? 'FOOD',
+          description: prefill?.description ?? '', amount: '', currency: lastCurrency(trip.id) ?? trip.currency, perUnit: '',
+          date: prefill?.date ?? localToday(), category: prefill?.category ?? 'FOOD',
           payerId: prefill?.payerId ?? me.id, splitType: 'EQUAL', dayBasis: 'DAYS',
           shares: trip.participants.map((p) => ({ participantId: p.id, included: prefill ? prefill.participantIds.includes(p.id) : true,
             amount: '', weight: toInputNumber(p.defaultWeight) })),
@@ -113,6 +137,13 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
   const splitType = watch('splitType')
   const shares = watch('shares')
   const amount = watch('amount')
+  const currency = watch('currency') ?? trip.currency
+  const perUnit = watch('perUnit') ?? ''
+  const date = watch('date')
+  const foreign = currency !== trip.currency
+  // il cambio salvato resta finché non cambiano valuta o data (D-69); poi se ne propone uno nuovo
+  const [rateTouched, setRateTouched] = useState(false)
+  const setPerUnit = useCallback((v: string) => setValue('perUnit', v), [setValue])
   const category = watch('category')
   const dayBasis = watch('dayBasis')
   const isDays = splitType === 'DAYS'
@@ -134,11 +165,13 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
     })
   }, [splitType, dayBasis, touched, trip, setValue])
   const includedCount = shares.filter((s) => s.included).length
-  const totalCents = parseCents(amount, trip.currency) ?? 0
+  const totalCents = parseCents(amount, currency) ?? 0
+  // nella valuta del viaggio: le quote in parti uguali, per presenza o «conta per» si mostrano già convertite
+  const baseCents = foreign ? Math.round(totalCents * toFxRate(perUnit)) : totalCents
   const perHead = includedCount > 0 ? Math.floor(totalCents / includedCount) / 100 : 0
-  const assigned = shares.filter((s) => s.included).reduce((sum, s) => sum + (parseCents(s.amount, trip.currency) ?? 0), 0)
+  const assigned = shares.filter((s) => s.included).reduce((sum, s) => sum + (parseCents(s.amount, currency) ?? 0), 0)
   const remaining = (totalCents - assigned) / 100
-  const preview = splitByWeight(totalCents, shares.flatMap((s) => (s.included ? [{ id: s.participantId, weight: (parseCents(s.weight) ?? 0) / 100 }] : [])))
+  const preview = splitByWeight(baseCents, shares.flatMap((s) => (s.included ? [{ id: s.participantId, weight: (parseCents(s.weight) ?? 0) / 100 }] : [])))
   const daysLabel = DAYS_LABEL[dayBasis]
   const countsDiffer = splitType === 'EQUAL' && shares.some((s) => s.included && parseCents(s.weight) !== 100)
   const countsShown = splitType === 'EQUAL' && (showCounts || countsDiffer)
@@ -149,7 +182,10 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
 
   const mutation = expense ? update : create
   const onSubmit = handleSubmit((values) =>
-    mutation.mutate(toExpenseInput(values, trip.currency), { onSuccess: () => goBack(`/trips/${trip.id}/expenses`) }),
+    mutation.mutate(toExpenseInput(values, trip.currency), { onSuccess: () => {
+      if (!expense) rememberCurrency(trip.id, values.currency ?? trip.currency)
+      goBack(`/trips/${trip.id}/expenses`)
+    } }),
   )
 
   return (
@@ -157,7 +193,16 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
       <h2>{expense ? 'Modifica spesa' : 'Nuova spesa'}</h2>
 
       <div className="card">
-        <AmountField label="Importo" className="amount-input" currency={trip.currency} error={errors.amount?.message} {...register('amount')} />
+        <AmountField label="Importo" className="amount-input" currency={currency} error={errors.amount?.message} {...register('amount')} />
+        <CurrencySelect id="expense-currency" value={currency} tripCurrency={trip.currency}
+          onChange={(c) => { setValue('currency', c, { shouldValidate: !!errors.amount }); setValue('perUnit', ''); setRateTouched(true) }} />
+        {foreign && (
+          <>
+            <RateLine from={currency} to={trip.currency} date={date} value={perUnit} onChange={setPerUnit} error={errors.perUnit?.message}
+              saved={expense && expense.currency === currency && !rateTouched ? expense.fxRate : undefined} />
+            {totalCents > 0 && toFxRate(perUnit) > 0 && <p className="muted amount-preview">≈ {formatMoney(baseCents / 100, trip.currency)}</p>}
+          </>
+        )}
         <Field label="Descrizione" placeholder="Es. Cena in trattoria" error={errors.description?.message} {...register('description')} />
         <fieldset className="field" style={{ marginBottom: 0 }}>
           <legend>Categoria</legend>
@@ -170,7 +215,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
       </div>
 
       <div className="card">
-        <Field label="Data" type="date" error={errors.date?.message} {...register('date')} />
+        <Field label="Data" type="date" error={errors.date?.message} {...register('date', { onChange: () => setRateTouched(true) })} />
         <fieldset className="field" style={{ marginBottom: 0 }}>
           <legend>Chi ha pagato?</legend>
           <div className="people" style={{ marginBottom: 0 }}>
@@ -248,14 +293,14 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
               </span>
             )}
             {splitType === 'CUSTOM' && shares[i]?.included && (
-              <input aria-label={`Quota di ${p.displayName}`} inputMode={fractionDigits(trip.currency) === 0 ? 'numeric' : 'decimal'} placeholder={fractionDigits(trip.currency) === 0 ? '0' : '0,00'} autoComplete="off" className="share-input" {...withAmountSanitizer(register(`shares.${i}.amount`), fractionDigits(trip.currency))} />
+              <input aria-label={`Quota di ${p.displayName}`} inputMode={fractionDigits(currency) === 0 ? 'numeric' : 'decimal'} placeholder={fractionDigits(currency) === 0 ? '0' : '0,00'} autoComplete="off" className="share-input" {...withAmountSanitizer(register(`shares.${i}.amount`), fractionDigits(currency))} />
             )}
           </div>
         ))}
         {splitType === 'CUSTOM' && (
           <p className={remaining === 0 ? 'muted' : 'field-error'} style={{ marginTop: 8 }}>
             {remaining !== 0 && <Icon name="error" />}
-            <span>Resta da assegnare: {formatMoney(remaining, trip.currency)}</span>
+            <span>Resta da assegnare: {formatMoney(remaining, currency)}</span>
           </p>
         )}
         {errors.shares?.message && <p className="field-error"><Icon name="error" /><span>{errors.shares.message}</span></p>}
@@ -268,7 +313,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
       {canEdit ? (
         <div className="actions">
           {expense && <Button type="button" variant="danger" onClick={() => setConfirmDelete(true)}><Icon name="delete" />Elimina</Button>}
-          <Button type="submit" loading={mutation.isPending}><Icon name="save" />Salva{totalCents > 0 && <span className="echo" aria-hidden="true">· {formatMoney(totalCents / 100, trip.currency)}</span>}</Button>
+          <Button type="submit" loading={mutation.isPending}><Icon name="save" />Salva{totalCents > 0 && <span className="echo" aria-hidden="true">· {formatMoney(totalCents / 100, currency)}{foreign && baseCents > 0 ? ` ≈ ${formatMoney(baseCents / 100, trip.currency)}` : ''}</span>}</Button>
         </div>
       ) : (
         <p className="muted">Puoi solo consultare questa spesa.</p>

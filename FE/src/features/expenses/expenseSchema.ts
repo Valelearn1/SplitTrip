@@ -2,6 +2,7 @@ import { z } from 'zod'
 import type { ExpenseInput } from '../../shared/api/types'
 import { normalizeSeparators } from '../../shared/utils/amount'
 import { fractionDigits, maxCents, noCentsMessage } from '../../shared/utils/currencies'
+import { toFxRate } from './useRate'
 import { formatMoney } from '../../shared/utils/format'
 
 /** "12,50", "12.50" o "1.234,56" → centesimi, senza tetto; null se non è un numero con al massimo 2 decimali. */
@@ -41,10 +42,16 @@ const shareSchema = z.object({
   weight: z.string().optional(),
 })
 
-export const expenseSchema = (currency: string) => z
+/**
+ * Il modulo spesa (D-69): `tripCurrency` è la valuta del viaggio; `currency` quella dello scontrino (di base la stessa) e
+ * `perUnit` quanti `currency` vale 1 unità del viaggio («177,82»). Importo e quote si controllano nella valuta dello scontrino.
+ */
+export const expenseSchema = (tripCurrency: string) => z
   .object({
     description: z.string().trim().min(1, 'Scrivi cosa avete pagato').max(120, 'Al massimo 120 caratteri'),
-    amount: amountSchema(currency),
+    amount: z.string(),
+    currency: z.string().length(3).optional(),
+    perUnit: z.string().optional(),
     date: z.string().min(1, 'Scegli una data'),
     category: z.enum(['FOOD', 'TRANSPORT', 'LODGING', 'ACTIVITY', 'OTHER']),
     payerId: z.string().min(1, 'Chi ha pagato?'),
@@ -53,6 +60,20 @@ export const expenseSchema = (currency: string) => z
     shares: z.array(shareSchema),
   })
   .superRefine((v, ctx) => {
+    const currency = v.currency ?? tripCurrency
+    const symbol = tripCurrency === 'EUR' ? '€' : tripCurrency
+    const amountIssue = amountSchema(currency).safeParse(v.amount).error?.issues[0]?.message
+    if (amountIssue) ctx.addIssue({ code: 'custom', path: ['amount'], message: amountIssue })
+    const foreign = currency !== tripCurrency
+    if (foreign && toFxRate(v.perUnit ?? '') <= 0) {
+      ctx.addIssue({ code: 'custom', path: ['perUnit'], message: `Scrivi quanti ${currency} vale 1 ${symbol}` })
+    } else if (foreign && !amountIssue) {
+      // il convertito deve stare nel tetto della valuta del viaggio (D-70)
+      const converted = Math.round((centsOf(v.amount) ?? 0) * toFxRate(v.perUnit ?? ''))
+      if (converted > maxCents(tripCurrency)) {
+        ctx.addIssue({ code: 'custom', path: ['amount'], message: `Convertito supera ${maxMessage(tripCurrency).replace('Al massimo ', '')} ${tripCurrency}` })
+      }
+    }
     const included = v.shares.filter((s) => s.included)
     if (included.length === 0) {
       ctx.addIssue({ code: 'custom', path: ['shares'], message: 'Seleziona almeno un partecipante' })
@@ -95,7 +116,8 @@ export const expenseSchema = (currency: string) => z
 
 export type ExpenseForm = z.infer<ReturnType<typeof expenseSchema>>
 
-export function toExpenseInput(form: ExpenseForm, currency = 'EUR'): ExpenseInput {
+export function toExpenseInput(form: ExpenseForm, tripCurrency = 'EUR'): ExpenseInput {
+  const currency = form.currency ?? tripCurrency
   const included = form.shares.filter((s) => s.included)
   // Parti uguali dove qualcuno conta per più o meno di 1 si salva come WEIGHT: backend invariato (D-44)
   const counts = form.splitType === 'EQUAL' && included.some((s) => hasCount(s.weight) && parseCents(s.weight) !== 100)
@@ -103,6 +125,8 @@ export function toExpenseInput(form: ExpenseForm, currency = 'EUR'): ExpenseInpu
   return {
     description: form.description,
     amount: (parseCents(form.amount, currency) ?? 0) / 100,
+    currency,
+    fxRate: currency === tripCurrency ? 1 : toFxRate(form.perUnit ?? ''),
     date: form.date,
     category: form.category,
     payerId: form.payerId,

@@ -37,12 +37,12 @@ export type SplitType = 'EQUAL' | 'CUSTOM' | 'WEIGHT' | 'DAYS'
 export type DayBasis = 'DAYS' | 'NIGHTS'
 export type Share = { participantId: string; displayName: string; amount: number; weight: number | null }
 export type Expense = {
-  id: string; description: string; amount: number; currency: string; date: string; category: ExpenseCategory
+  id: string; description: string; amount: number; currency: string; fxRate: number; amountBase: number; date: string; category: ExpenseCategory
   splitType: SplitType; dayBasis: DayBasis | null; payerId: string; payerName: string; createdBy: string; shares: Share[]; createdAt: string
   receiptPhotoId: string | null
 }
 export type ExpenseInput = {
-  description: string; amount: number; date: string; category: ExpenseCategory; payerId: string
+  description: string; amount: number; currency: string; fxRate?: number; date: string; category: ExpenseCategory; payerId: string
   splitType: SplitType; dayBasis?: DayBasis; shares: { participantId: string; amount?: number; weight?: number }[]
 }
 export type TrashedExpense = { id: string; description: string; amount: number; date: string; deletedAt: string }

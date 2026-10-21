@@ -9,7 +9,7 @@ describe('expenseSchema', () => {
   it('EQUAL: manda solo i partecipanti inclusi, senza importi', () => {
     const parsed = expenseSchema('EUR').parse(base)
     expect(toExpenseInput(parsed)).toEqual({
-      description: 'Cena', amount: 90, date: '2026-11-02', category: 'FOOD', payerId: 'p1', splitType: 'EQUAL',
+      description: 'Cena', amount: 90, currency: 'EUR', fxRate: 1, date: '2026-11-02', category: 'FOOD', payerId: 'p1', splitType: 'EQUAL',
       shares: [{ participantId: 'p1' }, { participantId: 'p2' }],
     })
   })

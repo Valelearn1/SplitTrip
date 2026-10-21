@@ -38,3 +38,14 @@ it('la mia quota è nella valuta del viaggio, non sempre in euro', () => {
   expect(screen.getByText(`tua quota ${money(2000, 'JPY')}`)).toBeInTheDocument()
   expect(screen.queryByText(/€/)).not.toBeInTheDocument()
 })
+
+it('una spesa in yen mostra lo scontrino e, sotto, l\'importo nella valuta del viaggio', () => {
+  render(<MemoryRouter><ExpenseRow currency="EUR" meId="p2" expense={{
+    id: 'e1', description: 'Cena', amount: 2000, currency: 'JPY', fxRate: 0.00562366, amountBase: 11.25, date: '2026-11-02', category: 'FOOD',
+    splitType: 'EQUAL', dayBasis: null, payerId: 'p1', payerName: 'Ada', createdBy: 'u1', createdAt: '2026-11-02T10:00:00Z', receiptPhotoId: null,
+    shares: [{ participantId: 'p1', displayName: 'Ada', amount: 5.63, weight: null }, { participantId: 'p2', displayName: 'Bruno', amount: 5.62, weight: null }],
+  }} /></MemoryRouter>)
+  expect(screen.getByText(/2\.000\sJPY/)).toBeInTheDocument()
+  expect(screen.getByText(/≈ 11,25\s€/)).toBeInTheDocument()
+  expect(screen.getByText(/tua quota 5,62\s€/)).toBeInTheDocument()
+})

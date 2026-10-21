@@ -30,7 +30,8 @@ export function ExpenseRow({ expense, currency, meId }: { expense: Expense; curr
           </span>
         </span>
         <span className="row-side">
-          <MoneyText amount={expense.amount} currency={currency} />
+          <MoneyText amount={expense.amount} currency={expense.currency} />
+          {expense.currency !== currency && <small className="muted" style={{ display: 'block' }}>≈ {formatMoney(expense.amountBase, currency)}</small>}
           {expense.payerId === meId ? (
             <small className="muted" style={{ display: 'block', color: 'var(--accent)' }}>Hai anticipato</small>
           ) : (
