@@ -1,5 +1,5 @@
 import { act, screen, within } from '@testing-library/react'
-import { onlineManager } from '@tanstack/react-query'
+import { focusManager, onlineManager } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
@@ -60,6 +60,44 @@ describe('ExpenseFormPage', () => {
     expect(router.state.location.pathname).toBe('/trips/t1/expenses')
     expect(router.state.historyAction).toBe('REPLACE')                         // «Indietro» non riapre il modulo salvato
     await expectAccessible()   // D-65
+  })
+
+  it('chi è entrato da poco è nella divisione anche se il viaggio era già in memoria (trovato dal giro e2e, D-66)', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u1', email: 'v@e.it', displayName: 'Vale' } }))
+    let sent: unknown
+    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json({ ...trip, participants: [trip.participants[0]] })))
+    const router = renderWithProviders(
+      [{ path: '/trips/:tripId', element: <TripLayout />, children: [
+        { index: true, element: <h2>Panoramica</h2> },
+        { path: 'expenses/new', element: <ExpenseFormPage /> },
+        { path: 'expenses', element: <h2>Lista spese</h2> },
+      ] }],
+      '/trips/t1',
+    )
+    expect(await screen.findByRole('heading', { name: 'Panoramica' })).toBeInTheDocument()   // il viaggio è in memoria con la sola Vale
+    server.use(   // intanto Marco entra col codice
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
+      http.post('http://localhost/api/trips/t1/expenses', async ({ request }) => { sent = await request.json(); return HttpResponse.json({ id: 'e1' }, { status: 201 }) }),
+    )
+    await act(() => router.navigate('/trips/t1/expenses/new'))
+    const user = userEvent.setup()
+    await user.type(await screen.findByLabelText('Importo'), '60')
+    await user.type(screen.getByLabelText('Descrizione'), 'Cena')
+    await user.click(screen.getByRole('button', { name: 'Salva' }))
+    expect(await screen.findByRole('heading', { name: 'Panoramica' })).toBeInTheDocument()   // torna da dove si era partiti
+    expect(sent).toMatchObject({ shares: [{ participantId: 'p1' }, { participantId: 'p2' }] })
+  })
+
+  it('un aggiornamento del viaggio mentre si scrive non cancella il modulo', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
+    server.use(http.get('http://localhost/api/trips/t1', async () => { await new Promise((r) => setTimeout(r, 50)); return HttpResponse.json(trip) }))
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }], '/trips/t1/expenses/new')
+    const user = userEvent.setup()
+    await user.type(await screen.findByLabelText('Importo'), '60')
+    act(() => { focusManager.setFocused(false); focusManager.setFocused(true) })   // come un evento dal vivo: il viaggio si rilegge
+    await act(() => new Promise((r) => setTimeout(r, 150)))
+    expect(screen.getByLabelText('Importo')).toHaveValue('60')
+    act(() => focusManager.setFocused(undefined))
   })
 
   it('parti uguali con chi conta per 2: precompilato dal partecipante, spiegato e inviato come WEIGHT', async () => {

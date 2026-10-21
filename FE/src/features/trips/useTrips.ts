@@ -14,6 +14,11 @@ export function useTrip(tripId: string) {
   return useQuery({ queryKey: tripKeys.one(tripId), queryFn: () => tripsApi.get(tripId) })
 }
 
+/** Rilegge sempre il viaggio all'apertura (anche se in memoria è «fresco»): chi è appena entrato deve esserci. */
+export function useFreshTrip(tripId: string, enabled: boolean) {
+  return useQuery({ queryKey: tripKeys.one(tripId), queryFn: () => tripsApi.get(tripId), refetchOnMount: 'always', enabled })
+}
+
 // Invalidare ['trips'] copre anche ['trips', id, …]: lista e dettaglio si aggiornano insieme
 export function useCreateTrip() {
   const qc = useQueryClient()

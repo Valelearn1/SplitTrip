@@ -17,6 +17,7 @@ import { withAmountSanitizer } from '../../shared/utils/amount'
 import { formatCount, formatMoney, localToday } from '../../shared/utils/format'
 import { defaultBasis, presence, splitByWeight } from '../../shared/utils/split'
 import type { TripContext } from '../trips/TripLayout'
+import { useFreshTrip } from '../trips/useTrips'
 import { CountsFor } from './CountsFor'
 import { expenseSchema, parseCents, toExpenseInput, type ExpenseForm } from './expenseSchema'
 import { ReceiptSection } from './ReceiptSection'
@@ -41,10 +42,16 @@ export function ExpenseFormPage() {
   const { expenseId } = useParams<{ expenseId?: string }>()
   const ctx = useOutletContext<TripContext>()
   const existing = useExpense(ctx.trip.id, expenseId ?? '')
+  // nuova spesa: la divisione nasce dalle persone del viaggio, quindi si rileggono sempre (trovato dal giro e2e, D-66);
+  // senza rete la richiesta resta in pausa e si usa la copia salvata (tanto offline non si salva)
+  const fresh = useFreshTrip(ctx.trip.id, !expenseId)
   const prefill = (useLocation().state as { prefill?: ExpensePrefill } | null)?.prefill
   if (expenseId && existing.isPending) return <Spinner />
   if (expenseId && !existing.data) return <FormError error={existing.error ?? new Error('Spesa non trovata')} />
-  return <ExpenseFormInner ctx={ctx} expense={existing.data} prefill={expenseId ? undefined : prefill} />
+  // solo la prima rilettura: un aggiornamento dopo (dal vivo, dopo il salvataggio) non deve smontare il modulo
+  if (!expenseId && fresh.isFetching && !fresh.isFetchedAfterMount) return <Spinner />
+  const trip = expenseId ? ctx.trip : fresh.data ?? ctx.trip
+  return <ExpenseFormInner ctx={{ ...ctx, trip }} expense={existing.data} prefill={expenseId ? undefined : prefill} />
 }
 
 function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense?: Expense; prefill?: ExpensePrefill }) {

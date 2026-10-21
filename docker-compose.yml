@@ -11,5 +11,18 @@ services:
     volumes:
       - splittrip-db:/var/lib/postgresql/data
 
+  # D-66: database usa e getta del giro e2e (dati in memoria, vuoto a ogni avvio)
+  db-e2e:
+    image: postgres:16-alpine
+    container_name: splittrip-db-e2e
+    environment:
+      POSTGRES_DB: splittrip_e2e
+      POSTGRES_USER: splittrip
+      POSTGRES_PASSWORD: splittrip
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+
 volumes:
   splittrip-db:
