@@ -50,7 +50,7 @@ it('dati, password e preferenze si salvano; i numeri si vedono', async () => {
   expect(JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)!).user.chatSound).toBe(false)
 
   expect(screen.getByText('3')).toBeInTheDocument()                 // viaggi
-  expect(screen.getByText(/1234,50\s€/)).toBeInTheDocument()       // it-IT separa le migliaia da 5 cifre (format.test.ts)
+  expect(screen.getByText(/1\.234,50\s€/)).toBeInTheDocument()     // D-70: il punto delle migliaia sempre (format.test.ts)
   expect(screen.getByText(/410,25\s€/)).toBeInTheDocument()
   expect(screen.getByText(/30\.000\sJPY|¥\s?30\.000|30\.000\s¥/)).toBeInTheDocument()   // ogni valuta per conto suo, mai sommate
   expect(screen.getByText('12')).toBeInTheDocument()                // foto

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, expect, it, vi } from 'vitest'
 import { drawStory, type StoryData } from './storyCanvas'
 
-// Canvas finto: registra le chiamate; i testi a parte (un importo come «1248,60 €» contiene una virgola)
+// Canvas finto: registra le chiamate; i testi a parte (un importo come «1.248,60 €» contiene una virgola)
 function fakeCtx() {
   const calls: string[] = []
   const texts: string[] = []
@@ -29,7 +29,7 @@ const data: StoryData = { name: 'Lisbona 2026', dates: '13–18 ott 2026 · 5 no
 it('senza foto disegna il gradiente, poi titolo, totale, numeri, al massimo 4 badge e la firma', () => {   // Review Focus 4
   const { ctx, calls, texts } = fakeCtx()
   drawStory(ctx, data)
-  expect(texts).toEqual(['Lisbona 2026', '13–18 ott 2026 · 5 notti · 4 persone', '1248,60 €', 'in tutto', '312,15 €', 'a persona', '16', 'foto', '34', 'messaggi',
+  expect(texts).toEqual(['Lisbona 2026', '13–18 ott 2026 · 5 notti · 4 persone', '1.248,60 €', 'in tutto', '312,15 €', 'a persona', '16', 'foto', '34', 'messaggi',
     '💰 Cassa del gruppo', '📸 Occhio da reporter', '💬 Voce del gruppo', '🍝 Buona forchetta', 'SplitTrip · Dividete le spese, non le amicizie.'])
   expect(calls.some((c) => c.startsWith('drawImage'))).toBe(false)
 })

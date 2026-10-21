@@ -47,3 +47,17 @@ describe('tidyAmount (uscendo dal campo)', () => {
     ['1.234,56', '1234,56'], ['1.234', '1234'], ['12.5', '12,5'], ['12,', '12'], ['', ''], ['12,50', '12,50'],
   ])('%s → %s', (raw, out) => expect(tidyAmount(raw)).toBe(out))
 })
+
+describe('valute senza centesimi (D-70)', () => {
+  it('lo yen non accetta la virgola e arriva a 8 cifre', () => {
+    expect(nextAmount('2000', '2000,', 0)).toBe('2000')
+    expect(nextAmount('9999999', '99999999', 0)).toBe('99999999')
+    expect(nextAmount('99999999', '999999999', 0)).toBe('99999999')
+    expect(sanitizeAmount('2.000,50', 0)).toBe('2000')
+    expect(tidyAmount('2.000', 0)).toBe('2000')
+  })
+  it('l\'euro resta a 6 cifre e 2 decimali', () => {
+    expect(nextAmount('999999', '9999999')).toBe('999999')
+    expect(nextAmount('12', '12,')).toBe('12,')
+  })
+})

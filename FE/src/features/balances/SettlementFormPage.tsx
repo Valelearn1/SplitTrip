@@ -19,7 +19,7 @@ export function SettlementFormPage() {
   const goBack = useGoBack()
   const create = useCreateSettlement(trip.id)
   const { register, handleSubmit, formState: { errors } } = useForm<SettlementForm>({
-    resolver: zodResolver(settlementSchema),
+    resolver: zodResolver(settlementSchema(trip.currency)),
     defaultValues: {
       fromParticipantId: params.get('from') ?? me.id,
       toParticipantId: params.get('to') ?? '',
@@ -32,7 +32,7 @@ export function SettlementFormPage() {
   return (
     <form noValidate className="card" onSubmit={handleSubmit((v) =>
       create.mutate(
-        { fromParticipantId: v.fromParticipantId, toParticipantId: v.toParticipantId, amount: (parseCents(v.amount) ?? 0) / 100, date: v.date, note: v.note || undefined },
+        { fromParticipantId: v.fromParticipantId, toParticipantId: v.toParticipantId, amount: (parseCents(v.amount, trip.currency) ?? 0) / 100, date: v.date, note: v.note || undefined },
         { onSuccess: () => goBack(`/trips/${trip.id}/balances`) },
       ))}>
       <h2>Registra un rimborso</h2>

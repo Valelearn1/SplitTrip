@@ -14,6 +14,7 @@ import { Icon } from '../../shared/ui/Icon'
 import { Modal } from '../../shared/ui/Modal'
 import { Spinner } from '../../shared/ui/Spinner'
 import { withAmountSanitizer } from '../../shared/utils/amount'
+import { fractionDigits } from '../../shared/utils/currencies'
 import { formatCount, formatMoney, localToday } from '../../shared/utils/format'
 import { defaultBasis, presence, splitByWeight } from '../../shared/utils/split'
 import type { TripContext } from '../trips/TripLayout'
@@ -87,7 +88,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
   const [basisTouched, setBasisTouched] = useState(expense?.splitType === 'DAYS')
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ExpenseForm>({
-    resolver: zodResolver(expenseSchema),
+    resolver: zodResolver(expenseSchema(trip.currency)),
     defaultValues: expense
       ? {
           description: expense.description, amount: toInputAmount(expense.amount), date: expense.date,
@@ -133,9 +134,9 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
     })
   }, [splitType, dayBasis, touched, trip, setValue])
   const includedCount = shares.filter((s) => s.included).length
-  const totalCents = parseCents(amount) ?? 0
+  const totalCents = parseCents(amount, trip.currency) ?? 0
   const perHead = includedCount > 0 ? Math.floor(totalCents / includedCount) / 100 : 0
-  const assigned = shares.filter((s) => s.included).reduce((sum, s) => sum + (parseCents(s.amount) ?? 0), 0)
+  const assigned = shares.filter((s) => s.included).reduce((sum, s) => sum + (parseCents(s.amount, trip.currency) ?? 0), 0)
   const remaining = (totalCents - assigned) / 100
   const preview = splitByWeight(totalCents, shares.flatMap((s) => (s.included ? [{ id: s.participantId, weight: (parseCents(s.weight) ?? 0) / 100 }] : [])))
   const daysLabel = DAYS_LABEL[dayBasis]
@@ -148,7 +149,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
 
   const mutation = expense ? update : create
   const onSubmit = handleSubmit((values) =>
-    mutation.mutate(toExpenseInput(values), { onSuccess: () => goBack(`/trips/${trip.id}/expenses`) }),
+    mutation.mutate(toExpenseInput(values, trip.currency), { onSuccess: () => goBack(`/trips/${trip.id}/expenses`) }),
   )
 
   return (
@@ -247,7 +248,7 @@ function ExpenseFormInner({ ctx, expense, prefill }: { ctx: TripContext; expense
               </span>
             )}
             {splitType === 'CUSTOM' && shares[i]?.included && (
-              <input aria-label={`Quota di ${p.displayName}`} inputMode="decimal" placeholder="0,00" autoComplete="off" className="share-input" {...withAmountSanitizer(register(`shares.${i}.amount`))} />
+              <input aria-label={`Quota di ${p.displayName}`} inputMode={fractionDigits(trip.currency) === 0 ? 'numeric' : 'decimal'} placeholder={fractionDigits(trip.currency) === 0 ? '0' : '0,00'} autoComplete="off" className="share-input" {...withAmountSanitizer(register(`shares.${i}.amount`), fractionDigits(trip.currency))} />
             )}
           </div>
         ))}

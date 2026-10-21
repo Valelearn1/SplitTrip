@@ -6,6 +6,10 @@ describe('format', () => {
     // il locale it-IT raggruppa le migliaia solo da 5 cifre in su (12.345,50 ma 1234,50)
     expect(formatMoney(12345.5)).toMatch(/12\.345,50\s€/)
     expect(formatMoney(-15, 'EUR')).toMatch(/-15,00\s€/)
+    expect(formatMoney(2000)).toMatch(/2\.000,00\s€/)          // D-70: il punto delle migliaia sempre, come nel server
+    expect(formatMoney(2000, 'JPY')).toMatch(/2\.000\sJPY/)
+    expect(formatMoney(2000, 'HUF')).toMatch(/2\.000\sHUF/)
+    expect(formatMoney(999, 'EUR')).toMatch(/^999,00\s€$/)
   })
   it('formatta le date in italiano', () => {
     expect(formatDate('2026-11-01')).toBe('1 nov 2026')

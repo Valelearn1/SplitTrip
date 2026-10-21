@@ -1,8 +1,11 @@
 import { format, parseISO } from 'date-fns'
 import { it } from 'date-fns/locale'
+import { fractionDigits } from './currencies'
 
+/** D-70: il punto delle migliaia sempre («2.000 JPY», «1.234,56 €»), come nel server; i decimali della valuta. */
 export function formatMoney(amount: number, currency = 'EUR'): string {
-  return new Intl.NumberFormat('it-IT', { style: 'currency', currency }).format(amount)
+  const digits = fractionDigits(currency)
+  return new Intl.NumberFormat('it-IT', { style: 'currency', currency, useGrouping: 'always', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(amount)
 }
 
 export function formatDate(iso: string): string {
