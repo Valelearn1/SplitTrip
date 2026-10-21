@@ -10,6 +10,8 @@ async function person(browser: Browser, name: string) {
   const page = await (await browser.newContext()).newPage()
   // solo nel test: in produzione i luoghi arrivano dal backend (D-46, D-51)
   await page.route('**/api/places**', (route) => route.fulfill({ json: [lisbona] }))
+  // solo nel test: il cambio BCE arriva dal backend (D-69), qui è fisso per non dipendere da Frankfurter
+  await page.route('**/api/rates**', (route) => route.fulfill({ json: { rate: 0.00562366, date: '2026-10-16' } }))
   await page.goto('/register')
   await page.getByLabel('Nome', { exact: true }).fill(name)
   await page.getByLabel('Email', { exact: true }).fill(`e2e-${stamp}-${name.toLowerCase()}@splittrip.test`)
@@ -63,4 +65,20 @@ test('giro completo: viaggio, invito col QR, spesa, saldo e «Salda»', async ({
 
   await ada.goto(`${trip}/balances`)
   await expect(ada.getByText('Siete in pari')).toBeVisible()
+
+  // Bruno paga il sushi in yen: la spesa si salva come 3.000 JPY e i saldi si muovono di 16,87 € convertiti (D-69)
+  await bruno.goto(`${trip}/expenses/new`)
+  await bruno.getByLabel('Valuta').selectOption('JPY')
+  await expect(bruno.getByText('Cambio del 16 ott (BCE): 1 € = 177,82 JPY')).toBeVisible()
+  await bruno.getByLabel('Importo').fill('3000')
+  await bruno.getByLabel('Descrizione').fill('Sushi')
+  await expect(bruno.getByText('≈ 16,87 €').first()).toBeVisible()   // sotto l'importo (e nell'eco di «Salva»)
+  await bruno.getByRole('button', { name: /^Salva/ }).click()
+  await expect(bruno).toHaveURL(new RegExp(`${trip}/expenses$`))
+  await expect(bruno.getByText(/3\.000\sJPY/)).toBeVisible()
+  await expect(bruno.getByText(/≈ 16,87\s€/)).toBeVisible()
+
+  await ada.goto(`${trip}/balances`)
+  await expect(ada.getByText('Devi dare').first()).toBeVisible()
+  await expect(ada.getByText(/8,4[34]\s€/).first()).toBeVisible()
 })
