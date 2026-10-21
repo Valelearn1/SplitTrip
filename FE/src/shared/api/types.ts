@@ -137,3 +137,6 @@ export type Wrapped = {
   settlement: { settled: boolean; openTransfers: number }
   guess: { mine: number | null; played: number; others: { participantId: string; displayName: string; amount: number; diff: number }[] | null }
 }
+
+/** D-69: quanto vale 1 unità di `from` in `to`, e la data del tasso BCE usato. */
+export type Rate = { rate: number; date: string }
