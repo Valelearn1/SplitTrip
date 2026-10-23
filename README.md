@@ -54,6 +54,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - ↩️ **«Indietro» su ogni pagina**; dopo un salvataggio si torna da dove si era partiti, senza rientrare nel modulo
 - ♿ **Accessibile e verificata**: interfaccia mobile-first, ogni importo ha segno e testo («devi dare / devi ricevere»), mai solo il colore; controlli automatici di accessibilità (axe) in ogni pagina, verifica a mano con tastiera, lettore di schermo, zoom e filtri per il daltonismo; segue testo grande, contrasto aumentato e colori forzati del sistema
 - 💱 **Spese e rimborsi in altre valute**: scegli la valuta dello scontrino, il cambio BCE del giorno arriva precompilato (o lo scrivi tu) e i conti restano nella valuta del viaggio («2.000 JPY ≈ 11,25 €»)
+- 🖼️ **Copertina del viaggio**: chiunque sia nel viaggio sceglie la foto di copertina dalla galleria; nella Home si tocca per entrare nel viaggio
 - 📱 **QR dell'invito**: il codice del viaggio anche come QR, da inquadrare col telefono (funziona anche offline)
 - 🗣️ **Linguaggio senza genere**: nessun testo dà per scontato chi legge («chi organizza», «Dividete le spese, non le amicizie»)
 
@@ -149,8 +150,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 251 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 367 test
+cd BE && sh mvnw test   # 254 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 370 test
 docker compose up -d db-e2e && cd FE && npm run e2e   # giro completo in un browser vero (Playwright)
 ```
 

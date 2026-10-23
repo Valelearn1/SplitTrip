@@ -8,15 +8,18 @@ import { Modal } from '../../shared/ui/Modal'
 import { PlaceInput } from '../../shared/ui/PlaceInput'
 import { formatDate } from '../../shared/utils/format'
 import { photoPath } from './photosApi'
+import { useSetCover } from '../trips/useTrips'
 import { useDeletePhoto, useSetPhotoPlace } from './usePhotos'
 
 type Props = {
-  tripId: string; photo: Photo; canDelete: boolean; canEditPlace: boolean; onClose: () => void
+  tripId: string; photo: Photo; coverPhotoId: string | null; canDelete: boolean; canEditPlace: boolean; onClose: () => void
   near?: { latitude: number; longitude: number }
 }
 
-export function PhotoViewer({ tripId, photo, canDelete, canEditPlace, onClose, near }: Props) {
+export function PhotoViewer({ tripId, photo, coverPhotoId, canDelete, canEditPlace, onClose, near }: Props) {
   const remove = useDeletePhoto(tripId)
+  const cover = useSetCover(tripId)   // D-71: chiunque sia nel viaggio
+  const isCover = coverPhotoId === photo.id
   const setPlace = useSetPhotoPlace(tripId)
   const [confirm, setConfirm] = useState(false)
   const [placeName, setPlaceName] = useState(photo.placeName) // aggiornato dalla risposta, senza riaprire la foto
@@ -32,6 +35,14 @@ export function PhotoViewer({ tripId, photo, canDelete, canEditPlace, onClose, n
       <AuthImage path={photoPath(tripId, photo.id, 'image')} alt={photo.caption ?? `Foto di ${photo.uploaderName}`} className="viewer-img" />
       <p className="muted">Caricata da {photo.uploaderName} · {formatDate((photo.takenAt ?? photo.createdAt).slice(0, 10))}</p>
       {placeName && <p className="muted"><Icon name="location_on" className="inline-icon" /> {placeName}</p>}
+      <div className="row-actions">
+        {isCover
+          ? <>
+              <span className="pill pill-positive"><Icon name="wallpaper" /><span>È la copertina del viaggio</span></span>
+              <Button variant="secondary" className="btn-sm" needsNetwork loading={cover.isPending} onClick={() => cover.mutate(null)}>Togli copertina</Button>
+            </>
+          : <Button variant="secondary" className="btn-sm" needsNetwork loading={cover.isPending} onClick={() => cover.mutate(photo.id)}><Icon name="wallpaper" />Usa come copertina</Button>}
+      </div>
       {canEditPlace && !editing && (
         <div className="row-actions">
           <Button variant="secondary" className="btn-sm" onClick={() => { setDraft({ name: '' }); setEditing(true) }}>
@@ -53,7 +64,7 @@ export function PhotoViewer({ tripId, photo, canDelete, canEditPlace, onClose, n
           </div>
         </div>
       )}
-      <FormError error={remove.error ?? setPlace.error} />
+      <FormError error={remove.error ?? setPlace.error ?? cover.error} />
       <div className="modal-actions">
         {canDelete && !confirm && <Button variant="danger" onClick={() => setConfirm(true)}><Icon name="delete" />Elimina</Button>}
         {confirm && (

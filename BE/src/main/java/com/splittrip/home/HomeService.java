@@ -106,7 +106,8 @@ public class HomeService {
         boolean todayInTrip = !today.isBefore(t.startDate()) && !today.isAfter(t.endDate());
         DayForecast todayForecast = !todayInTrip ? null
                 : weather.forecast(t.id(), userId).stream().filter(d -> d.date().equals(today)).findFirst().orElse(null);
-        return new Featured(t, status, daysUntil, dayOfTotal, totalDays, photos.findLatestPhotoId(t.id()).orElse(null), todayForecast, myNet(t.id(), userId));
+        UUID cover = trips.coverPhotoId(t.id()).or(() -> photos.findLatestPhotoId(t.id())).orElse(null);   // la scelta, altrimenti l'ultima (D-71)
+        return new Featured(t, status, daysUntil, dayOfTotal, totalDays, cover, todayForecast, myNet(t.id(), userId));
     }
 
     private BigDecimal myNet(UUID tripId, UUID userId) {

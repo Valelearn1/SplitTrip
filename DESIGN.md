@@ -502,6 +502,10 @@ L'app segue quello che la persona ha già scelto sul telefono o nel computer, se
 - **Negli elenchi** (spese e rimborsi) l'importo dello scontrino grande, «≈ …» nella valuta del viaggio piccolo sotto; saldi, riepilogo e «Salda» proposto solo nella valuta del viaggio.
 - **Valute senza centesimi** (JPY, HUF, ISK, KRW): campo senza virgola, segnaposto «0», importi senza decimali; il punto delle migliaia sempre.
 
+### Copertina del viaggio (D-71)
+- **Nel visualizzatore della foto**: «Usa come copertina» (`btn-secondary btn-sm`, icona `wallpaper`) per chiunque sia nel viaggio; se la foto è già la copertina, pillola positiva «È la copertina del viaggio» e «Togli copertina». Offline i due bottoni sono spenti (serve la rete).
+- **Nella Home**: tutta la copertina del viaggio in evidenza è un link al viaggio (`a.featured-cover`, `aria-hidden`, fuori dal Tab: per il lettore di schermo resta il solo «Apri …»); con la foto scelta o, senza scelta, l'ultima caricata; senza foto, la valigia.
+
 ### Modale
 `<dialog>` bianco, raggio 16 px, padding 24 px, larghezza massima 420 px, ombra modale e backdrop d'inchiostro al 45%; azioni allineate a destra.
 

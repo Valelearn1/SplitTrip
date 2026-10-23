@@ -73,3 +73,21 @@ it('viaggio in corso rimasto «in pianificazione»: «Nuova spesa» c’è lo st
   renderWithProviders([{ path: '/trips', element: <HomePage /> }], '/trips')
   expect(await screen.findByRole('link', { name: 'Nuova spesa' })).toHaveAttribute('href', '/trips/t1/expenses/new')
 })
+
+it('tutta la copertina del viaggio in evidenza porta al viaggio, con o senza foto (D-71)', async () => {
+  const home = (coverPhotoId: string | null) => ({
+    featured: { trip: summary('t1', 'Lisbona 2026', 'ONGOING'), status: 'ONGOING', daysUntil: null, dayOfTotal: 3, totalDays: 6, coverPhotoId, weatherToday: null, myNet: 0 },
+    balances: [], totals: { toReceive: 0, toGive: 0, tripsToReceive: 0, tripsToGive: 0 }, latestNotifications: [], trips: { current: [], past: [] },
+  })
+  server.use(
+    http.get('http://localhost/api/me/home', () => HttpResponse.json(home('ph1'))),
+    http.get('http://localhost/api/trips/t1/photos/ph1/image', () => new HttpResponse(new Blob(['x']), { headers: { 'Content-Type': 'image/jpeg' } })),
+  )
+  renderWithProviders([{ path: '/trips', element: <HomePage /> }], '/trips')
+  await screen.findByText('In corso · giorno 3 di 6')
+  const cover = document.querySelector('a.featured-cover')
+  expect(cover).toHaveAttribute('href', '/trips/t1')
+  expect(cover).toHaveAttribute('aria-hidden', 'true')   // per il lettore di schermo basta «Apri Lisbona 2026»: un link solo
+  expect(screen.getByRole('link', { name: 'Apri Lisbona 2026' })).toHaveAttribute('href', '/trips/t1')
+  await expectAccessible()
+})

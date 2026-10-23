@@ -6,6 +6,8 @@ import com.splittrip.common.FieldException;
 import com.splittrip.common.NotFoundException;
 import com.splittrip.common.events.ParticipantJoined;
 import com.splittrip.expense.ExpenseRepository;
+import com.splittrip.photo.PhotoKind;
+import com.splittrip.photo.PhotoRepository;
 import com.splittrip.trip.dto.JoinPreviewResponse;
 import com.splittrip.trip.dto.TripPatchRequest;
 import com.splittrip.trip.dto.TripRequest;
@@ -39,11 +41,12 @@ public class TripService {
     private final ExpenseRepository expenses;
     private final ApplicationEventPublisher events;
     private final UserAvatarRepository avatars;
+    private final PhotoRepository photos;
     private final Clock clock;
 
     public TripService(TripRepository trips, ParticipantRepository participants, UserService users,
                        TripAccessService access, InviteCodeGenerator codes,
-                       ExpenseRepository expenses, ApplicationEventPublisher events, UserAvatarRepository avatars,
+                       ExpenseRepository expenses, ApplicationEventPublisher events, UserAvatarRepository avatars, PhotoRepository photos,
                        Clock clock) {
         this.trips = trips;
         this.participants = participants;
@@ -54,6 +57,7 @@ public class TripService {
         this.events = events;
         this.avatars = avatars;
         this.clock = clock;
+        this.photos = photos;
     }
 
     @Transactional
@@ -117,6 +121,33 @@ public class TripService {
         }
         trip.setUpdatedAt(clock.instant());
         return get(tripId, userId);
+    }
+
+    /** D-71: la copertina la sceglie chiunque sia nel viaggio, anche a viaggio chiuso (non tocca i conti). */
+    @Transactional
+    public TripResponse setCover(UUID tripId, UUID userId, UUID photoId) {
+        access.requireMember(tripId, userId);
+        Trip trip = trips.findById(tripId).orElseThrow();
+        if (photos.findKind(photoId, tripId).filter(k -> k == PhotoKind.PHOTO).isEmpty()) {
+            throw new BadRequestException("La copertina deve essere una foto di questo viaggio");
+        }
+        trip.setCoverPhotoId(photoId);
+        trip.setUpdatedAt(clock.instant());
+        return get(tripId, userId);
+    }
+
+    @Transactional
+    public void clearCover(UUID tripId, UUID userId) {
+        access.requireMember(tripId, userId);
+        Trip trip = trips.findById(tripId).orElseThrow();
+        trip.setCoverPhotoId(null);
+        trip.setUpdatedAt(clock.instant());
+    }
+
+    /** La copertina scelta, se c'è (per la Home). */
+    @Transactional(readOnly = true)
+    public Optional<UUID> coverPhotoId(UUID tripId) {
+        return trips.findCoverPhotoId(tripId);
     }
 
     @Transactional

@@ -16,6 +16,8 @@ export const tripsApi = {
   joinPreview: (code: string) => api<JoinPreview>(`/trips/join-preview?code=${encodeURIComponent(code)}`),
   join: (code: string, participantId?: string) => api<Trip>('/trips/join', { method: 'POST', body: { code, participantId } }),
   regenerateCode: (tripId: string) => api<Trip>(`/trips/${tripId}/invite-code/regenerate`, { method: 'POST' }),
+  setCover: (tripId: string, photoId: string) => api<Trip>(`/trips/${tripId}/cover`, { method: 'PUT', body: { photoId } }),
+  clearCover: (tripId: string) => api<void>(`/trips/${tripId}/cover`, { method: 'DELETE' }),
   addParticipant: (tripId: string, body: ParticipantInput) => api<Participant>(`/trips/${tripId}/participants`, { method: 'POST', body }),
   updateParticipant: (tripId: string, participantId: string, body: ParticipantPatch) =>
     api<Participant>(`/trips/${tripId}/participants/${participantId}`, { method: 'PATCH', body }),

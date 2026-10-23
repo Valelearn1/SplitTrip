@@ -641,6 +641,7 @@ fieldset.field.card { padding: var(--space-4); }
 ul.chips { list-style: none; margin: 0; padding: 0; }
 /* copertina della Home: l'immagine riempie il riquadro 16:9 senza allungarlo */
 .featured-cover { position: relative; overflow: hidden; }
+a.featured-cover { cursor: pointer; color: var(--accent); }   /* D-71: tutta la copertina apre il viaggio */
 .featured-cover img, .featured-cover .img-placeholder { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 /* Intestazione su telefono (v3.2): con luna/sole in più, il nome accanto all'avatar e la parola «Esci» lasciano spazio */

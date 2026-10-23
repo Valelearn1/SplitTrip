@@ -47,6 +47,8 @@ public class Trip {
     /** Coordinate della destinazione per il meteo, calcolate al primo uso (D-37). */
     @Setter @Column(precision = 9, scale = 6) private BigDecimal latitude;
     @Setter @Column(precision = 9, scale = 6) private BigDecimal longitude;
+    // D-71: foto scelta come copertina (null = l'ultima caricata); la colonna si azzera da sola se la foto viene eliminata
+    @Setter @Column(name = "cover_photo_id") private UUID coverPhotoId;
 
     @Column(name = "created_at", nullable = false, updatable = false) private Instant createdAt;
     @Setter @Column(name = "updated_at", nullable = false) private Instant updatedAt;

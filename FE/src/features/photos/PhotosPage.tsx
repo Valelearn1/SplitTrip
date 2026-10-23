@@ -43,7 +43,7 @@ export function PhotosPage() {
       )}
       {uploading && <PhotoUploadSheet tripId={trip.id} open near={near} onClose={() => setUploading(false)} />}
       {open && (
-        <PhotoViewer tripId={trip.id} photo={open} near={near} canDelete={open.uploaderId === me.userId || isOrganizer}
+        <PhotoViewer tripId={trip.id} photo={open} near={near} coverPhotoId={trip.coverPhotoId} canDelete={open.uploaderId === me.userId || isOrganizer}
           canEditPlace={canWrite && (open.uploaderId === me.userId || isOrganizer)} onClose={() => setOpen(null)} />
       )}
     </div>

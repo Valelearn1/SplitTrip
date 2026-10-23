@@ -24,6 +24,7 @@ export type TripSummary = {
 export type Trip = Omit<TripSummary, 'memberCount' | 'myRole'> & {
   inviteCode: string; ownerId: string; participants: Participant[]
   latitude: number | null; longitude: number | null // dalla proposta scelta o calcolate dal meteo
+  coverPhotoId: string | null // la foto scelta come copertina (D-71); null = l'ultima caricata
 }
 export type Place = { name: string; detail: string; latitude: number; longitude: number }
 export type PlaceValue = { name: string; latitude?: number; longitude?: number }

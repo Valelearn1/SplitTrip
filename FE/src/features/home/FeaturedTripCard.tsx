@@ -22,11 +22,12 @@ export function FeaturedTripCard({ featured: f }: { featured: HomeFeatured }) {
   const weather = f.weatherToday ? weatherLabel(f.weatherToday.code) : null
   return (
     <article className="card featured">
-      <div className="featured-cover">
+      {/* tutta la copertina si tocca (D-71); per il lettore di schermo basta il link «Apri …» qui sotto */}
+      <Link to={`/trips/${f.trip.id}`} className="featured-cover" aria-hidden="true" tabIndex={-1}>
         {f.coverPhotoId
-          ? <AuthImage path={photoPath(f.trip.id, f.coverPhotoId, 'image')} alt={`Ultima foto di ${f.trip.name}`} />
+          ? <AuthImage path={photoPath(f.trip.id, f.coverPhotoId, 'image')} alt="" />
           : <Suitcase size={56} />}
-      </div>
+      </Link>
       <div className="featured-body">
         <p className="featured-status">{statusLine(f)}</p>
         <h2>{f.trip.name}</h2>

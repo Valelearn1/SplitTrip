@@ -1,12 +1,14 @@
 package com.splittrip.trip;
 
 import com.splittrip.auth.CurrentUserId;
+import com.splittrip.trip.dto.CoverRequest;
 import com.splittrip.trip.dto.JoinPreviewResponse;
 import com.splittrip.trip.dto.JoinRequest;
 import com.splittrip.trip.dto.TripPatchRequest;
 import com.splittrip.trip.dto.TripRequest;
 import com.splittrip.trip.dto.TripResponse;
 import com.splittrip.trip.dto.TripSummaryResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,6 +71,19 @@ public class TripController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@CurrentUserId UUID userId, @PathVariable UUID tripId) {
         trips.delete(tripId, userId);
+    }
+
+    @PutMapping("/{tripId}/cover")
+    @Operation(summary = "Scegli una foto del viaggio come copertina; chiunque sia nel viaggio (D-71)")
+    public TripResponse setCover(@CurrentUserId UUID userId, @PathVariable UUID tripId, @Valid @RequestBody CoverRequest req) {
+        return trips.setCover(tripId, userId, req.photoId());
+    }
+
+    @DeleteMapping("/{tripId}/cover")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Togli la copertina scelta: torna l'ultima foto caricata")
+    public void clearCover(@CurrentUserId UUID userId, @PathVariable UUID tripId) {
+        trips.clearCover(tripId, userId);
     }
 
     @PostMapping("/{tripId}/invite-code/regenerate")

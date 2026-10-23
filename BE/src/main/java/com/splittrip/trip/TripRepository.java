@@ -10,6 +10,8 @@ import java.util.UUID;
 public interface TripRepository extends JpaRepository<Trip, UUID> {
     Optional<Trip> findByInviteCode(String inviteCode);
     boolean existsByInviteCode(String inviteCode);
+    @Query("select t.coverPhotoId from Trip t where t.id = :id")
+    Optional<UUID> findCoverPhotoId(UUID id);
 
     @Query("select p.trip from Participant p where p.user.id = :userId and p.leftAt is null order by p.trip.startDate desc")
     List<Trip> findAllByMemberUserId(UUID userId);

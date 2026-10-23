@@ -92,3 +92,12 @@ export function useUnlinkParticipant(tripId: string) {
     onSuccess: () => qc.invalidateQueries({ queryKey: tripKeys.all }),
   })
 }
+
+/** Copertina del viaggio (D-71): la sceglie chiunque sia nel viaggio; cambia il viaggio e la Home. */
+export function useSetCover(tripId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (photoId: string | null) => { if (photoId) await tripsApi.setCover(tripId, photoId); else await tripsApi.clearCover(tripId) },
+    onSuccess: () => { void qc.invalidateQueries({ queryKey: tripKeys.one(tripId) }); void qc.invalidateQueries({ queryKey: ['home'] }) },
+  })
+}

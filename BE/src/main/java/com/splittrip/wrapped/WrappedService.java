@@ -100,7 +100,8 @@ public class WrappedService {
                 .limit(6)
                 .map(r -> new Moment((UUID) r[3], (String) r[4], (String) r[1], (BigDecimal) r[5], (BigDecimal) r[6]))
                 .toList();
-        UUID cover = photoRows.isEmpty() ? null : (UUID) photoRows.getFirst()[3];
+        UUID latest = photoRows.isEmpty() ? null : (UUID) photoRows.getFirst()[3];
+        UUID cover = trip.getCoverPhotoId() != null ? trip.getCoverPhotoId() : latest;   // la copertina scelta, altrimenti l'ultima (D-71)
 
         Map<UUID, Integer> msgCount = new HashMap<>();
         for (Object[] r : messages.countTextByAuthor(tripId)) msgCount.put((UUID) r[0], ((Long) r[1]).intValue());

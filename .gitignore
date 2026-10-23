@@ -6,3 +6,6 @@
 
 # dati di esempio per la presentazione: password degli account di prova (scripts/demo-seed.mjs)
 docs/demo/.account-demo.json
+
+# cache di test finita per sbaglio alla radice (vitest va lanciato da FE/)
+node_modules/

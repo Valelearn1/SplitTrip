@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { expect, it } from 'vitest'
+import { StrictMode } from 'react'
+import { expect, it, vi } from 'vitest'
 import { Modal } from './Modal'
 
 it('ogni modale ha il proprio titolo come nome, anche con più modali nella pagina', () => {
@@ -14,4 +15,11 @@ it('ogni modale ha il proprio titolo come nome, anche con più modali nella pagi
   const titleOf = (d: HTMLElement) => document.getElementById(d.getAttribute('aria-labelledby') ?? '')?.textContent
   expect(titleOf(first)).toBe('Eliminare «Valigia»?')
   expect(titleOf(second)).toBe('Eliminare «Spesa»?')
+})
+
+it('in StrictMode (sviluppo) la modale resta aperta: il doppio effetto non la chiude e non chiama onClose', () => {
+  const onClose = vi.fn()
+  render(<StrictMode><Modal open title="Prova" onClose={onClose}><p>ciao</p></Modal></StrictMode>)
+  expect(screen.getByRole('dialog', { name: 'Prova' })).toHaveAttribute('open')
+  expect(onClose).not.toHaveBeenCalled()
 })
