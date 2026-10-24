@@ -14,7 +14,7 @@ Analisi del 21 ottobre 2026. Prezzi in dollari come li pubblicano i servizi; in 
 | **Brevo** | email di ripristino della password (D-61) | Free | 0 € | 300 email al giorno |
 | **Open-Meteo** | meteo e proposte di luoghi (D-46, D-51) | gratuito | 0 € | **solo uso non commerciale**; 10.000 chiamate al giorno |
 | **Frankfurter** | cambio del giorno (D-69) | gratuito | 0 € | nessuna chiave, nessuna quota, uso commerciale permesso |
-| **GitHub Actions** | CI: backend, frontend, giro e2e (D-66) | Free, repository privato | 0 € | 2.000 minuti al mese; un push ne consuma circa 9–10 (tre job) → circa 200 push al mese |
+| **GitHub Actions** | CI: backend, frontend, giro e2e (D-66) | Free, repository pubblico | 0 € | minuti illimitati sui runner standard per i repository pubblici; un push ne usa circa 9–10 (tre job) |
 
 **Costo attuale: 0 € al mese**, più qualche centesimo di consigli AI.
 
@@ -27,7 +27,7 @@ Analisi del 21 ottobre 2026. Prezzi in dollari come li pubblicano i servizi; in 
 | Una foto nel database | 1600 px riscritta in JPEG ≈ 300 KB + miniatura 13 KB (misurato in locale: 151 KB di media sulle foto di prova) | 0,3 MB × 0,30 $/GB/mese ≈ **0,01 centesimi al mese** |
 | Un viaggio con 50 foto | 15 MB di database | ≈ 0,4 centesimi al mese |
 | Una foto vista | ~300 KB di banda | 5 GB gratuiti ≈ 17.000 foto viste al mese; oltre, ≈ 0,005 centesimi a foto |
-| Un push | ~9–10 minuti di CI | gratuito entro 2.000 minuti; oltre 0,006 $/minuto ≈ 6 centesimi a push |
+| Un push | ~9–10 minuti di CI | gratuito (repository pubblico); se diventasse privato: 2.000 minuti gratuiti al mese, oltre 0,006 $/minuto ≈ 6 centesimi a push |
 
 ## 3. Tre scenari
 
@@ -40,7 +40,7 @@ Analisi del 21 ottobre 2026. Prezzi in dollari come li pubblicano i servizi; in 
 | Email | Brevo Free | Brevo Free | Brevo Free (300 al giorno bastano per i ripristini; con l'invito per email, Starter **9 $**) |
 | Meteo e luoghi | Open-Meteo gratuito | gratuito (non commerciale) | se l'app guadagna: licenza commerciale **29 $** |
 | Cambi | 0 $ | 0 $ | 0 $ |
-| CI | 0 $ | 0 $ | 0 $ (o repository pubblico: illimitato) |
+| CI | 0 $ | 0 $ | 0 $ (repository pubblico) |
 | **Totale al mese** | **≈ 0 €** | **≈ 14 $ ≈ 12,50 €** | **≈ 100–110 $ ≈ 90–100 €** |
 | **Per viaggio attivo** | — | ≈ 1,25 € | ≈ 0,20 € |
 
