@@ -35,7 +35,7 @@ class PasswordResetControllerTest extends IntegrationTest {
     String register(String name) throws Exception {
         String email = name.toLowerCase() + "-" + UUID.randomUUID() + "@example.com";
         mvc.perform(post("/api/auth/register").contentType(APPLICATION_JSON).content("""
-                {"email":"%s","password":"password1","displayName":"%s"}
+                {"email":"%s","password":"password1","displayName":"%s","acceptedTerms":true}
                 """.formatted(email, name))).andExpect(status().isCreated());
         return email;
     }

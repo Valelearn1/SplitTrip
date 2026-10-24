@@ -34,6 +34,7 @@ it('l’informativa nomina titolare, contatto di esempio, fornitori, diritti e m
     expect(screen.getAllByText(new RegExp(who)).length).toBeGreaterThan(0)
   }
   expect(screen.getByText(/non usa cookie/)).toBeInTheDocument()
+  expect(screen.getByText(/data e ora in cui hai accettato i Termini/)).toBeInTheDocument()   // D-73
   expect(screen.getByRole('region', { name: /Fornitori/ })).toHaveAttribute('tabindex', '0')   // la tabella scorre di lato: raggiungibile da tastiera
   expect(screen.getByRole('link', { name: /Garante/ })).toHaveAttribute('href', 'https://www.garanteprivacy.it')
   await expectAccessible()

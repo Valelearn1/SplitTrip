@@ -31,7 +31,7 @@ class AuthServiceTest {
         when(users.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(jwt.issue(any())).thenReturn("tok");
 
-        service.register(new RegisterRequest("  Marco@Example.com ", "password1", "Marco"));
+        service.register(new RegisterRequest("  Marco@Example.com ", "password1", "Marco", true));
 
         verify(users).save(argThat(u -> u.getEmail().equals("marco@example.com")
                 && !u.getPasswordHash().equals("password1")));
@@ -40,7 +40,7 @@ class AuthServiceTest {
     @Test
     void registrazioneConEmailGiaUsataDa409() {
         when(users.existsByEmail("marco@example.com")).thenReturn(true);
-        assertThatThrownBy(() -> service.register(new RegisterRequest("marco@example.com", "password1", "Marco")))
+        assertThatThrownBy(() -> service.register(new RegisterRequest("marco@example.com", "password1", "Marco", true)))
                 .isInstanceOf(ConflictException.class);
     }
 

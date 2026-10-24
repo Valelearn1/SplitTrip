@@ -39,6 +39,9 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    /** D-73: quando sono stati accettati i Termini e condizioni; null per gli account precedenti alla casella. */
+    @Setter @Column(name = "terms_accepted_at") private Instant termsAcceptedAt;
+
     // Preferenze sull'account (D-48): si ritrovano su ogni dispositivo
     @Setter @Column(name = "preferred_currency", nullable = false, length = 3) private String preferredCurrency = "EUR";
     @Setter @Column(name = "chat_sound", nullable = false) private boolean chatSound = true;

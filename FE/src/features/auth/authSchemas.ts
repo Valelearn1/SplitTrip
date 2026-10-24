@@ -14,6 +14,8 @@ export const registerSchema = z.object({
     .max(72, 'Al massimo 72 caratteri')
     .regex(/[A-Za-z]/, 'Serve almeno una lettera')
     .regex(/\d/, 'Serve almeno una cifra'),
+  // D-73: stessa regola e stesso messaggio del server
+  acceptedTerms: z.boolean().refine((v) => v, 'Per registrarti accetta i Termini e condizioni'),
 })
 
 export const forgotSchema = z.object({

@@ -224,6 +224,7 @@ Dipendenze: 1 ← S1 · 3 ← S2 · 8 ← S1 · 6-manuale ← S4 · 12-link ← 
 | 13 | Email oltre al ripristino della password: invito al viaggio (chi organizza scrive l'email di chi invitare), riepilogo pronto a fine viaggio, promemoria di un debito aperto | 2–3 h l'invito, di più le altre | ognuna vuole modello, invio dopo il commit (come D-61), preferenza per spegnerla e test; il promemoria anche un'attività pianificata | Brevo (D-61) |
 | 14 | Contatto vero nell'informativa sulla privacy (alias Outlook al posto di `privacy@splittrip.example`) e dominio .it su Register.it collegato a Render (DNS, CORS, CSP, link delle email e del QR) | 1–2 h | il contatto di esempio basta per la valutazione; il dominio dopo la presentazione del 28 | D-72 |
 | 15 | Font e icone ospitati sul nostro sito invece che da Google Fonts | 1–2 h | oggi l'indirizzo IP di chi apre il sito arriva a Google (dichiarato nell'informativa, D-72); vanno ritagliate le icone usate e aggiornati CSP e service worker | D-63 |
+| 16 | Chiedere di accettare i Termini a chi ha un account creato prima della casella (`terms_accepted_at` vuota) e quando i Termini cambiano (versione accettata) | 2–3 h | gli account precedenti sono pochi e di prova; serve una pagina che si apre all'accesso e un controllo nel server | D-73 |
 
 ---
 

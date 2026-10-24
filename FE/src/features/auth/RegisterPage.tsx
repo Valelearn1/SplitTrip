@@ -17,7 +17,7 @@ export function RegisterPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from ?? '/trips'
-  const { register, handleSubmit, setError, formState: { errors } } = useForm<RegisterForm>({ resolver: zodResolver(registerSchema) })
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<RegisterForm>({ resolver: zodResolver(registerSchema), defaultValues: { acceptedTerms: false } })
   const mutation = useMutation({
     mutationFn: authApi.register,
     onSuccess: (data) => {
@@ -43,11 +43,15 @@ export function RegisterPage() {
         <Field label="Nome" autoComplete="name" placeholder="Come ti chiama il gruppo" error={errors.displayName?.message} {...register('displayName')} />
         <Field label="Email" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
         <PasswordField label="Password" autoComplete="new-password" placeholder="Almeno 8 caratteri, una lettera e una cifra" error={errors.password?.message} {...register('password')} />
+        <div className="terms">
+          <label className="check">
+            <input type="checkbox" aria-invalid={errors.acceptedTerms ? true : undefined} aria-describedby={errors.acceptedTerms ? 'terms-err' : undefined} {...register('acceptedTerms')} />
+            <span>Accetto i <Link to="/termini">Termini e condizioni</Link> e ho letto l'<Link to="/privacy">Informativa sulla privacy</Link></span>
+          </label>
+          {errors.acceptedTerms && <p id="terms-err" className="field-error">{errors.acceptedTerms.message}</p>}
+        </div>
         <FormError error={mutation.error} offlineMessage="Serve la rete per entrare" />
         <Button type="submit" needsNetwork={false} loading={mutation.isPending}>Registrati</Button>
-        <p className="muted legal-note">
-          Registrandoti accetti i <Link to="/termini">Termini e condizioni</Link> e confermi di aver letto l'<Link to="/privacy">Informativa sulla privacy</Link>.
-        </p>
       </form>
       <p className="muted" style={{ textAlign: 'center' }}>
         Hai già un account? <Link to="/login" state={location.state}>Entra</Link>

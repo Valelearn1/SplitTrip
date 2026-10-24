@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.util.Locale;
 
 @Service
@@ -39,7 +40,10 @@ public class AuthService {
         if (users.existsByEmail(email)) {
             throw new ConflictException("Esiste già un account con questa email");
         }
-        User user = users.save(new User(email, encoder.encode(req.password()), req.displayName().strip(), clock.instant()));
+        Instant now = clock.instant();
+        User user = new User(email, encoder.encode(req.password()), req.displayName().strip(), now);
+        user.setTermsAcceptedAt(now);   // D-73: la validazione ha già controllato la spunta
+        user = users.save(user);
         return new AuthResponse(jwt.issue(user.getId()), UserResponse.from(user, false));
     }
 

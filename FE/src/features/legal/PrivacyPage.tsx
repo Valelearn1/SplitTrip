@@ -24,7 +24,7 @@ export function PrivacyPage() {
 
       <h2>Quali dati</h2>
       <ul>
-        <li><strong>Account:</strong> nome, email e password, salvata solo come hash non reversibile (bcrypt).</li>
+        <li><strong>Account:</strong> nome, email e password, salvata solo come hash non reversibile (bcrypt), e la data e ora in cui hai accettato i Termini e condizioni.</li>
         <li><strong>Profilo:</strong> foto (facoltativa) e preferenze: valuta, tema, suono, animazioni.</li>
         <li><strong>Viaggi:</strong> nome, destinazione, date, persone del gruppo (anche chi non ha un account, con il nome scelto dal gruppo), giorni di presenza e quote.</li>
         <li><strong>Spese e rimborsi:</strong> importi, valute, cambi, categorie, note, chi ha pagato e per chi.</li>

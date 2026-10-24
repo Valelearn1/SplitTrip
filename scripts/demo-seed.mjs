@@ -102,6 +102,7 @@ async function demoAccount(key, displayName) {
         email: acc.email,
         password: acc.password,
         displayName,
+        acceptedTerms: true, // D-73: chi lancia lo script accetta i termini per gli account di esempio
       });
       here.accounts[key] = acc;
       save();

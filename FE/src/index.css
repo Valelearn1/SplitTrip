@@ -576,7 +576,10 @@ fieldset.field.card { padding: var(--space-4); }
 .legal-table { overflow-x: auto; }
 .legal-table table { border-collapse: collapse; font-size: 0.875rem; min-width: 560px; }
 .legal-table :is(th, td) { text-align: left; vertical-align: top; padding: var(--space-2); border-bottom: 1px solid var(--line); }
-.legal-note { font-size: 0.8125rem; text-align: center; margin: 0; }
+/* Casella dei termini alla registrazione (D-73): il testo va a capo accanto alla casella, non sotto */
+.terms .check { align-items: flex-start; font-size: 0.875rem; line-height: 1.4; }
+.terms .check input { flex: none; margin-top: 1px; }
+.terms .field-error { margin-top: var(--space-1); }
 @media (min-width: 720px) { .landing-pillars { grid-template-columns: repeat(3, 1fr); } }
 
 /* Home (D-49): il viaggio in evidenza in testa, poi azioni, conti, novità, elenco */

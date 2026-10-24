@@ -57,7 +57,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 🖼️ **Copertina del viaggio**: chiunque sia nel viaggio sceglie la foto di copertina dalla galleria; nella Home si tocca per entrare nel viaggio
 - 📱 **QR dell'invito**: il codice del viaggio anche come QR, da inquadrare col telefono (funziona anche offline)
 - 🗣️ **Linguaggio senza genere**: nessun testo dà per scontato chi legge («chi organizza», «Dividete le spese, non le amicizie»)
-- ⚖️ **Termini e condizioni e informativa sulla privacy** leggibili anche senza account: chi tratta i dati, quali fornitori li ricevono e cosa, nessun cookie (D-72)
+- ⚖️ **Termini e condizioni e informativa sulla privacy** leggibili anche senza account: chi tratta i dati, quali fornitori li ricevono e cosa, nessun cookie; alla registrazione la casella «Accetto i Termini», con data e ora salvate (D-72, D-73)
 
 ## 📸 Screenshot
 
@@ -151,8 +151,8 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 ## 🧪 Test
 
 ```bash
-cd BE && sh mvnw test   # 254 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 378 test
+cd BE && sh mvnw test   # 258 test: unitari + integrazione con Postgres reale (serve Docker)
+cd FE && npm test       # 380 test
 docker compose up -d db-e2e && cd FE && npm run e2e   # giro completo in un browser vero (Playwright)
 ```
 

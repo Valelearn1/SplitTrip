@@ -16,6 +16,7 @@ async function person(browser: Browser, name: string) {
   await page.getByLabel('Nome', { exact: true }).fill(name)
   await page.getByLabel('Email', { exact: true }).fill(`e2e-${stamp}-${name.toLowerCase()}@splittrip.test`)
   await page.getByLabel('Password', { exact: true }).fill(password)
+  await page.getByRole('checkbox', { name: /Accetto i Termini/ }).check()   // D-73
   await page.getByRole('button', { name: 'Registrati' }).click()
   await expect(page).toHaveURL(/\/trips$/)
   return page
