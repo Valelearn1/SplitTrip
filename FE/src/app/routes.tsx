@@ -20,6 +20,8 @@ import { NotificationsPage } from '../features/notifications/NotificationsPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { TodoListsPage } from '../features/todo/TodoListsPage'
 import { WrappedPage } from '../features/wrapped/WrappedPage'
+import { PrivacyPage } from '../features/legal/PrivacyPage'
+import { TermsPage } from '../features/legal/TermsPage'
 import { Layout } from './Layout'
 import { NotFoundPage } from './NotFoundPage'
 import { RequireAuth } from './RequireAuth'
@@ -33,6 +35,8 @@ export const routes: RouteObject[] = [
       { path: '/register', element: <RegisterPage /> },
       { path: '/password-dimenticata', element: <ForgotPasswordPage /> },
       { path: '/reimposta-password', element: <ResetPasswordPage /> },
+      { path: '/termini', element: <TermsPage /> },
+      { path: '/privacy', element: <PrivacyPage /> },
       {
         element: <RequireAuth />,
         children: [

@@ -1,6 +1,7 @@
 import { Link, Navigate } from 'react-router'
 import { Icon } from '../../shared/ui/Icon'
 import { Logo } from '../../shared/ui/Logo'
+import { LegalFooter } from '../legal/LegalFooter'
 import { useAuth } from '../auth/useAuth'
 
 const PILLARS = [
@@ -35,10 +36,10 @@ export function LandingPage() {
         <h2>Come funziona</h2>
         <ol>{STEPS.map((s) => <li key={s}>{s}</li>)}</ol>
       </section>
-      <footer className="landing-footer muted">
+      <LegalFooter>
         <strong>Dividete le spese, non le amicizie.</strong>
         Fatto con ☕ da Valentina · <a href="https://github.com/Valelearn1/SplitTrip">codice su GitHub</a>
-      </footer>
+      </LegalFooter>
     </div>
   )
 }

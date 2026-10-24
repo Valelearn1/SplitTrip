@@ -93,11 +93,12 @@ body { margin: 0; min-height: 100dvh; }
 .season-art { width: 100%; height: 100%; object-fit: cover; object-position: center bottom; display: block; }
 /* Testo direttamente sul disegno (fuori da card e modali): lo sfondo è fisso, quindi scorrendo qualunque riga
    può finire sopra colline o mare. Grigio più scuro e un alone del colore di fondo lo staccano dall'illustrazione. */
-.app-main :is(p, .muted, h1, h3, .label):not(.card *, .chat *, dialog *, .btn, .btn *, .chip, .chip *, .landing-footer, .landing-footer *) {
+.app-main :is(p, .muted, h1, h3, .label):not(.card *, .chat *, dialog *, .btn, .btn *, .chip, .chip *, .site-footer, .site-footer *) {
   text-shadow: 0 0 2px var(--bg), 0 0 6px var(--bg), 0 0 12px var(--bg);
 }
 .app-main .muted:not(.card *, .chat *, dialog *, .btn, .btn *) { color: var(--ink-2); }
-.landing-footer strong { display: block; color: var(--ink-2); font-size: 1rem; margin-bottom: 4px; }
+.site-footer strong { display: block; color: var(--ink-2); font-size: 1rem; margin-bottom: 4px; }
+.site-footer p { margin: var(--space-1) 0 0; }
 ::selection { background: var(--accent-soft); color: var(--ink); }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
@@ -565,7 +566,17 @@ fieldset.field.card { padding: var(--space-4); }
 .landing-pillars .msi { color: var(--accent); font-size: 1.75rem; }
 .landing-steps ol { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
 .landing-steps li::marker { color: var(--accent); font-weight: 700; }
-.landing-footer { text-align: center; font-size: 0.875rem; padding-bottom: var(--space-4); }
+.site-footer { text-align: center; font-size: 0.875rem; padding-bottom: var(--space-4); }
+
+/* Pagine legali (D-72): testo lungo in una card, righe comode da leggere, tabella dei fornitori che scorre da sola */
+.legal { max-width: 720px; margin: 0 auto; line-height: 1.6; }
+.legal h2 { font-size: 1.125rem; margin: var(--space-4) 0 var(--space-2); }
+.legal ul { padding-left: 1.25rem; }
+.legal li + li { margin-top: var(--space-1); }
+.legal-table { overflow-x: auto; }
+.legal-table table { border-collapse: collapse; font-size: 0.875rem; min-width: 560px; }
+.legal-table :is(th, td) { text-align: left; vertical-align: top; padding: var(--space-2); border-bottom: 1px solid var(--line); }
+.legal-note { font-size: 0.8125rem; text-align: center; margin: 0; }
 @media (min-width: 720px) { .landing-pillars { grid-template-columns: repeat(3, 1fr); } }
 
 /* Home (D-49): il viaggio in evidenza in testa, poi azioni, conti, novità, elenco */
@@ -672,7 +683,7 @@ a.featured-cover { cursor: pointer; color: var(--accent); }   /* D-71: tutta la 
 .confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .confetti span { position: absolute; top: 0; width: 8px; height: 12px; border-radius: 2px; }
 /* il footer della landing sta sempre sopra le colline: vetro come le card */
-.landing-footer { background: var(--surface-glass); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-radius: var(--radius); padding: var(--space-3) var(--space-4); }
+.site-footer { background: var(--surface-glass); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-radius: var(--radius); padding: var(--space-3) var(--space-4); }
 
 /* Riepilogo di fine viaggio (v3.2, D-53): scommessa, rivelazione, numeri */
 .wrapped-gate, .wrapped-reveal, .wrapped-wait { position: relative; overflow: hidden; display: grid; justify-items: center; gap: var(--space-3); max-width: 520px; margin: 0 auto; text-align: center; }

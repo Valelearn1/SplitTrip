@@ -8,6 +8,7 @@ const FORM_PARENT: [RegExp, string][] = [
 export function parentOf(pathname: string): string {
   const path = pathname.replace(/\/+$/, '') || '/'
   for (const [re, to] of FORM_PARENT) if (re.test(path)) return path.replace(re, to)
+  if (path === '/termini' || path === '/privacy') return '/'   // la presentazione; chi ha l'account da lì va alla Home
   const section = path.match(/^\/trips\/([^/]+)\/[^/]+$/)
   if (section && section[1] !== 'new') return `/trips/${section[1]}`
   return '/trips'

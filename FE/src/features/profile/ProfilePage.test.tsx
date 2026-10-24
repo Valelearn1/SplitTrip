@@ -78,3 +78,10 @@ it('se il server non si raggiunge più, «I miei numeri» già caricati restano 
   expect(screen.queryByText('Il server non risponde, riprova tra poco')).not.toBeInTheDocument()
   act(() => focusManager.setFocused(undefined))
 })
+
+it('in fondo il copyright e le pagine legali (D-72)', async () => {
+  renderWithProviders([{ path: '/profile', element: <ProfilePage /> }], '/profile')
+  expect(await screen.findByText(/© 2026 Valentina Ferro/)).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Termini e condizioni' })).toHaveAttribute('href', '/termini')
+  expect(screen.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy')
+})

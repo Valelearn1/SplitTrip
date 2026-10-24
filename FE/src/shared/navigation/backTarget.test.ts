@@ -22,6 +22,8 @@ it.each([
   ['/notifications', '/trips'],
   ['/profile', '/trips'],
   ['/pagina-che-non-esiste', '/trips'],
+  ['/termini', '/'],            // pagine legali: anche senza account, si torna alla presentazione
+  ['/privacy', '/'],
 ])('da %s la pagina madre è %s', (from, to) => {
   expect(parentOf(from)).toBe(to)
 })

@@ -17,8 +17,10 @@ export function Layout() {
   const { auth, logout } = useAuth()
   const inTrip = useMatch('/trips/:tripId/*')
   const path = useLocation().pathname.replace(/\/+$/, '') || '/'
-  // ovunque tranne Home, landing, accesso, registrazione e ripristino della password; la Chat ha il suo nell'intestazione
-  const showBack = !!auth && !['/', '/trips', '/login', '/register', '/password-dimenticata', '/reimposta-password'].includes(path) && !path.endsWith('/chat')
+  // ovunque tranne Home, landing, accesso, registrazione e ripristino della password; la Chat ha il suo nell'intestazione.
+  // Le pagine legali (D-72) lo hanno anche senza account: ci si arriva dalla presentazione e dalla registrazione.
+  const legal = path === '/termini' || path === '/privacy'
+  const showBack = legal || !!auth && !['/', '/trips', '/login', '/register', '/password-dimenticata', '/reimposta-password'].includes(path) && !path.endsWith('/chat')
   return (
     <SeasonProvider>
       <SeasonBackground />

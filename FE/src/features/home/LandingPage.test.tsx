@@ -15,6 +15,9 @@ it('presenta l’app a chi non è loggato', async () => {
   expect(screen.getByRole('link', { name: 'Ho un codice invito' })).toHaveAttribute('href', '/login?next=/join')
   expect(screen.getByText('Prima: pianificate insieme')).toBeInTheDocument()
   expect(screen.getByText('Dividete le spese, non le amicizie.')).toBeInTheDocument()
+  expect(screen.getByText(/© 2026 Valentina Ferro/)).toBeInTheDocument()   // D-72
+  expect(screen.getByRole('link', { name: 'Termini e condizioni' })).toHaveAttribute('href', '/termini')
+  expect(screen.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy')
   await expectAccessible()   // D-65
 })
 

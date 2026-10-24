@@ -13,6 +13,7 @@ const routes = [{
     { path: '/', element: page('Landing') }, { path: '/login', element: page('Accesso') }, { path: '/register', element: page('Registrazione') },
     { path: '/trips', element: page('Home') }, { path: '/profile', element: page('Profilo') },
     { path: '/trips/:tripId/expenses', element: page('Spese') }, { path: '/trips/:tripId/chat', element: page('Chat') },
+    { path: '/termini', element: page('Termini') }, { path: '/privacy', element: page('Privacy') },
   ],
 }]
 
@@ -40,4 +41,12 @@ it('il logo porta alla Home e si chiama «SplitTrip»; il nome ha la sua classe 
   const brand = await screen.findByRole('link', { name: 'SplitTrip' })
   expect(brand).toHaveAttribute('href', '/trips')
   expect(brand.querySelector('.brand-name')).toHaveTextContent('SplitTrip')
+})
+
+it.each(['Termini:/termini', 'Privacy:/privacy'])('«Indietro» c\'è in %s anche senza account (D-72)', async (entry) => {
+  localStorage.removeItem(AUTH_STORAGE_KEY)
+  const [name, path] = entry.split(':')
+  renderWithProviders(routes, path)
+  expect(await screen.findByRole('heading', { name })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Indietro' })).toBeInTheDocument()
 })

@@ -222,6 +222,8 @@ Dipendenze: 1 ← S1 · 3 ← S2 · 8 ← S1 · 6-manuale ← S4 · 12-link ← 
 | 11 | Risposte dell'AI senza genere | da valutare | l'uscita del modello non si controlla in modo deterministico | — |
 | 12 | Spese e saldi dal vivo (WebSocket) | 0,5 giorni | oggi si rileggono all'apertura della pagina (D-66); dal vivo servirebbe un evento per spesa e rimborso | D-39 |
 | 13 | Email oltre al ripristino della password: invito al viaggio (chi organizza scrive l'email di chi invitare), riepilogo pronto a fine viaggio, promemoria di un debito aperto | 2–3 h l'invito, di più le altre | ognuna vuole modello, invio dopo il commit (come D-61), preferenza per spegnerla e test; il promemoria anche un'attività pianificata | Brevo (D-61) |
+| 14 | Contatto vero nell'informativa sulla privacy (alias Outlook al posto di `privacy@splittrip.example`) e dominio .it su Register.it collegato a Render (DNS, CORS, CSP, link delle email e del QR) | 1–2 h | il contatto di esempio basta per la valutazione; il dominio dopo la presentazione del 28 | D-72 |
+| 15 | Font e icone ospitati sul nostro sito invece che da Google Fonts | 1–2 h | oggi l'indirizzo IP di chi apre il sito arriva a Google (dichiarato nell'informativa, D-72); vanno ritagliate le icone usate e aggiornati CSP e service worker | D-63 |
 
 ---
 

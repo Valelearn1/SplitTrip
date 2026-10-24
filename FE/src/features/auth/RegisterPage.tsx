@@ -45,6 +45,9 @@ export function RegisterPage() {
         <PasswordField label="Password" autoComplete="new-password" placeholder="Almeno 8 caratteri, una lettera e una cifra" error={errors.password?.message} {...register('password')} />
         <FormError error={mutation.error} offlineMessage="Serve la rete per entrare" />
         <Button type="submit" needsNetwork={false} loading={mutation.isPending}>Registrati</Button>
+        <p className="muted legal-note">
+          Registrandoti accetti i <Link to="/termini">Termini e condizioni</Link> e confermi di aver letto l'<Link to="/privacy">Informativa sulla privacy</Link>.
+        </p>
       </form>
       <p className="muted" style={{ textAlign: 'center' }}>
         Hai già un account? <Link to="/login" state={location.state}>Entra</Link>
