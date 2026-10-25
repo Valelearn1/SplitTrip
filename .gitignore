@@ -4,7 +4,7 @@
 .impeccable/mocks/
 .vscode/
 
-# dati di esempio per la presentazione: password degli account di prova (scripts/demo-seed.mjs)
+# password degli account di prova creati per la presentazione (lo script che li generava è stato tolto il 25 ottobre)
 docs/demo/.account-demo.json
 
 # cache di test finita per sbaglio alla radice (vitest va lanciato da FE/)
