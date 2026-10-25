@@ -45,7 +45,7 @@ it('tre schede: la scheda nell’URL e i permessi di chi non organizza', async (
   expect(screen.getByText('Questi dati li cambia solo chi organizza il viaggio.')).toHaveClass('kv-note')   // staccato dal riquadro
   await user.click(screen.getByRole('tab', { name: 'Io' }))
   expect(screen.getByLabelText('Il tuo nome in questo viaggio')).toHaveValue('Marco')   // non «Nome nel viaggio», che si legge «del viaggio»
-  expect(screen.getByRole('group', { name: 'Conta per' })).toBeInTheDocument()
+  expect(screen.queryByRole('group', { name: 'Conta per' })).not.toBeInTheDocument()   // D-75: niente «conta per»
   expect(screen.getByRole('button', { name: 'Lascia il viaggio' })).toBeInTheDocument()
   await expectAccessible()   // D-65
 })
@@ -67,7 +67,7 @@ it('l’organizzatore modifica il viaggio e non può lasciarlo', async () => {
 })
 
 
-it('Persone: l’organizzatore vede chi conta per quanto, aggiunge chi non usa l’app e scollega', async () => {
+it('Persone: l’organizzatore vede le date di presenza, aggiunge chi non usa l’app e scollega', async () => {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(vale))
   let added: unknown
   let unlinked = false
@@ -78,7 +78,7 @@ it('Persone: l’organizzatore vede chi conta per quanto, aggiunge chi non usa l
   )
   renderWithProviders(routes, '/trips/t1/settings?tab=persone')
   expect(await screen.findByText('senza account')).toBeInTheDocument()
-  expect(screen.getByText(/conta per ½/)).toBeInTheDocument()
+  expect(screen.queryByText(/conta per/)).not.toBeInTheDocument()   // D-75: il peso salvato prima non si mostra più
   expect(screen.getByText(/arriva il 3 nov/)).toBeInTheDocument()
   const user = userEvent.setup()
   await user.type(screen.getByLabelText('Nome della persona da aggiungere'), 'Zio Beppe')

@@ -96,12 +96,10 @@ Le scelte logiche e tecniche spiegate come risposte alle domande che possono arr
 - **A voce:** i dati dei soldi meritano storico e ripristino. Foto e voci delle liste sono usa e getta.
 - **Riferimento:** D-15. Eccezione dichiarata: un messaggio di chat eliminato perde davvero il testo (D-40).
 
-### Perché la divisione per notti/giorni e «conta per»?
-- **A voce:** chi arriva al terzo giorno non paga le prime due notti. Una coppia con un solo telefono «conta per due».
-- **Dettagli:**
-  - la spesa salva i numeri inviati, così resta stabile anche se poi cambiano le date del viaggio;
-  - «peso» è diventato «Conta per» dopo una prova con un collega, perché la parola risultava astratta.
-- **Riferimento:** D-31, D-33, D-44.
+### Perché la divisione per notti/giorni? E che fine ha fatto «conta per»?
+- **A voce:** chi arriva al terzo giorno non paga le prime due notti. La spesa salva i numeri inviati, così resta stabile anche se poi cambiano le date del viaggio.
+- **«Conta per» (½ · 1 · 2):** c'era, ed è stato tolto il giorno della consegna. Era nato come «peso», rinominato dopo una prova con un collega perché la parola era astratta; nei test dal telefono è rimasto difficile da capire, e una coppia si sistema con una spesa a parte. Il motore dei pesi resta nel backend: le spese salvate prima si leggono ancora giuste.
+- **Riferimento:** D-31, D-33, D-44, D-75.
 
 ### ★ Come funzionano le valute? Perché il cambio non si ricalcola?
 - **A voce:** si scrive l'importo dello scontrino nella sua valuta. Il cambio del giorno arriva dalla Banca Centrale Europea e viene **salvato con la spesa**. Se il cambio domani si muove, i conti di ieri non cambiano.

@@ -28,7 +28,7 @@ function handlers(onPatch: (b: unknown) => void) {
   ]
 }
 
-it('«Va bene così» salva conta per e date e va alla panoramica', async () => {
+it('«Va bene così» salva le date e va alla panoramica; niente «conta per» (D-75)', async () => {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco', hasAvatar: false, preferredCurrency: 'EUR', chatSound: true, reduceMotion: false } }))
   let sent: unknown
   server.use(...handlers((b) => { sent = b }))
@@ -36,10 +36,10 @@ it('«Va bene così» salva conta per e date e va alla panoramica', async () => 
   expect(await screen.findByRole('heading', { name: 'Ti diamo il benvenuto in Lisbona 2026' })).toBeInTheDocument()
   expect(screen.getByLabelText('Arrivo')).toHaveValue('2026-11-01')   // precompilate con le date del viaggio
   const user = userEvent.setup()
-  await user.click(screen.getByRole('radio', { name: '2' }))
+  expect(screen.queryByRole('radio', { name: '2' })).not.toBeInTheDocument()
   await user.clear(screen.getByLabelText('Arrivo')); await user.type(screen.getByLabelText('Arrivo'), '2026-11-03')
   await user.click(screen.getByRole('button', { name: 'Va bene così' }))
-  await waitFor(() => expect(sent).toEqual({ defaultWeight: 2, arrivalDate: '2026-11-03', departureDate: '2026-11-06' }))
+  await waitFor(() => expect(sent).toEqual({ arrivalDate: '2026-11-03', departureDate: '2026-11-06' }))
   expect(await screen.findByText('Pagina panoramica')).toBeInTheDocument()
   await expectAccessible()   // D-65
 })
@@ -73,5 +73,5 @@ it('chi aveva già date diverse può tornare a «tutto il viaggio»: le date si 
   const user = userEvent.setup()
   await user.clear(screen.getByLabelText('Arrivo')); await user.type(screen.getByLabelText('Arrivo'), '2026-11-01')
   await user.click(screen.getByRole('button', { name: 'Va bene così' }))
-  await waitFor(() => expect(sent).toEqual({ defaultWeight: 1, clearDates: true }))
+  await waitFor(() => expect(sent).toEqual({ clearDates: true }))
 })

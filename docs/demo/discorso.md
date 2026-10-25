@@ -12,9 +12,9 @@ Presentazione del 28 ottobre 2026. Circa 430 parole, ritmo tranquillo. Tra paren
 
 > Ada organizza un viaggio a Lisbona. Sceglie la destinazione dall'elenco, e con quella arrivano meteo, mappa e la stagione dello sfondo. Per invitare il gruppo basta il QR: chi lo inquadra entra nel viaggio. *(Se il tempo lo permette: «potete provarlo anche voi, adesso».)*
 
-**[0:50 – 1:30] Le spese** · *a schermo: nuova spesa, «conta per», valuta*
+**[0:50 – 1:30] Le spese** · *a schermo: nuova spesa, presenza, valuta*
 
-> Le spese si dividono come succede davvero: in parti uguali, per chi c'era solo due notti, o con chi «conta per due», come una coppia. E se a Tokyo Bruno paga il sushi in yen, scrive l'importo dello scontrino: il cambio della Banca Centrale Europea arriva da solo e i conti restano in euro, al centesimo.
+> Le spese si dividono come succede davvero: in parti uguali, per chi c'era solo due notti, o con gli importi scritti a mano. E se a Tokyo Bruno paga il sushi in yen, scrive l'importo dello scontrino: il cambio della Banca Centrale Europea arriva da solo e i conti restano in euro, al centesimo.
 
 **[1:30 – 2:00] Saldare, offline, la fine** · *a schermo: Saldi → «Salda», avviso offline, riepilogo*
 

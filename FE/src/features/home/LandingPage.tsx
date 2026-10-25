@@ -6,7 +6,7 @@ import { useAuth } from '../auth/useAuth'
 
 const PILLARS = [
   { icon: 'checklist', title: 'Prima: pianificate insieme', text: 'Liste condivise, meteo della destinazione e consigli per decidere cosa portare e cosa vedere.' },
-  { icon: 'receipt_long', title: 'Durante: spese e chat', text: 'Ogni spesa divisa come serve, anche per presenza o per chi conta per due; foto sulla mappa e chat del gruppo.' },
+  { icon: 'receipt_long', title: 'Durante: spese e chat', text: 'Ogni spesa divisa come serve: in parti uguali, per presenza o con importi a mano; foto sulla mappa e chat del gruppo.' },
   { icon: 'balance', title: 'Dopo: conti chiari', text: 'Saldi sempre aggiornati e il minimo di rimborsi per tornare in pari, senza fogli di calcolo.' },
 ]
 const STEPS = ['Crea il viaggio e scegli la destinazione', 'Invita il gruppo con un codice', 'Registrate le spese: i conti si fanno da soli']

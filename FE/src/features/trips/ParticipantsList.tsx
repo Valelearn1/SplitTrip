@@ -1,6 +1,6 @@
 import type { Participant } from '../../shared/api/types'
 import { Avatar } from '../../shared/ui/Avatar'
-import { formatCount, formatDayMonth } from '../../shared/utils/format'
+import { formatDayMonth } from '../../shared/utils/format'
 
 type Props = {
   participants: Participant[]
@@ -9,10 +9,9 @@ type Props = {
   onRemove?: (p: Participant) => void
 }
 
-/** «conta per 2 · arriva il 3 nov»: solo quello che non è il valore di base */
+/** «arriva il 3 nov · parte il 6 nov»: solo quello che non è il valore di base (il peso salvato prima di D-75 non si mostra) */
 function details(m: Participant): string {
   return [
-    m.defaultWeight !== 1 ? `conta per ${formatCount(m.defaultWeight)}` : null,
     m.arrivalDate ? `arriva il ${formatDayMonth(m.arrivalDate)}` : null,
     m.departureDate ? `parte il ${formatDayMonth(m.departureDate)}` : null,
   ].filter(Boolean).join(' · ')

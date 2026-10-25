@@ -1,10 +1,8 @@
 import { z } from 'zod'
-import { parseCents } from '../expenses/expenseSchema'
 
 export const participantSchema = z
   .object({
     displayName: z.string().trim().min(2, 'Almeno 2 caratteri').max(40, 'Al massimo 40 caratteri'),
-    defaultWeight: z.string().refine((v) => (parseCents(v) ?? 0) > 0, 'Un numero maggiore di zero, es. 1, 2 o 0,5'),
     arrivalDate: z.string(),
     departureDate: z.string(),
   })

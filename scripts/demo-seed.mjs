@@ -301,12 +301,9 @@ async function seedLisbon(lead, bruno, chiara, dario) {
     C = pid(trip, "Chiara"),
     D = pid(trip, "Dario"),
     Z = pid(trip, "Zia Carla");
-  // Chiara arriva martedì; Dario viaggia in coppia e conta per due (D-31, D-33)
+  // Chiara arriva martedì (D-31); il «conta per» non c'è più (D-75): Dario conta per uno come gli altri
   await call("PATCH", `/api/trips/${id}/participants/${C}`, lead.token, {
     arrivalDate: "2026-10-27",
-  });
-  await call("PATCH", `/api/trips/${id}/participants/${D}`, lead.token, {
-    defaultWeight: 2,
   });
   await call("PATCH", `/api/trips/${id}`, lead.token, { status: "ONGOING" });
 
@@ -331,8 +328,7 @@ async function seedLisbon(lead, bruno, chiara, dario) {
     date: "2026-10-25",
     category: "FOOD",
     payerId: B,
-    splitType: "WEIGHT",
-    shares: weighted({ [me]: 1, [B]: 1, [D]: 2, [Z]: 1 }),
+    shares: equal(me, B, D, Z),
   });
   await expense(lead.token, id, {
     description: "Spesa al mercato",

@@ -506,14 +506,6 @@ fieldset.field.card { padding: var(--space-4); }
 .envelope { flex: none; color: var(--ink-2); }
 .notification.unread .envelope { color: var(--accent); }
 .suitcase { flex: none; color: var(--accent); overflow: visible; }
-/* «Conta per» (v3, D-44): ½ · 1 · 2 · altro, al posto del vecchio campo «Peso» */
-.counts-for { border: 0; padding: 0; margin: 0 0 var(--space-2); min-width: 0; }
-.counts-for .chips { margin: 0; gap: 6px; flex-wrap: nowrap; }
-.counts-for .chip { padding: 0 14px; }
-.counts-for .weight-input { margin-top: 6px; }
-.counts-legend { margin-bottom: 6px; font-size: 0.875rem; font-weight: 600; color: var(--ink-2); }
-.counts-side { display: grid; justify-items: end; gap: 2px; }
-@media (max-width: 719px) { .row-wrap .counts-side { margin-left: auto; } }
 /* Liste di gruppo (v3, D-45): si dice che sono condivise; «Chi lo porta?» compare solo se la si chiede */
 .list-shared { margin: -4px 0 var(--space-2); font-size: 0.875rem; }
 .assign-ask { font-size: 0.9375rem; }

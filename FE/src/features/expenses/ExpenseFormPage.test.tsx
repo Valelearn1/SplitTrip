@@ -133,7 +133,7 @@ describe('ExpenseFormPage', () => {
     expect(await screen.findByLabelText('Importo', {}, { timeout: 4500 })).toBeInTheDocument()
   }, 8000)
 
-  it('parti uguali con chi conta per 2: precompilato dal partecipante, spiegato e inviato come WEIGHT', async () => {
+  it('parti uguali: nessun «conta per», anche se un partecipante aveva un peso salvato (D-75)', async () => {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
     let sent: unknown
     server.use(
@@ -146,34 +146,16 @@ describe('ExpenseFormPage', () => {
     await user.type(screen.getByLabelText('Descrizione'), 'Cena')
     expect(screen.queryByRole('radio', { name: 'Pesi' })).not.toBeInTheDocument()
     expect(screen.getByRole('radio', { name: 'Parti uguali' })).toBeChecked()
-    // Marco rappresenta due persone (impostato in «La mia partecipazione»): la scelta è già visibile e spiegata
-    expect(within(screen.getByRole('group', { name: 'Marco conta per' })).getByRole('radio', { name: '2' })).toBeChecked()
-    expect(screen.getByText('Marco conta per 2: 60,00 € invece di 45,00 €')).toBeInTheDocument()
+    // Marco ha defaultWeight 2 da prima: non conta più, la quota è a testa e non c'è niente da scegliere
+    expect(screen.queryByRole('button', { name: /conta per/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('group', { name: /conta per/ })).not.toBeInTheDocument()
+    expect(screen.queryByText(/conta per/)).not.toBeInTheDocument()
+    expect(screen.getByText(/Quota a testa/)).toHaveTextContent('45,00 €')
     await user.click(screen.getByRole('button', { name: /Salva/ }))
     expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
-    expect(sent).toMatchObject({ splitType: 'WEIGHT', shares: [{ participantId: 'p1', weight: 1 }, { participantId: 'p2', weight: 2 }] })
-    expect(sent).not.toHaveProperty('dayBasis')
-  })
-
-  it('«Qualcuno conta per più di una persona?» apre la scelta; ½ per un bambino', async () => {
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
-    let sent: unknown
-    server.use(
-      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(trip)),
-      http.post('http://localhost/api/trips/t1/expenses', async ({ request }) => { sent = await request.json(); return HttpResponse.json({ id: 'e1' }, { status: 201 }) }),
-    )
-    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }, { path: 'expenses', element: <h2>Lista spese</h2> }] }], '/trips/t1/expenses/new')
-    const user = userEvent.setup()
-    await user.type(await screen.findByLabelText('Importo'), '90')
-    await user.type(screen.getByLabelText('Descrizione'), 'Gelati')
-    expect(screen.getByText(/Quota a testa/)).toBeInTheDocument()
-    expect(screen.queryByRole('group', { name: 'Vale conta per' })).not.toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Qualcuno conta per più di una persona?' }))
-    await user.click(within(screen.getByRole('group', { name: 'Vale conta per' })).getByRole('radio', { name: '½' }))
-    expect(screen.getByText('Vale conta per ½: 30,00 € invece di 45,00 €')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: /Salva/ }))
-    expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
-    expect(sent).toMatchObject({ splitType: 'WEIGHT', shares: [{ participantId: 'p1', weight: 0.5 }, { participantId: 'p2', weight: 1 }] })
+    // in parti uguali le quote non portano pesi: il server divide a testa
+    expect(sent).toMatchObject({ splitType: 'EQUAL', shares: [{ participantId: 'p1' }, { participantId: 'p2' }] })
+    expect((sent as { shares: { weight?: number }[] }).shares.every((x) => x.weight === undefined)).toBe(true)
   })
 
   it('per presenza: notti dalla categoria alloggio, ricalcolo se non toccate', async () => {
@@ -203,37 +185,55 @@ describe('ExpenseFormPage', () => {
     expect(sent).toMatchObject({ splitType: 'DAYS', dayBasis: 'NIGHTS', shares: [{ participantId: 'p1', weight: 1 }, { participantId: 'p2', weight: 4 }] })
   })
 
-  it('un «conta per» scritto a mano non diventa «giorni» passando a Presenza', async () => {
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
-    server.use(http.get('http://localhost/api/trips/t1', () => HttpResponse.json(tripWeights)))
-    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/new', element: <ExpenseFormPage /> }] }], '/trips/t1/expenses/new')
-    const user = userEvent.setup()
-    await user.click(within(await screen.findByRole('group', { name: 'Vale conta per' })).getByRole('radio', { name: 'altro' }))
-    await user.clear(screen.getByLabelText('Vale conta per (numero)'))
-    await user.type(screen.getByLabelText('Vale conta per (numero)'), '7')
-    await user.click(screen.getByRole('radio', { name: 'Presenza' }))
-    expect(screen.getByLabelText('Giorni di Vale')).toHaveValue('3') // presenza reale: arriva il 3, viaggio 1–5
-  })
-
-  it('una spesa per peso già salvata si apre come parti uguali e, passata a Presenza, propone notti dalle date', async () => {
+  it('una spesa per peso già salvata si apre come parti uguali: i «conta per» si leggono, si azzerano con un tocco, e Presenza propone le notti', async () => {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
     const saved = {
       id: 'e1', description: 'Casa', amount: 300, currency: 'EUR', date: '2026-11-01', category: 'LODGING', splitType: 'WEIGHT', dayBasis: null,
       payerId: 'p2', payerName: 'Marco', createdBy: 'u2', createdAt: '2026-11-01T10:00:00Z',
       shares: [{ participantId: 'p1', displayName: 'Vale', amount: 100, weight: 1 }, { participantId: 'p2', displayName: 'Marco', amount: 200, weight: 2 }],
     }
+    let sent: unknown
     server.use(
       http.get('http://localhost/api/trips/t1', () => HttpResponse.json(tripWeights)),
       http.get('http://localhost/api/trips/t1/expenses/e1', () => HttpResponse.json(saved)),
+      http.put('http://localhost/api/trips/t1/expenses/e1', async ({ request }) => { sent = await request.json(); return HttpResponse.json(saved) }),
     )
-    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> }] }], '/trips/t1/expenses/e1/edit')
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> }, { path: 'expenses', element: <h2>Lista spese</h2> }] }], '/trips/t1/expenses/e1/edit')
     const user = userEvent.setup()
-    // una spesa «per peso» di prima si apre come Parti uguali con i suoi «conta per»
+    // una spesa «per peso» di prima (D-44) si apre come Parti uguali: i numeri salvati restano e si vedono, ma non c'è più la scelta
     expect(await screen.findByRole('radio', { name: 'Parti uguali' })).toBeChecked()
-    expect(within(screen.getByRole('group', { name: 'Marco conta per' })).getByRole('radio', { name: '2' })).toBeChecked()
+    expect(screen.getByText('Marco conta per 2: 200,00 € invece di 150,00 €')).toBeInTheDocument()
+    expect(screen.queryByRole('group', { name: /conta per/ })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Ogni persona conta per 1' }))
+    expect(screen.queryByText(/conta per 2/)).not.toBeInTheDocument()
     await user.click(screen.getByRole('radio', { name: 'Presenza' }))
     expect(screen.getByLabelText('Notti di Vale')).toHaveValue('2')
     expect(screen.getByLabelText('Notti di Marco')).toHaveValue('4')
+    await user.click(screen.getByRole('radio', { name: 'Parti uguali' }))
+    await user.click(screen.getByRole('button', { name: /Salva/ }))
+    expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
+    expect(sent).toMatchObject({ splitType: 'EQUAL', shares: [{ participantId: 'p1' }, { participantId: 'p2' }] })
+  })
+
+  it('una spesa per peso già salvata, lasciata com\'è, resta per peso: i conti di prima non cambiano', async () => {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token: 't', user: { id: 'u2', email: 'm@e.it', displayName: 'Marco' } }))
+    const saved = {
+      id: 'e1', description: 'Casa', amount: 300, currency: 'EUR', date: '2026-11-01', category: 'LODGING', splitType: 'WEIGHT', dayBasis: null,
+      payerId: 'p2', payerName: 'Marco', createdBy: 'u2', createdAt: '2026-11-01T10:00:00Z',
+      shares: [{ participantId: 'p1', displayName: 'Vale', amount: 100, weight: 1 }, { participantId: 'p2', displayName: 'Marco', amount: 200, weight: 2 }],
+    }
+    let sent: unknown
+    server.use(
+      http.get('http://localhost/api/trips/t1', () => HttpResponse.json(tripWeights)),
+      http.get('http://localhost/api/trips/t1/expenses/e1', () => HttpResponse.json(saved)),
+      http.put('http://localhost/api/trips/t1/expenses/e1', async ({ request }) => { sent = await request.json(); return HttpResponse.json(saved) }),
+    )
+    renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ path: 'expenses/:expenseId/edit', element: <ExpenseFormPage /> }, { path: 'expenses', element: <h2>Lista spese</h2> }] }], '/trips/t1/expenses/e1/edit')
+    const user = userEvent.setup()
+    await user.clear(await screen.findByLabelText('Descrizione')); await user.type(screen.getByLabelText('Descrizione'), 'Casa al mare')
+    await user.click(screen.getByRole('button', { name: /Salva/ }))
+    expect(await screen.findByRole('heading', { name: 'Lista spese' })).toBeInTheDocument()
+    expect(sent).toMatchObject({ splitType: 'WEIGHT', shares: [{ participantId: 'p1', weight: 1 }, { participantId: 'p2', weight: 2 }] })
   })
 
   it('aperta da «Chi offre?» ha pagante, partecipanti, categoria e data già scelti', async () => {

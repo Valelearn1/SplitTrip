@@ -88,9 +88,9 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 | Versione | Contenuto | Stato |
 |---|---|---|
 | **v1 Core** | auth, viaggi, spese, rimborsi, saldi | ✅ |
-| **v1.5 Divisioni smart** | divisione per presenza e «conta per» (ex peso), partecipanti senza account rivendicabili, modello dati pronto per multi-valuta | ✅ |
+| **v1.5 Divisioni smart** | divisione per presenza e «conta per» (ex peso; tolto dall'interfaccia il 25 ottobre, D-75), partecipanti senza account rivendicabili, modello dati pronto per multi-valuta | ✅ |
 | **v2 Social** | liste condivise con assegnatario, foto con mappa, scontrino sulla spesa, notifiche in-app, meteo, foto profilo | ✅ |
-| **v3 Live** | chat di gruppo e notifiche in tempo reale (WebSocket STOMP), consigli AI, «conta per», movimento | ✅ |
+| **v3 Live** | chat di gruppo e notifiche in tempo reale (WebSocket STOMP), consigli AI, movimento | ✅ |
 | **v3.1 Rifinitura** | dai test con gli amici: proposte di luoghi, benvenuto, Impostazioni a schede, Home e presentazione, profilo con preferenze, reazioni ed emoji in chat | ✅ |
 | **v3.2 Giochi, riepilogo e tema** | «Chi offre?», riepilogo di fine viaggio con «Indovina il totale», badge e immagine per le storie, tema scuro, palette cobalto e lampone, sfondo stagionale, logo mappamondo, «Indietro» ovunque, password dimenticata, importi solo numerici, destinazioni reali | ✅ |
 | **v3.3 Inclusiva** | accessibilità verificata (WCAG 2.2 AA), linguaggio senza genere, impostazioni di sistema, ritocchi | ✅ |
@@ -152,13 +152,13 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 
 ```bash
 cd BE && sh mvnw test   # 258 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 380 test
+cd FE && npm test       # 383 test
 docker compose up -d db-e2e && cd FE && npm run e2e   # giro completo in un browser vero (Playwright)
 ```
 
 Cosa coprono:
 - ⚖️ **motore dei saldi** al 100 %: somma dei netti sempre zero, centesimi di resto deterministici, al massimo n−1 trasferimenti
-- 🧮 **divisione «conta per» e per presenza**: stessi esempi di riferimento nel backend e nel frontend (resto maggiore, Σ quote = totale)
+- 🧮 **divisione per presenza e per peso (il motore)**: stessi esempi di riferimento nel backend e nel frontend (resto maggiore, Σ quote = totale)
 - 🗃️ **migrazione dei dati**: test che applica la V1, inserisce dati reali (anche un ex membro nel cestino) e verifica la V2
 - 🔄 **flussi API end-to-end** su Postgres reale (Testcontainers): registrazione → viaggio → invito → spese → rimborsi → saldi
 - 🔒 **sicurezza**: 401/403, SQL injection, XSS, id utente preso solo dal token, nessuno stack trace negli errori
@@ -180,7 +180,7 @@ Cosa coprono:
 - 🗣️ **linguaggio**: un test nel frontend e uno nel backend bloccano le forme col genere («Bentornata», «organizzatore», «sei stato/a»…) nei testi a schermo, nei messaggi del server, nelle email e nelle istruzioni all'AI
 - 💱 **valute**: conversione a 2 decimali, quote in yen che sommano al centesimo in euro, cambio zero o con troppi decimali rifiutato, servizio dei cambi finto (fine settimana → venerdì, valuta sconosciuta → 404, giù → 503), rimborso parziale in yen nei saldi, rimborsi vecchi invariati (V10)
 - 🧭 **giro completo** (Playwright, in CI a ogni push): due persone si registrano, viaggio, invito col QR, spesa, saldo e «Salda», poi una spesa in yen; alla prima esecuzione ha trovato due errori sui soldi (D-66)
-- 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda», liste, caricamento foto col consenso alla posizione, campanella, chat, consigli AI, «conta per», busta e valigia
+- 🖥️ **frontend**: client API, rotte protette, form spesa (validazione delle quote), saldi e «Salda», liste, caricamento foto col consenso alla posizione, campanella, chat, consigli AI, busta e valigia
 
 Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il codice.
 
