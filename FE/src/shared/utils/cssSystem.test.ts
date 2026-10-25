@@ -49,3 +49,10 @@ it('con i colori forzati chip scelti, persona scelta e interruttore si vedono, e
   expect(forced).toMatch(/\.chip:has\(input:focus-visible\)[^{]*\.switch:focus-visible[^{]*\{[^}]*outline: 3px solid Highlight/)
   expect(forced).toMatch(/\.switch\[aria-checked='true'\] \.switch-track[^{]*\{[^}]*background: Highlight/)
 })
+
+it('lo sfondo fisso non segue la barra del browser (100lvh) e sta su un livello suo: niente scatti scorrendo dal telefono', () => {
+  const bg = block('.season-bg {')
+  expect(bg).toContain('height: 100lvh')
+  expect(bg).toContain('will-change: transform')
+  expect(bg).not.toContain('inset: 0')
+})

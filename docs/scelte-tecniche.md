@@ -28,6 +28,11 @@ Le scelte logiche e tecniche spiegate come risposte alle domande che possono arr
 - **Scartato:** branch e PR per ogni card, come nel progetto di gruppo.
 - **Riferimento:** D-23, D-66.
 
+### ★ Si può usare senza account? Perché «Ho un codice invito» chiede di registrarsi?
+- **A voce:** sono due cose diverse. **Essere nel viaggio** senza account si può: chi organizza aggiunge «Dario» per nome, e Dario sta in spese, quote e saldi senza aver mai aperto l'app. Se un giorno la installa, entra col codice e rivendica il suo posto scegliendo il suo nome. **Usare l'app** invece richiede un account, perché l'app deve sapere chi sei: chi paga, chi scrive in chat, chi carica una foto.
+- **Scartato:** l'ospite via link senza account: il link diventerebbe una credenziale (token per dispositivo, scadenza, revoca, cosa può fare l'ospite). È nella roadmap, con una spec sua.
+- **Riferimento:** D-02, D-30, D-32, D-74.
+
 ### Perché mobile-first?
 - **A voce:** in vacanza si usa il telefono. Il riferimento è una larghezza di 430 px.
 - **Riferimento:** D-11.

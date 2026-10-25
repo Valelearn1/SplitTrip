@@ -12,7 +12,7 @@ it('presenta l’app a chi non è loggato', async () => {
   expect(await screen.findByRole('heading', { name: 'Vacanze in compagnia, conti chiari' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Crea un account' })).toHaveAttribute('href', '/register')
   expect(screen.getByRole('link', { name: 'Accedi' })).toHaveAttribute('href', '/login')
-  expect(screen.getByRole('link', { name: 'Ho un codice invito' })).toHaveAttribute('href', '/login?next=/join')
+  expect(screen.getByRole('link', { name: 'Ho un codice invito' })).toHaveAttribute('href', '/register?next=/join')   // chi ha un codice è quasi sempre nuovo
   expect(screen.getByText('Prima: pianificate insieme')).toBeInTheDocument()
   expect(screen.getByText('Dividete le spese, non le amicizie.')).toBeInTheDocument()
   expect(screen.getByText(/© 2026 Valentina Ferro/)).toBeInTheDocument()   // D-72

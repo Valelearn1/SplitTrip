@@ -55,3 +55,28 @@ it('con la spunta la registrazione manda acceptedTerms: true (D-73)', async () =
   expect(await screen.findByText('Home')).toBeInTheDocument()
   expect(body).toEqual({ displayName: 'Ada', email: 'ada@e.it', password: 'password1', acceptedTerms: true })
 })
+
+it('nessun placeholder nei campi; le regole della password stanno sotto il campo e il lettore di schermo le legge', async () => {
+  renderWithProviders([{ path: '/register', element: <RegisterPage /> }], '/register')
+  for (const label of ['Nome', 'Email', 'Password']) expect(await screen.findByLabelText(label)).not.toHaveAttribute('placeholder')
+  expect(screen.getByLabelText('Password')).toHaveAccessibleDescription('Almeno 8 caratteri, con una lettera e una cifra')
+})
+
+it('con ?next=/join spiega che serve un account e dopo la registrazione porta al codice', async () => {
+  server.use(http.post('http://localhost/api/auth/register', () =>
+    HttpResponse.json({ token: 't', user: { id: 'u1', email: 'ada@e.it', displayName: 'Ada', hasAvatar: false, preferredCurrency: 'EUR', chatSound: true, reduceMotion: false } }, { status: 201 })))
+  const user = userEvent.setup()
+  renderWithProviders([{ path: '/register', element: <RegisterPage /> }, { path: '/join', element: <h1>Inserisci il codice</h1> }], '/register?next=/join')
+  expect(await screen.findByText(/Per entrare nel viaggio con un codice serve un account/)).toBeInTheDocument()
+  expect(screen.getByText(/chi organizza lo aggiunge per nome/)).toBeInTheDocument()
+  await fill(user)
+  await user.click(screen.getByRole('checkbox', { name: /Accetto i Termini/ }))
+  await user.click(screen.getByRole('button', { name: 'Registrati' }))
+  expect(await screen.findByRole('heading', { name: 'Inserisci il codice' })).toBeInTheDocument()
+})
+
+it('?next= verso un altro sito viene ignorato anche qui', async () => {
+  renderWithProviders([{ path: '/register', element: <RegisterPage /> }], '/register?next=//esempio.test/trappola')
+  await screen.findByRole('heading', { name: 'Crea il tuo account' })
+  expect(screen.queryByText(/serve un account/)).not.toBeInTheDocument()
+})

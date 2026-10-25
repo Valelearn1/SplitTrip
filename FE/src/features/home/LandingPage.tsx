@@ -25,7 +25,7 @@ export function LandingPage() {
           <Link to="/register" className="btn btn-primary">Crea un account</Link>
           <Link to="/login" className="btn btn-secondary">Accedi</Link>
         </div>
-        <Link to="/login?next=/join" className="link-button">Ho un codice invito</Link>
+        <Link to="/register?next=/join" className="link-button">Ho un codice invito</Link>
       </section>
       <section className="landing-pillars">
         {PILLARS.map((p) => (
