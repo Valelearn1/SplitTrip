@@ -71,15 +71,15 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 
 | Chat del viaggio | Impostazioni del viaggio | «Chi offre?» |
 |---|---|---|
-| ![Chat in tempo reale](docs/screenshots/mobile-chat.png) | ![Impostazioni, scheda Persone](docs/screenshots/mobile-settings.png) | ![La ruota sceglie chi offre](docs/screenshots/mobile-wheel.png) |
+| ![Chat in tempo reale](docs/screenshots/mobile-chat.png) | ![Impostazioni, scheda Persone](docs/screenshots/mobile-settings-persone.png) | ![La ruota sceglie chi offre](docs/screenshots/mobile-wheel.png) |
 
 | «Indovina il totale» | Riepilogo: badge e classifiche | Tema scuro |
 |---|---|---|
 | ![Rivelazione del totale](docs/screenshots/mobile-guess.png) | ![Badge e classifiche del riepilogo](docs/screenshots/mobile-wrapped.png) | ![Home nel tema scuro](docs/screenshots/mobile-dark-home.png) |
 
-| App installata: avviso di nuova versione | | |
+| App installata: avviso di nuova versione | Registrazione con i termini | Informativa sulla privacy |
 |---|---|---|
-| ![La barra «C'è una nuova versione di SplitTrip» con i bottoni Aggiorna e Dopo](docs/screenshots/mobile-update-banner.png) | | |
+| ![La barra «C'è una nuova versione di SplitTrip» con i bottoni Aggiorna e Dopo](docs/screenshots/mobile-update-banner-io.png) | ![Registrazione con la casella «Accetto i Termini e condizioni»](docs/screenshots/mobile-register.png) | ![Informativa sulla privacy, leggibile senza account](docs/screenshots/mobile-privacy.png) |
 
 ![Dashboard desktop](docs/screenshots/desktop-dashboard.png)
 
