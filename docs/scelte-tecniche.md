@@ -413,7 +413,7 @@ Colpo d'occhio: cosa del programma è in SplitTrip, cosa è stato fatto in modo 
 
 | Livello | Strumenti | Quanti |
 |---|---|---|
-| Backend: unitari e integrazione | JUnit 5, MockMvc, **Testcontainers** con un Postgres vero | 258 |
+| Backend: unitari e integrazione | JUnit 5, MockMvc, **Testcontainers** con un Postgres vero | 259 |
 | Frontend | Vitest, Testing Library, MSW, axe | 383 |
 | Giro completo nel browser | Playwright: due persone si registrano, entrano col QR, dividono una cena, saldano, aggiungono una spesa in yen | 1 |
 

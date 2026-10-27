@@ -42,4 +42,16 @@ class RestClientOpenMeteoClientTest {
         server.expect(requestTo(startsWith("https://geocoding-api.open-meteo.com"))).andRespond(withSuccess("{}", APPLICATION_JSON));
         assertThat(client.geocode("Xyzzy")).isEmpty();
     }
+
+    @Test
+    void unGiornoSenzaDatiVieneSaltato() {
+        // Open-Meteo a volte manda l'ultimo dei 16 giorni con tutti null (previsione non ancora calcolata)
+        server.expect(requestTo(startsWith("https://api.open-meteo.com/v1/forecast")))
+                .andRespond(withSuccess("""
+                        {"daily":{"time":["2026-10-27","2026-10-28","2026-11-11"],"weather_code":[61,3,null],"temperature_2m_max":[16.7,15.7,null],"temperature_2m_min":[10.5,9.1,null]}}
+                        """, APPLICATION_JSON));
+
+        var days = client.forecast(new BigDecimal("51.5"), new BigDecimal("-0.12"));
+        assertThat(days).extracting(d -> d.date().toString()).containsExactly("2026-10-27", "2026-10-28");
+    }
 }

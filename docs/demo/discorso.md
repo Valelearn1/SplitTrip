@@ -32,7 +32,7 @@ Presentazione del 28 ottobre 2026. Circa 498 parole, ritmo tranquillo. Tra paren
 
 ## Da ricontrollare prima del 28
 
-- **Numeri:** «settantacinque decisioni» (D-01…D-75 in `docs/decisioni.md`) e «più di seicento test» (258 backend + 383 frontend + il giro e2e al 25 ottobre). Se cambiano, aggiornare qui.
+- **Numeri:** «settantacinque decisioni» (D-01…D-75 in `docs/decisioni.md`) e «più di seicento test» (259 backend + 383 frontend + il giro e2e al 27 ottobre). Se cambiano, aggiornare qui.
 - **Il viaggio:** London 2026 deve restare «In corso» (24–31 ottobre: il 28 è il giorno 5, come scritto; se la data cambia, leggere il numero a schermo). Hotel 400 GBP = 476,03 €, quota 238,02 €: se aggiungi altre spese cambiano, rileggerli dallo schermo.
 - **QR dal vivo:** chi inquadra entra nel viaggio dal proprio telefono dopo una registrazione di un minuto. Tenere la pagina del QR pronta e dire che si può fare anche dopo.
 - **Server:** svegliare Render qualche minuto prima (`curl https://splittrip-api.onrender.com/actuator/health`); aprire il sito dal telefono una volta prima di salire.

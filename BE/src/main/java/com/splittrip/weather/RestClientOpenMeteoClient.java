@@ -46,7 +46,12 @@ public class RestClientOpenMeteoClient implements OpenMeteoClient {
         Daily d = r.daily();
         List<DayForecast> out = new ArrayList<>();
         for (int i = 0; i < d.time().size(); i++) {
-            out.add(new DayForecast(d.time().get(i), d.weatherCode().get(i), d.tMin().get(i), d.tMax().get(i)));
+            Integer code = d.weatherCode().get(i);
+            BigDecimal tMin = d.tMin().get(i);
+            BigDecimal tMax = d.tMax().get(i);
+            // L'ultimo dei 16 giorni a volte arriva con tutti null (previsione non ancora calcolata): si salta
+            if (code == null || tMin == null || tMax == null) continue;
+            out.add(new DayForecast(d.time().get(i), code, tMin, tMax));
         }
         return out;
     }
