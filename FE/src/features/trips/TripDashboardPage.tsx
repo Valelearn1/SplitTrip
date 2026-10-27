@@ -39,7 +39,7 @@ export function TripDashboardPage() {
         </div>
       </div>
 
-      <WeatherCard tripId={trip.id} />
+      <WeatherCard trip={trip} />
       <AiTipsCard tripId={trip.id} destination={trip.destination} canWrite={canWrite} />
       <GamesCard trip={trip} me={me} canWrite={canWrite} over={trip.status === 'CLOSED' || trip.endDate < serverToday()} />
 

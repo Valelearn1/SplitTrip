@@ -17,6 +17,10 @@ it('e può ancora parlare con l\'API e col canale live', () => {
   expect(connectSrc).toContain('wss://splittrip-api.onrender.com')
 })
 
+it('e il browser può chiedere il meteo a Open-Meteo (D-76: dal server l\'IP condiviso di Render è bloccato)', () => {
+  expect(connectSrc).toContain('https://api.open-meteo.com')
+})
+
 it('il manifest arriva col suo Content-Type', () => {
   expect(renderYaml).toMatch(/path: \/manifest\.webmanifest\s+name: Content-Type\s+value: application\/manifest\+json/)
 })

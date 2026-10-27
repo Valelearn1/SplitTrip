@@ -2,6 +2,6 @@
 export const LEGAL = {
   owner: 'Valentina Ferro',
   contact: 'privacy@splittrip.example',
-  updated: '24 ottobre 2026',
+  updated: '27 ottobre 2026',
   year: 2026,
 } as const

@@ -1,7 +1,33 @@
-import { api } from '../../shared/api/client'
-import type { Weather } from '../../shared/api/types'
+import type { Weather, WeatherDay } from '../../shared/api/types'
 
-export const weatherApi = { forecast: (tripId: string) => api<Weather>(`/trips/${tripId}/weather`) }
+export const OPEN_METEO_FORECAST = 'https://api.open-meteo.com/v1/forecast'
+
+type Daily = { time?: string[]; weather_code?: (number | null)[]; temperature_2m_max?: (number | null)[]; temperature_2m_min?: (number | null)[] }
+
+/**
+ * Previsioni chieste dal browser a Open-Meteo (D-76): il server su Render esce da un IP condiviso con altri siti, che
+ * esaurisce il limite gratuito giornaliero; dal dispositivo di chi guarda il limite è il suo. Vanno solo le coordinate
+ * della destinazione (vedi l'informativa). Tiene i giorni del viaggio e salta quelli che arrivano senza dati.
+ */
+export async function fetchForecast(latitude: number, longitude: number, startDate: string, endDate: string): Promise<Weather> {
+  const url = new URL(OPEN_METEO_FORECAST)
+  url.search = new URLSearchParams({
+    latitude: String(latitude), longitude: String(longitude),
+    daily: 'weather_code,temperature_2m_max,temperature_2m_min', timezone: 'auto', forecast_days: '16',
+  }).toString()
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Open-Meteo ${res.status}`)
+  const body = (await res.json()) as { daily?: Daily }
+  const d = body.daily ?? {}
+  const days: WeatherDay[] = []
+  ;(d.time ?? []).forEach((date, i) => {
+    const code = d.weather_code?.[i], tMax = d.temperature_2m_max?.[i], tMin = d.temperature_2m_min?.[i]
+    if (code == null || tMax == null || tMin == null) return
+    if (date < startDate || date > endDate) return   // date ISO: il confronto tra stringhe è quello giusto
+    days.push({ date, code, tMin, tMax })
+  })
+  return { days }
+}
 
 /** Codici meteo WMO → icona Material e testo (D-24: mai solo l'icona). */
 export function weatherLabel(code: number): { icon: string; label: string } {

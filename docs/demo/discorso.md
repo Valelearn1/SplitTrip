@@ -22,7 +22,7 @@ Presentazione del 28 ottobre 2026. Circa 498 parole, ritmo tranquillo. Tra paren
 
 **[2:00 – 2:50] Come è fatto** · *a schermo: GitHub col badge verde, Actions, board Trello*
 
-> Dietro c'è un metodo: prima la specifica, poi il piano, poi il codice, scritto partendo dai test. Ogni scelta è registrata con le alternative scartate: sono settantacinque decisioni. Il progetto ha più di seicento test, tra backend, frontend e un giro completo in un browser vero: due persone si registrano, dividono una cena e saldano. A ogni push parte la CI, l'integrazione continua: un server di GitHub scarica il codice, avvia un database, fa girare tutti i test e il giro nel browser, e mette un semaforo verde o rosso sul commit. Alla prima esecuzione ha trovato due errori sui soldi che nessuno aveva notato usando l'app. L'interfaccia è verificata per l'accessibilità, i testi non danno per scontato il genere di chi legge, e chi si registra sa dove finiscono i suoi dati.
+> Dietro c'è un metodo: prima la specifica, poi il piano, poi il codice, scritto partendo dai test. Ogni scelta è registrata con le alternative scartate: sono settantasei decisioni. Il progetto ha più di seicento test, tra backend, frontend e un giro completo in un browser vero: due persone si registrano, dividono una cena e saldano. A ogni push parte la CI, l'integrazione continua: un server di GitHub scarica il codice, avvia un database, fa girare tutti i test e il giro nel browser, e mette un semaforo verde o rosso sul commit. Alla prima esecuzione ha trovato due errori sui soldi che nessuno aveva notato usando l'app. L'interfaccia è verificata per l'accessibilità, i testi non danno per scontato il genere di chi legge, e chi si registra sa dove finiscono i suoi dati.
 
 **[2:50 – 3:00] Chiusura** · *a schermo: la Home con il Big Ben*
 
@@ -32,7 +32,7 @@ Presentazione del 28 ottobre 2026. Circa 498 parole, ritmo tranquillo. Tra paren
 
 ## Da ricontrollare prima del 28
 
-- **Numeri:** «settantacinque decisioni» (D-01…D-75 in `docs/decisioni.md`) e «più di seicento test» (259 backend + 383 frontend + il giro e2e al 27 ottobre). Se cambiano, aggiornare qui.
+- **Numeri:** «settantasei decisioni» (D-01…D-76 in `docs/decisioni.md`) e «più di seicento test» (259 backend + 387 frontend + il giro e2e al 27 ottobre). Se cambiano, aggiornare qui.
 - **Il viaggio:** London 2026 deve restare «In corso» (24–31 ottobre: il 28 è il giorno 5, come scritto; se la data cambia, leggere il numero a schermo). Hotel 400 GBP = 476,03 €, quota 238,02 €: se aggiungi altre spese cambiano, rileggerli dallo schermo.
 - **QR dal vivo:** chi inquadra entra nel viaggio dal proprio telefono dopo una registrazione di un minuto. Tenere la pagina del QR pronta e dire che si può fare anche dopo.
 - **Server:** svegliare Render qualche minuto prima (`curl https://splittrip-api.onrender.com/actuator/health`); aprire il sito dal telefono una volta prima di salire.

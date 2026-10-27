@@ -9,3 +9,6 @@ docs/demo/.account-demo.json
 
 # cache di test finita per sbaglio alla radice (vitest va lanciato da FE/)
 node_modules/
+
+# account di prova per il localhost
+docs/demo/.account-locale.json

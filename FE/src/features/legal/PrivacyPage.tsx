@@ -5,7 +5,7 @@ const PROVIDERS = [
   { who: 'Render', why: 'ospita sito, server e database', gets: 'i dati dell\'app, per intero', where: 'Stati Uniti' },
   { who: 'Brevo', why: 'invia l\'email per reimpostare la password', gets: 'il tuo indirizzo email e il link', where: 'Unione europea (Francia)' },
   { who: 'Anthropic', why: 'consigli per il viaggio e per la valigia', gets: 'destinazione, date, numero di persone, meteo e le voci già in lista; mai nomi, email o importi', where: 'Stati Uniti' },
-  { who: 'Open-Meteo', why: 'meteo e proposte di luoghi', gets: 'coordinate, date e il testo cercato, inviati dal nostro server: non il tuo indirizzo IP', where: 'non riceve dati personali' },
+  { who: 'Open-Meteo', why: 'meteo e proposte di luoghi', gets: 'per il meteo, le coordinate della destinazione, inviate dal tuo browser (quindi con il tuo indirizzo IP, come per qualsiasi sito); per i luoghi, il testo cercato, inviato dal nostro server', where: 'Svizzera' },
   { who: 'Frankfurter', why: 'cambi del giorno della Banca centrale europea', gets: 'data e valute, inviate dal nostro server', where: 'non riceve dati personali' },
   { who: 'OpenStreetMap', why: 'immagini della mappa', gets: 'il tuo indirizzo IP e il tipo di browser, perché il browser le scarica direttamente', where: 'Regno Unito' },
   { who: 'Google Fonts', why: 'caratteri del testo e icone', gets: 'il tuo indirizzo IP e il tipo di browser, perché il browser li scarica direttamente', where: 'Stati Uniti' },
@@ -59,7 +59,7 @@ export function PrivacyPage() {
         Render, Anthropic e Google hanno sede negli Stati Uniti; il server e il database di SplitTrip si trovano negli
         Stati Uniti. I trasferimenti avvengono con le garanzie previste dagli articoli 45 e 46 del GDPR offerte dai
         fornitori, come le clausole contrattuali standard o l'adesione all'EU-U.S. Data Privacy Framework. Il Regno Unito
-        ha una decisione di adeguatezza della Commissione europea.
+        e la Svizzera hanno una decisione di adeguatezza della Commissione europea.
       </p>
 
       <h2>Per quanto tempo</h2>

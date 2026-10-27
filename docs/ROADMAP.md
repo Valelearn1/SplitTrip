@@ -226,6 +226,7 @@ Dipendenze: 1 ← S1 · 3 ← S2 · 8 ← S1 · 6-manuale ← S4 · 12-link ← 
 | 15 | Font e icone ospitati sul nostro sito invece che da Google Fonts | 1–2 h | oggi l'indirizzo IP di chi apre il sito arriva a Google (dichiarato nell'informativa, D-72); vanno ritagliate le icone usate e aggiornati CSP e service worker | D-63 |
 | 16 | Chiedere di accettare i Termini a chi ha un account creato prima della casella (`terms_accepted_at` vuota) e quando i Termini cambiano (versione accettata) | 2–3 h | gli account precedenti sono pochi e di prova; serve una pagina che si apre all'accesso e un controllo nel server | D-73 |
 | 17 | Accesso con Google (OAuth, «Continua con Google») | mezza giornata | client OAuth su Google Cloud, verifica del token nel server, account senza password (migrazione, profilo, «password dimenticata»), CSP su Render da aprire a Google, informativa da aggiornare, giro e2e: troppo a ridosso della consegna | D-72, D-73 |
+| 18 | Riserva per il meteo della Home e dei consigli AI: salvare l'ultima previsione buona per viaggio (`trip_forecasts`) e servirla quando Open-Meteo risponde 429 dall'IP condiviso di Render; in alternativa far chiedere anche questi dal browser | 2–3 h | il backend aggiorna la tabella quando una chiamata riesce (di notte il contatore riparte) e la Home mostra «previsione di ieri» con la data; oggi, su Render, Home e AI restano senza meteo nelle ore in cui l'IP condiviso è bloccato, la card della panoramica no | D-76 |
 
 ---
 

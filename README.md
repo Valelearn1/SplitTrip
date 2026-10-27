@@ -28,7 +28,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 - 📷 **Foto del viaggio** in griglia e **sulla mappa** (OpenStreetMap): la posizione GPS si mostra solo se chi carica lo sceglie
 - 🧾 **Scontrino** fotografato e allegato alla spesa
 - 🔔 **Notifiche** in-app: nuova spesa, rimborso ricevuto, nuovo partecipante, voce assegnata a te
-- 🌤️ **Meteo della destinazione** nei giorni del viaggio (Open-Meteo)
+- 🌤️ **Meteo della destinazione** nei giorni del viaggio (Open-Meteo, chiesto dal browser: D-76)
 - 🙂 **Foto profilo**, visibile solo a chi viaggia con te
 - 💬 **Chat di gruppo in tempo reale** per ogni viaggio: «sta scrivendo…», messaggi eliminabili, e le spese appena aggiunte compaiono in chat con il link
 - 🔔 **Campanella live**: la notifica arriva subito, senza ricaricare la pagina
@@ -144,7 +144,7 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 | `CORS_ORIGIN` | BE | `http://localhost:5173` | URL del frontend |
 | `VITE_API_URL` | FE | `/api` (proxy Vite) | URL dell'API |
 | `ANTHROPIC_API_KEY` | BE | vuota (consigli AI spenti) | chiave Anthropic, inserita a mano su Render |
-| `BREVO_API_KEY` | BE | vuota (nessuna email) | chiave API di Brevo con il solo permesso d'invio delle email transazionali, inserita a mano su Render |
+| `BREVO_API_KEY` | BE | vuota (nessuna email) | chiave API di Brevo con il solo permesso d'invio delle email transazionali, inserita a mano su Render. Se Brevo ha gli «IP autorizzati» attivi, servono gli intervalli in uscita di Render (scheda del servizio → Connect → Outbound), altrimenti risponde 401 e l'email non parte |
 | `MAIL_FROM` | BE | vuota | mittente verificato su Brevo |
 | `MAIL_LOG_LINKS` | BE | `false` | mai in produzione; in locale `true` scrive nel log il link di «Password dimenticata» |
 
@@ -152,7 +152,7 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 
 ```bash
 cd BE && sh mvnw test   # 259 test: unitari + integrazione con Postgres reale (serve Docker)
-cd FE && npm test       # 383 test
+cd FE && npm test       # 387 test
 docker compose up -d db-e2e && cd FE && npm run e2e   # giro completo in un browser vero (Playwright)
 ```
 
@@ -164,7 +164,7 @@ Cosa coprono:
 - 🔒 **sicurezza**: 401/403, SQL injection, XSS, id utente preso solo dal token, nessuno stack trace negli errori
 - 🖼️ **immagini**: riscrittura lato server (niente EXIF), PNG trasparente su bianco, file finti rifiutati, limite di dimensione e di numero
 - 🔔 **notifiche**: un evento per azione, mai a chi l'ha fatta, scritte solo dopo il commit
-- 🌤️ **meteo**: servizio giù o lento → card vuota, mai un errore
+- 🌤️ **meteo**: servizio giù o lento → card vuota, mai un errore; la card lo chiede dal browser (D-76), perché dal server di Render l'IP condiviso esaurisce il limite giornaliero gratuito di Open-Meteo
 - ⚡ **tempo reale** con un client STOMP vero: CONNECT senza token rifiutato, canale di un viaggio solo ai membri, notifica solo al destinatario, «sta scrivendo» limitato; nel frontend riconnessione, logout e nessun messaggio doppio
 - ✨ **AI**: nel testo per il modello niente nomi né email, risposta rotta → 503 senza consumare il limite, 5 generazioni al giorno
 - 📍 **luoghi**: testo con caratteri speciali codificato bene, servizio giù → nessuna proposta ma testo libero valido, 30 ricerche al minuto, cache
@@ -198,6 +198,7 @@ Sviluppato in **TDD**: ogni test è stato visto fallire prima di scrivere il cod
 | **Immagini** | il server decodifica e riscrive ogni foto in JPEG (via EXIF e metadati, file finti rifiutati dal contenuto, non dal nome); la posizione si salva solo con il consenso esplicito di chi carica; le immagini si scaricano con il token (`Authorization: Bearer`), mai da URL pubblici; limiti di 3 MB a file e 200 foto a viaggio |
 | **Tempo reale** | il JWT viaggia nel frame CONNECT del WebSocket, mai nell'URL; ogni sottoscrizione verifica che tu sia membro del viaggio; si scrive solo via REST (stessi controlli delle API), il socket spinge dati già salvati; limite di 20 messaggi al minuto e frame da 8 KB |
 | **Luoghi** | le proposte passano dal backend (Open-Meteo, D-51): al servizio arriva solo il testo cercato, mai chi sei; solo per chi ha fatto il login, 30 ricerche al minuto, risultati in cache |
+| **Meteo** | la card lo chiede dal browser a Open-Meteo (D-76) con le sole coordinate della destinazione, quindi Open-Meteo vede l'indirizzo IP di chi guarda, come per le immagini della mappa; lo dice l'informativa |
 | **Ripristino password** | risposta sempre uguale (nessuno scopre chi è registrato); token casuale da 32 byte, valido 30 minuti e una volta sola, salvato solo come hash SHA-256; un link nuovo annulla i precedenti; per account al massimo un'email al minuto e cinque al giorno; email spedita dopo il salvataggio, su un thread a parte, con l'API di Brevo (chiave solo nelle variabili d'ambiente, permesso minimo); stesso limite anti-forza-bruta dell'accesso |
 | **Account** | cambio password solo con quella attuale, stesse regole della registrazione; email unica (senza distinzione di maiuscole); preferenze sull'account, nessun dato in più |
 | **Dati sul dispositivo** | offline restano sul telefono solo le risposte già viste (in IndexedDB, marchiate con versione e persona) e le foto già aperte; mai il JSON nella cache del service worker; all'uscita dall'account tutto viene cancellato; sul telefono di altri, esci sempre |
@@ -233,7 +234,7 @@ SplitTrip/
 │   │   ├── todo/               liste condivise e voci
 │   │   ├── photo/              foto, scontrini, ImageProcessor
 │   │   ├── notification/       notifiche (ascoltano gli eventi)
-│   │   ├── weather/            meteo da Open-Meteo
+│   │   ├── weather/            meteo da Open-Meteo, chiesto dal browser (D-76)
 │   │   ├── live/               WebSocket STOMP, JWT nel CONNECT, permessi per canale
 │   │   ├── chat/               chat del viaggio, righe evento, «sta scrivendo», reazioni
 │   │   ├── ai/                 consigli AI e valigia suggerita

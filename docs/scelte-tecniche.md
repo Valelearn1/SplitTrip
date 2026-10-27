@@ -90,7 +90,7 @@ Colpo d'occhio: cosa del programma è in SplitTrip, cosa è stato fatto in modo 
 ### 2.2 Perché Vitest e non Jest?
 - **A voce:** Vitest è il test runner nativo di Vite: stessa configurazione, stessa gestione di TypeScript e dei moduli, e un'API compatibile con Jest (`describe`, `it`, `expect`). Testing Library e axe funzionano uguali.
 - **A lezione:** Jest con CRA (settimana 10).
-- **Perché diverso:** con Vite, Jest avrebbe richiesto una configurazione separata per TypeScript e per gli `import` dei file statici; Vitest no. I 383 test del frontend girano in meno di un minuto.
+- **Perché diverso:** con Vite, Jest avrebbe richiesto una configurazione separata per TypeScript e per gli `import` dei file statici; Vitest no. I 387 test del frontend girano in meno di un minuto.
 - **Riferimento:** D-19, D-66.
 
 ### 2.3 ★ Perché CSS puro e non Bootstrap e SASS?
@@ -210,6 +210,11 @@ Colpo d'occhio: cosa del programma è in SplitTrip, cosa è stato fatto in modo 
 - **A voce:** l'ho misurato. Photon rispondeva in 8–11 secondi e rifiutava l'italiano; Open-Meteo risponde in 0,1 secondi e in italiano.
 - **Cosa si perde:** vie e monumenti, perché trova solo località.
 - **Riferimento:** D-51 (sostituisce D-46). Il meteo viene dallo stesso servizio, senza chiave, con una cache di 1 ora (D-37).
+
+### 4.3 bis Perché il meteo lo chiede il browser e non il server?
+- **A voce:** il limite gratuito di Open-Meteo, 10.000 chiamate al giorno, è per indirizzo IP. Il server su Render esce da un indirizzo condiviso con tutti gli altri siti ospitati nella stessa regione, e quel contatore si esaurisce in poche ore anche se SplitTrip fa venti chiamate. Dal browser ogni persona usa il proprio indirizzo.
+- **Onestà:** l'ho scoperto nei log di Render la sera prima della presentazione (`429 Daily API request limit exceeded` da venerdì). Il costo è che Open-Meteo vede l'indirizzo IP di chi guarda, come già OpenStreetMap per la mappa: è scritto nell'informativa. La Home e i consigli AI chiedono ancora dal server, e su Render restano senza meteo finché il blocco dura; la riserva «ultima previsione buona salvata» è in ROADMAP.
+- **Riferimento:** D-76.
 
 ### 4.4 Perché la destinazione va scelta dall'elenco e non scritta liberamente?
 - **A voce:** senza coordinate non ci sono meteo, mappa e stagione dello sfondo. Se il servizio è giù, il viaggio non si salva e l'app lo dice (503), invece di salvare un dato a metà.
@@ -414,7 +419,7 @@ Colpo d'occhio: cosa del programma è in SplitTrip, cosa è stato fatto in modo 
 | Livello | Strumenti | Quanti |
 |---|---|---|
 | Backend: unitari e integrazione | JUnit 5, MockMvc, **Testcontainers** con un Postgres vero | 259 |
-| Frontend | Vitest, Testing Library, MSW, axe | 383 |
+| Frontend | Vitest, Testing Library, MSW, axe | 387 |
 | Giro completo nel browser | Playwright: due persone si registrano, entrano col QR, dividono una cena, saldano, aggiungono una spesa in yen | 1 |
 
 - **Metodo:** TDD, cioè prima il test e poi il codice, guardandolo fallire.

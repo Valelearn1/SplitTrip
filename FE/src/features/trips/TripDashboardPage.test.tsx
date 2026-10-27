@@ -1,5 +1,6 @@
 import { cleanup, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
+import { OPEN_METEO_FORECAST } from '../weather/weatherApi'
 import { describe, expect, it } from 'vitest'
 import { renderWithProviders } from '../../test/renderWithProviders'
 import { server } from '../../test/server'
@@ -35,7 +36,7 @@ describe('TripDashboardPage', () => {
         }),
       ),
       http.get('http://localhost/api/trips/t1/expenses', () => HttpResponse.json([])),
-      http.get('http://localhost/api/trips/t1/weather', () => HttpResponse.json({ days: [] })),
+      http.get(OPEN_METEO_FORECAST, () => HttpResponse.json({ daily: {} }))   // D-76: il meteo lo chiede il browser,
     )
     renderWithProviders(
       [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ index: true, element: <TripDashboardPage /> }] }],
@@ -61,7 +62,7 @@ describe('TripDashboardPage', () => {
       http.get('http://localhost/api/trips/t1/ai/tips', () => HttpResponse.json({ available: false, remainingToday: 5, tips: [], generatedAt: null })),
       http.get('http://localhost/api/trips/t1/balances', () => HttpResponse.json({ balances: [], suggestedTransfers: [] })),
       http.get('http://localhost/api/trips/t1/expenses', () => HttpResponse.json([])),
-      http.get('http://localhost/api/trips/t1/weather', () => HttpResponse.json({ days: [] })),
+      http.get(OPEN_METEO_FORECAST, () => HttpResponse.json({ daily: {} }))   // D-76: il meteo lo chiede il browser,
     ]
     const routes = [{ path: '/trips/:tripId', element: <TripLayout />, children: [{ index: true, element: <TripDashboardPage /> }] }]
     server.use(...base, http.get('http://localhost/api/trips/t1', () => HttpResponse.json({ ...trip, endDate: '2999-12-31' })))
@@ -89,7 +90,7 @@ describe('TripDashboardPage', () => {
         splitType: 'EQUAL', dayBasis: null, payerId: 'p1', payerName: 'Vale', createdBy: 'u1', createdAt: '2026-11-02T10:00:00Z', receiptPhotoId: null,
         shares: [{ participantId: 'p1', displayName: 'Vale', amount: 5.63, weight: null }, { participantId: 'p2', displayName: 'Marco', amount: 5.62, weight: null }],
       }])),
-      http.get('http://localhost/api/trips/t1/weather', () => HttpResponse.json({ days: [] })),
+      http.get(OPEN_METEO_FORECAST, () => HttpResponse.json({ daily: {} }))   // D-76: il meteo lo chiede il browser,
     )
     renderWithProviders([{ path: '/trips/:tripId', element: <TripLayout />, children: [{ index: true, element: <TripDashboardPage /> }] }], '/trips/t1')
     expect(await screen.findByText(/2\.000\sJPY/)).toBeInTheDocument()
