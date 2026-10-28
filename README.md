@@ -17,7 +17,7 @@ Progetto finale (capstone) del corso fullstack: frontend React + TypeScript, bac
 
 - 🔐 **Registrazione e login** con JWT
 - ✈️ **Viaggi** con stato (in pianificazione → in corso → chiuso) e **codice invito** da condividere su WhatsApp
-- 💸 **Spese** divise in parti uguali (dove qualcuno può **contare per 2**, la coppia con un solo telefono, **o per ½**, il bambino), con importi personalizzati o **per presenza** (notti o giorni: chi arriva dopo paga meno alloggio), con l'anteprima delle quote
+- 💸 **Spese** divise in parti uguali tra chi scegli, con importi personalizzati o **per presenza** (notti o giorni: chi arriva dopo paga meno alloggio), con l'anteprima delle quote
 - 👵 **Partecipanti senza account**: l'organizzatore aggiunge chi non usa l'app, che ha comunque la sua quota; se poi si registra, entrando col codice **rivendica il suo posto** e ritrova le sue spese
 - 🧳 **La mia partecipazione**: ognuno imposta per quante persone conta e le date di arrivo e partenza, o lascia il viaggio senza perdere lo storico
 - ⚖️ **Saldi** sempre aggiornati e **trasferimenti suggeriti**: il minimo di rimborsi per azzerare i debiti del gruppo
@@ -218,6 +218,7 @@ Il progetto è sviluppato con un metodo **spec-driven**: prima la specifica, poi
 | [`docs/accessibilita-verifica.md`](docs/accessibilita-verifica.md) | registro della verifica di accessibilità: controlli automatici, prove a mano, problemi trovati e risolti |
 | [`docs/costi-operativi.md`](docs/costi-operativi.md) | costi operativi: servizi usati, costi unitari, tre scenari (oggi, uso piccolo, lancio), rischi e modello di business (Pass viaggio) |
 | [`docs/scelte-tecniche.md`](docs/scelte-tecniche.md) | perché così: le scelte logiche e tecniche in forma breve, domande e risposte in tabelle, con il confronto col programma del corso (Vite e non CRA, TanStack Query e non Redux, CSS puro e non Bootstrap, Leaflet e non Google Maps, niente 2FA, OCR o RAG e perché), le alternative scartate e i limiti noti |
+| [`docs/perche-stack-metodo.md`](docs/perche-stack-metodo.md) | quattro risposte brevi: perché un'altra app, le chicche, lo stack, i passi seguiti per ogni versione (brainstorming, spec, piano, card Trello, TDD, revisione, e2e e CI) |
 | [`docs/stitch/`](docs/stitch/) | schermate di riferimento generate con Stitch |
 | [Board Trello](https://trello.com/b/rel5oKVP/splittrip) | una card per task, con obiettivo, riferimenti a spec e piano, dipendenze, «fatto quando» e messaggio di commit; una lista per versione |
 
