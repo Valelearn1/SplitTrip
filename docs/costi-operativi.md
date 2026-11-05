@@ -1,6 +1,6 @@
 # SplitTrip — costi operativi
 
-Analisi del 21 ottobre 2026. Prezzi in dollari come li pubblicano i servizi; in euro al cambio BCE del 20 ottobre (1 $ = 0,89 €). Le stime d'uso sono ipotesi dichiarate, non misure.
+Analisi del 21 ottobre 2026, aggiornata il 5 novembre: il database è passato da Render a Neon (D-77). Prezzi in dollari come li pubblicano i servizi; in euro al cambio BCE del 20 ottobre (1 $ = 0,89 €). Le stime d'uso sono ipotesi dichiarate, non misure.
 
 ## 1. Cosa usa l'app oggi
 
@@ -8,7 +8,7 @@ Analisi del 21 ottobre 2026. Prezzi in dollari come li pubblicano i servizi; in 
 |---|---|---|---|---|
 | **Render: web service** (backend Docker) | API, WebSocket, elaborazione delle foto | Free | 0 € | si spegne dopo 15 minuti senza traffico, si riaccende in circa un minuto; 750 ore al mese per workspace |
 | **Render: static site** (frontend) | il sito e la PWA | gratuito | 0 € | rientra nella banda del workspace |
-| **Render: Postgres** | dati e foto (D-07: le foto stanno nel database) | Free | 0 € | **scade 30 giorni dopo la creazione**, poi 14 giorni di tolleranza e viene cancellato; 1 GB; nessun backup |
+| **Neon: Postgres** (dal 5 novembre, D-77) | dati e foto (D-07: le foto stanno nel database) | Free, Francoforte | 0 € | 1 GB; non scade; si spegne dopo qualche minuto senza richieste e si riaccende alla prima; nessun backup giornaliero. Prima stava sul Postgres gratuito di Render, che **scade 30 giorni dopo la creazione** |
 | **Render: banda in uscita** | pagine, API, foto | Hobby | 0 € | 5 GB al mese (dal 1° agosto 2026), oltre 0,15 $/GB |
 | **Anthropic API** (Claude Haiku 4.5) | consigli per il viaggio e per la valigia (D-41) | a consumo | pochi centesimi | 1 $ per milione di token in ingresso, 5 $ in uscita; l'app limita a 5 generazioni al giorno per viaggio |
 | **Brevo** | email di ripristino della password (D-61) | Free | 0 € | 300 email al giorno |
@@ -48,7 +48,7 @@ Analisi del 21 ottobre 2026. Prezzi in dollari come li pubblicano i servizi; in 
 
 | Rischio | Quando | Effetto | Cosa fare |
 |---|---|---|---|
-| **Il database gratuito scade** | creato il 13 ottobre → scade intorno al **12 novembre**, cancellato intorno al **26 novembre** | tutti i dati del sito pubblicato si perdono | se il sito deve restare online dopo la valutazione: passare a Basic-256mb (6 $/mese) prima del 12 novembre, oppure esportare i dati (`pg_dump`). Controllare la data esatta nella dashboard di Render |
+| ~~Il database gratuito di Render scade~~ | creato il 13 ottobre → scadenza intorno al 12 novembre | **risolto il 5 novembre**: dati copiati su Neon gratuito (D-77) | il vecchio database di Render resta finché non scade: si può eliminare dalla dashboard una volta sicuri di Neon |
 | Server che dorme | dopo 15 minuti senza traffico | la prima apertura aspetta circa un minuto (l'app lo dice: «si sta svegliando») | prima della demo: `curl https://splittrip-api.onrender.com/actuator/health`; con Starter (7 $) il problema sparisce |
 | Banda ridotta a 5 GB | dal 1° agosto 2026 | molte foto viste → 0,15 $/GB | le foto già viste restano nella cache del telefono (D-63); al lancio, foto su un object storage (es. Cloudflare R2: 0,015 $/GB, banda in uscita gratuita) invece che nel database (rivedere D-07) |
 | Open-Meteo solo non commerciale | se SplitTrip diventa a pagamento | licenza obbligatoria (29 $/mese) | per il capstone non serve |
@@ -60,7 +60,7 @@ Analisi del 21 ottobre 2026. Prezzi in dollari come li pubblicano i servizi; in 
 - **Oggi SplitTrip costa zero**: tutti i servizi sono gratuiti e l'AI costa frazioni di centesimo, limitata per viaggio.
 - **Per tenerlo online davvero** bastano circa **12–13 € al mese**: server sempre acceso e database che non scade.
 - **Il costo cresce con le foto, non con le persone**: foto nel database e banda in uscita. È la prima cosa da cambiare per un lancio (object storage), insieme alla licenza del meteo se l'app diventa a pagamento.
-- **Prima scadenza concreta: il database gratuito, intorno al 12 novembre 2026.**
+- **Il database non scade più**: dal 5 novembre sta su Neon gratuito (D-77). Resta il server che dorme, risolto dal piano Starter (7 $/mese).
 
 ## 6. Modello di business: freemium con «Pass viaggio»
 

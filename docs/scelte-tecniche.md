@@ -144,7 +144,8 @@ Docker: database locale e di e2e, Testcontainers nei test, immagine del backend 
 
 | Limite | Soluzione | Costo |
 |---|---|---|
-| Server che dorme dopo 15 min; DB gratuito che scade a novembre | piani Starter e Basic di Render | 7 + 6 $/mese |
+| Server che dorme dopo 15 min | piano Starter di Render | 7 $/mese |
+| Database su Neon gratuito (D-77): si spegne senza richieste, niente backup giornalieri | piano a pagamento di Neon o Render Basic | da 6 $/mese |
 | Cache, rate limiter, WebSocket in memoria | Redis e broker, se servono più istanze | — |
 | Foto nel database | object storage (R2) | centesimi |
 | Greedy non sempre minimo; token valido 24 h; niente 2FA; niente «Elimina account»; codice invito condiviso | n − 1 basta; refresh token; TOTP; anonimizzazione; link per persona | ~1 giorno l'uno |

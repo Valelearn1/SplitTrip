@@ -36,12 +36,12 @@ Altre, più piccole: chi non ha l'app è nel viaggio lo stesso e può rivendicar
 | Livello | Scelta |
 |---|---|
 | Backend | Java 25, Spring Boot 4.1, Spring Security (JWT), JPA, Flyway, WebSocket STOMP |
-| Database | PostgreSQL (Docker in locale, Render in produzione), `NUMERIC` per i soldi |
+| Database | PostgreSQL (Docker in locale, Neon a Francoforte in produzione), `NUMERIC` per i soldi |
 | Frontend | React 19, TypeScript, Vite, TanStack Query, React Hook Form + Zod, CSS con variabili, Leaflet, Motion, PWA (service worker, IndexedDB) |
 | Servizi esterni | Open-Meteo (meteo e luoghi), Frankfurter (cambi BCE), Brevo (email di ripristino), Anthropic Claude Haiku (consigli), OpenStreetMap (mappa) |
 | Test | JUnit 5, MockMvc, Testcontainers · Vitest, Testing Library, MSW, axe · Playwright |
 | Qualità | ESLint, `tsc`, GitHub Actions (CI a ogni push) |
-| Hosting | Render: sito statico, backend in Docker, Postgres; configurazione in `render.yaml` |
+| Hosting | Render: sito statico e backend in Docker, configurazione in `render.yaml`; Neon: database |
 | Strumenti | Claude Code con le skill Superpowers, Trello, Stitch per le prime bozze grafiche |
 
 Numeri al 27 ottobre: 259 test backend, 387 frontend, 1 giro end-to-end, 76 decisioni registrate, 11 versioni rilasciate (v1.0 → v3.6).

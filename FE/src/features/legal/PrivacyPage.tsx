@@ -2,7 +2,8 @@ import { LEGAL } from './legal'
 import { LegalPage } from './LegalPage'
 
 const PROVIDERS = [
-  { who: 'Render', why: 'ospita sito, server e database', gets: 'i dati dell\'app, per intero', where: 'Stati Uniti' },
+  { who: 'Render', why: 'ospita sito e server', gets: 'i dati dell\'app mentre il server li elabora', where: 'Stati Uniti' },
+  { who: 'Neon', why: 'ospita il database', gets: 'i dati dell\'app, per intero', where: 'Germania (Francoforte)' },
   { who: 'Brevo', why: 'invia l\'email per reimpostare la password', gets: 'il tuo indirizzo email e il link', where: 'Unione europea (Francia)' },
   { who: 'Anthropic', why: 'consigli per il viaggio e per la valigia', gets: 'destinazione, date, numero di persone, meteo e le voci già in lista; mai nomi, email o importi', where: 'Stati Uniti' },
   { who: 'Open-Meteo', why: 'meteo e proposte di luoghi', gets: 'per il meteo, le coordinate della destinazione, inviate dal tuo browser (quindi con il tuo indirizzo IP, come per qualsiasi sito); per i luoghi, il testo cercato, inviato dal nostro server', where: 'Svizzera' },
@@ -56,8 +57,8 @@ export function PrivacyPage() {
 
       <h2>Fuori dall’Unione europea</h2>
       <p>
-        Render, Anthropic e Google hanno sede negli Stati Uniti; il server e il database di SplitTrip si trovano negli
-        Stati Uniti. I trasferimenti avvengono con le garanzie previste dagli articoli 45 e 46 del GDPR offerte dai
+        Render, Neon, Anthropic e Google hanno sede negli Stati Uniti; il server di SplitTrip si trova negli Stati Uniti,
+        il database in Germania (Francoforte). I trasferimenti avvengono con le garanzie previste dagli articoli 45 e 46 del GDPR offerte dai
         fornitori, come le clausole contrattuali standard o l'adesione all'EU-U.S. Data Privacy Framework. Il Regno Unito
         e la Svizzera hanno una decisione di adeguatezza della Commissione europea.
       </p>

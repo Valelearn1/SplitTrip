@@ -105,11 +105,11 @@ La visione di prodotto oltre il capstone (ospiti senza registrazione, spese in a
 | Livello | Tecnologie |
 |---|---|
 | **Backend** | Java 25, Spring Boot 4.1 (WebMVC, Data JPA / Hibernate 7, Security 7 + OAuth2 Resource Server, Validation, Actuator), Flyway, springdoc-openapi, ImageIO + TwelveMonkeys (WebP), WebSocket STOMP (broker in memoria), API di Anthropic (Claude Haiku) |
-| **Database** | PostgreSQL 16 |
+| **Database** | PostgreSQL (16 in locale e nei test, 18 in produzione su Neon) |
 | **Frontend** | React 19, TypeScript, Vite, React Router, TanStack Query (con persistenza in IndexedDB, idb-keyval), React Hook Form + Zod, date-fns, react-leaflet + OpenStreetMap, exifr, @stomp/stompjs, Motion, vite-plugin-pwa (Workbox) |
 | **Design** | DM Sans, Material Symbols, token CSS (nessun framework CSS) — sistema documentato in [`DESIGN.md`](DESIGN.md) |
 | **Test** | JUnit 5, Mockito, Testcontainers, MockMvc · Vitest, Testing Library, MSW |
-| **Deploy** | Render (backend Docker, frontend statico, Postgres) via [`render.yaml`](render.yaml) |
+| **Deploy** | Render (backend Docker, frontend statico) via [`render.yaml`](render.yaml); database Postgres su Neon, Francoforte (D-77) |
 
 ## 🚀 Avvio in locale
 
@@ -139,7 +139,9 @@ Tutte hanno un valore di default per lo sviluppo: in locale non serve impostarne
 
 | Variabile | Dove | Default in sviluppo | In produzione |
 |---|---|---|---|
-| `DATABASE_URL` | BE | `jdbc:postgresql://localhost:5432/splittrip` | dal database Render (formato `postgresql://…`, convertito in automatico) |
+| `DATABASE_URL` | BE | `jdbc:postgresql://localhost:5432/splittrip` | database Neon in forma `jdbc:postgresql://<host>/neondb?sslmode=require`, inserita a mano su Render (D-77); accetta anche `postgresql://utente:password@host/db`, convertito in automatico |
+| `DATABASE_USERNAME` | BE | `splittrip` | utente del database Neon, inserito a mano su Render |
+| `DATABASE_PASSWORD` | BE | `splittrip` | password del database Neon, inserita a mano su Render |
 | `JWT_SECRET` | BE | segreto di sviluppo | generato da Render, almeno 32 byte |
 | `CORS_ORIGIN` | BE | `http://localhost:5173` | URL del frontend |
 | `VITE_API_URL` | FE | `/api` (proxy Vite) | URL dell'API |

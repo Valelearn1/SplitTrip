@@ -11,7 +11,7 @@ const routes = [{ path: '/termini', element: <TermsPage /> }, { path: '/privacy'
 it('i termini si leggono senza account e dicono le cose che contano', async () => {
   renderWithProviders(routes, '/termini')
   expect(await screen.findByRole('heading', { level: 1, name: 'Termini e condizioni' })).toBeInTheDocument()
-  expect(screen.getByText('Ultimo aggiornamento: 27 ottobre 2026')).toBeInTheDocument()
+  expect(screen.getByText('Ultimo aggiornamento: 5 novembre 2026')).toBeInTheDocument()
   for (const h of ['Il servizio', 'Account', 'I tuoi contenuti', 'Uso corretto', 'Conti e consigli', 'Responsabilità', 'Modifiche e legge applicabile']) {
     expect(screen.getByRole('heading', { level: 2, name: h })).toBeInTheDocument()
   }
@@ -30,10 +30,11 @@ it('l’informativa nomina titolare, contatto di esempio, fornitori, diritti e m
   expect(screen.getAllByText(/Valentina Ferro/).length).toBeGreaterThan(0)
   expect(screen.getAllByText(/privacy@splittrip\.example/).length).toBeGreaterThan(0)
   expect(screen.getByText(/indirizzo di esempio/)).toBeInTheDocument()   // finché non c'è un contatto vero, lo diciamo
-  for (const who of ['Render', 'Brevo', 'Anthropic', 'Open-Meteo', 'Frankfurter', 'OpenStreetMap', 'Google Fonts']) {
+  for (const who of ['Render', 'Neon', 'Brevo', 'Anthropic', 'Open-Meteo', 'Frankfurter', 'OpenStreetMap', 'Google Fonts']) {
     expect(screen.getAllByText(new RegExp(who)).length).toBeGreaterThan(0)
   }
   expect(screen.getByText(/non usa cookie/)).toBeInTheDocument()
+  expect(screen.getByText(/il database in Germania \(Francoforte\)/)).toBeInTheDocument()   // D-77: il database è su Neon
   expect(screen.getByText(/coordinate della destinazione, inviate dal tuo browser/)).toBeInTheDocument()   // D-76: il meteo lo chiede il browser
   expect(screen.getByText(/data e ora in cui hai accettato i Termini/)).toBeInTheDocument()   // D-73
   expect(screen.getByRole('region', { name: /Fornitori/ })).toHaveAttribute('tabindex', '0')   // la tabella scorre di lato: raggiungibile da tastiera
